@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:unicorn/widgets/LogIn/login_main_details.dart';
+import 'package:unicorn/widgets/SignIn/signin_details.dart';
 
 class MainPage extends StatelessWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -82,7 +83,12 @@ class MainPage extends StatelessWidget {
                       fixedSize: Size(0.9.sw, 48),
                     ),
                     onPressed: () {
-                      print("Tapped SignIn");
+                     Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SignInPage(),
+                        ),
+                      );;
                     },
                   ),
                 ),
