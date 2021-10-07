@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/material.dart";
 import "package:flutter_screenutil/flutter_screenutil.dart";
 import 'package:unicorn/widgets/custom_input_text.dart';
@@ -12,6 +13,9 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
   String? email;
   String? password;
+
+  TextEditingController nameController = TextEditingController();
+  TextEditingController secondNameController = TextEditingController();
 
   var fields = {"email": 0, "password": 0};
   bool enable = false;
@@ -33,8 +37,18 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-  TextEditingController nameController = TextEditingController();
-  TextEditingController secondNameController = TextEditingController();
+  void signInWithEmailAndPassword() async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email!, password: password!);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,75 +67,77 @@ class _SignInPageState extends State<SignInPage> {
           },
         ),
       ),
-      body: SizedBox(
-        height: 1.sh,
-        width: 1.sw,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            CustomInputText(
-              labelName: "Email",
-              password: false,
-              getText: (val) {
-                email = val;
-                if (email != "") {
-                  fields["email"] = 1;
-                } else {
-                  fields["email"] = 0;
-                }
-                noEmptyFields();
-              },
-            ),
-            CustomInputText(
-              labelName: "Password",
-              password: false,
-              getText: (val) {
-                password = val;
-                if (email != "") {
-                  fields["password"] = 1;
-                } else {
-                  fields["password"] = 0;
-                }
-                noEmptyFields();
-              },
-            ),
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 60),
-                child: ElevatedButton(
-                  child: const Text(
-                    "Sign In",
-                    style: TextStyle(
-                      fontFamily: "Geometric Sans-Serif",
-                      fontSize: 20,
-                      color: Colors.white,
+      body: SingleChildScrollView(
+        child: SizedBox(
+          height: 0.6.sh,
+          width: 1.sw,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              CustomInputText(
+                labelName: "Email",
+                password: false,
+                getText: (val) {
+                  email = val;
+                  if (email != "") {
+                    fields["email"] = 1;
+                  } else {
+                    fields["email"] = 0;
+                  }
+                  noEmptyFields();
+                },
+              ),
+              CustomInputText(
+                labelName: "Password",
+                password: false,
+                getText: (val) {
+                  password = val;
+                  if (email != "") {
+                    fields["password"] = 1;
+                  } else {
+                    fields["password"] = 0;
+                  }
+                  noEmptyFields();
+                },
+              ),
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 60),
+                  child: ElevatedButton(
+                    child: const Text(
+                      "Sign In",
+                      style: TextStyle(
+                        fontFamily: "Geometric Sans-Serif",
+                        fontSize: 20,
+                        color: Colors.white,
+                      ),
                     ),
+                    style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                        primary: const Color(0xFF3D5AF1),
+                        fixedSize: Size(0.88.sw, 48),
+                        onSurface: const Color(0xFF3D5AF1)),
+                    onPressed: enable
+                        ? () {
+                            print("pressed");
+                          }
+                        : null,
                   ),
-                  style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      primary: const Color(0xFF3D5AF1),
-                      fixedSize: Size(0.88.sw, 48),
-                      onSurface: const Color(0xFF3D5AF1)),
-                  onPressed: enable
-                      ? () {
-                          print("pressed");
-                        }
-                      : null,
                 ),
               ),
-            ),
-            const Padding(
-              padding: EdgeInsets.only(top: 40),
-              child: Text(
-                "Forgot password ?",
-                style: TextStyle(
-                  fontFamily: "Geometric Sans-Serif",
-                  fontSize: 13,
-                  color: Color(0xFF3D5AF1),
+              const Padding(
+                padding: EdgeInsets.only(top: 40),
+                child: Text(
+                  "Forgot password ?",
+                  style: TextStyle(
+                    fontFamily: "Geometric Sans-Serif",
+                    fontSize: 13,
+                    color: Color(0xFF3D5AF1),
+                  ),
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );

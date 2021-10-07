@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:unicorn/widgets/custom_input_text.dart';
@@ -14,6 +15,11 @@ class _MainDetailsState extends State<MainDetails> {
   String? secondName;
   String? email;
   String? password;
+
+  TextEditingController nameController = TextEditingController();
+  TextEditingController secondNameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
   bool enable = false;
 
@@ -36,10 +42,20 @@ class _MainDetailsState extends State<MainDetails> {
     }
   }
 
-  TextEditingController nameController = TextEditingController();
-  TextEditingController secondNameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  void createUserWithEmailAndPassword() async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email!, password: password!);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == "weak-passowrd") {
+        print(e.code);
+      } else if (e.code == "email-already-in-use") {
+        print(e.code);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -157,7 +173,8 @@ class _MainDetailsState extends State<MainDetails> {
                         onSurface: const Color(0xFF3D5AF1)),
                     onPressed: enable
                         ? () {
-                            print("pressed");
+                            createUserWithEmailAndPassword();
+                            print("account created");
                           }
                         : null,
                   ),
