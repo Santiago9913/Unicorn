@@ -1,4 +1,0 @@
-enum ProfieTypes {
-  ENTREPRENEUR,
-  INVESTOR,
-}
