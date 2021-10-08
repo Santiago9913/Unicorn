@@ -1,14 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class InterestsPage extends StatelessWidget {
+class InterestsPage extends StatefulWidget {
   const InterestsPage({Key? key}) : super(key: key);
 
-  //String? interest;
+  @override
+  State<InterestsPage> createState() => _InterestsPageState();
+}
 
-  final bool enable = false;
+class _InterestsPageState extends State<InterestsPage> {
 
-  //var fields = {"interest": 0};
+  bool enable = false;
+  bool hasBeenPressedCrypto = false;
+  bool hasBeenPressedFintech = false;
+  bool hasBeenPressedBlockchain = false;
+  bool hasBeenPressedInnovation = false;
+  bool hasBeenPressedRandom = false;
+  Color bottonPressed = const Color(0xFFE2F3F5);
+  Color bottonUnpressed = const Color(0xFF0E153A);
+  Color textColorPressed = Colors.black;
+
+  var fields = {"Crypto": 0, "Fintech": 0, "Blockchain": 0, "Innovation": 0, "Random": 0};
+
+  void getSelected() {
+
+    fields["Crypto"] =  hasBeenPressedCrypto ? 1 : 0;
+    fields["Fintech"] =  hasBeenPressedFintech ? 1 : 0;
+    fields["Blockchain"] =  hasBeenPressedBlockchain ? 1 : 0;
+    fields["Innovation"] =  hasBeenPressedInnovation ? 1 : 0;
+    fields["Random"] =  hasBeenPressedRandom ? 1 : 0;
+
+  }
+
+  void Selected() {
+
+    if(hasBeenPressedCrypto || hasBeenPressedFintech || hasBeenPressedBlockchain || hasBeenPressedInnovation || hasBeenPressedRandom == true)
+      {
+        enable = true;
+      }
+    else
+      {
+        enable = false;
+      }
+
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -54,25 +90,30 @@ class InterestsPage extends StatelessWidget {
                   child: Directionality(
                     textDirection: TextDirection.rtl,
                     child: TextButton.icon(
-                      label: const Text(
+                      label: Text(
                         "Crypto",
                         style: TextStyle(
                           fontFamily: "Geometric Sans-Serif",
                           fontSize: 25,
-                          color: Colors.white,
+                          color: hasBeenPressedCrypto ? textColorPressed: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       icon: Image.asset("assets/icons/Other06.png"),
                       style: ElevatedButton.styleFrom(
-                        primary: const Color(0xFF0E153A),
+                        elevation: hasBeenPressedCrypto ? 30: 0,
+                        splashFactory: NoSplash.splashFactory,
+                        primary: hasBeenPressedCrypto ? bottonPressed: bottonUnpressed,
                         fixedSize: Size(0.9.sw, 70),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
                       ),
                       onPressed: () {
-
+                        setState(() {
+                          hasBeenPressedCrypto = !hasBeenPressedCrypto;
+                        });
+                        Selected();
                       },
                     ),
                   ),
@@ -82,25 +123,30 @@ class InterestsPage extends StatelessWidget {
                   child: Directionality(
                     textDirection: TextDirection.rtl,
                     child: TextButton.icon(
-                      label: const Text(
+                      label: Text(
                         "Fintech",
                         style: TextStyle(
                           fontFamily: "Geometric Sans-Serif",
                           fontSize: 25,
-                          color: Colors.white,
+                          color: hasBeenPressedFintech ? textColorPressed: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       icon: Image.asset("assets/icons/Other04.png"),
                       style: ElevatedButton.styleFrom(
-                        primary: const Color(0xFF0E153A),
+                        elevation: hasBeenPressedFintech ? 30: 0,
+                        splashFactory: NoSplash.splashFactory,
+                        primary: hasBeenPressedFintech ? bottonPressed: bottonUnpressed,
                         fixedSize: Size(0.9.sw, 70),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
                       ),
                       onPressed: () {
-
+                        setState(() {
+                          hasBeenPressedFintech = !hasBeenPressedFintech;
+                        });
+                        Selected();
                       },
                     ),
                   ),
@@ -110,25 +156,30 @@ class InterestsPage extends StatelessWidget {
                   child: Directionality(
                     textDirection: TextDirection.rtl,
                     child: TextButton.icon(
-                      label: const Text(
+                      label: Text(
                         "Blockchain",
                         style: TextStyle(
                           fontFamily: "Geometric Sans-Serif",
                           fontSize: 25,
-                          color: Colors.white,
+                          color: hasBeenPressedBlockchain ? textColorPressed: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       icon: Image.asset("assets/icons/Other09.png"),
                       style: ElevatedButton.styleFrom(
-                        primary: const Color(0xFF0E153A),
+                        elevation: hasBeenPressedBlockchain ? 30: 0,
+                        splashFactory: NoSplash.splashFactory,
+                        primary: hasBeenPressedBlockchain ? bottonPressed: bottonUnpressed,
                         fixedSize: Size(0.9.sw, 70),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
                       ),
                       onPressed: () {
-
+                        setState(() {
+                          hasBeenPressedBlockchain = !hasBeenPressedBlockchain;
+                        });
+                        Selected();
                       },
                     ),
                   ),
@@ -138,25 +189,30 @@ class InterestsPage extends StatelessWidget {
                   child: Directionality(
                     textDirection: TextDirection.rtl,
                     child: TextButton.icon(
-                      label: const Text(
+                      label: Text(
                         "Innovation",
                         style: TextStyle(
                           fontFamily: "Geometric Sans-Serif",
                           fontSize: 25,
-                          color: Colors.white,
+                          color: hasBeenPressedInnovation ? textColorPressed: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       icon: Image.asset("assets/icons/Other18.png"),
                       style: ElevatedButton.styleFrom(
-                        primary: const Color(0xFF0E153A),
+                        elevation: hasBeenPressedInnovation ? 30: 0,
+                        splashFactory: NoSplash.splashFactory,
+                        primary: hasBeenPressedInnovation ? bottonPressed: bottonUnpressed,
                         fixedSize: Size(0.9.sw, 70),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
                       ),
                       onPressed: () {
-
+                        setState(() {
+                          hasBeenPressedInnovation = !hasBeenPressedInnovation;
+                        });
+                        Selected();
                       },
                     ),
                   ),
@@ -166,25 +222,30 @@ class InterestsPage extends StatelessWidget {
                   child: Directionality(
                     textDirection: TextDirection.rtl,
                     child: TextButton.icon(
-                      label: const Text(
+                      label: Text(
                         "Random",
                         style: TextStyle(
                           fontFamily: "Geometric Sans-Serif",
                           fontSize: 25,
-                          color: Colors.white,
+                          color: hasBeenPressedRandom ? textColorPressed: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       icon: Image.asset("assets/icons/Other20.png"),
                       style: ElevatedButton.styleFrom(
-                        primary: const Color(0xFF0E153A),
+                        elevation: hasBeenPressedRandom ? 30: 0,
+                        splashFactory: NoSplash.splashFactory,
+                        primary: hasBeenPressedRandom ? bottonPressed: bottonUnpressed,
                         fixedSize: Size(0.9.sw, 70),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
                       ),
                       onPressed: () {
-
+                        setState(() {
+                          hasBeenPressedRandom = !hasBeenPressedRandom;
+                        });
+                        Selected();
                       },
                     ),
                   ),
@@ -208,16 +269,11 @@ class InterestsPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(15),
                         ),
                         onSurface: const Color(0xFF3D5AF1)),
-                    onPressed: () {
-                      //createUserWithEmailAndPassword();
-                      print("account created");
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const InterestsPage(),
-                        ),
-                      );;
+                    onPressed: enable
+                        ? () async {
+                      getSelected();
                     }
+                        : null,
                   ),
                 ),
               ]
