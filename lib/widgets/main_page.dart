@@ -52,6 +52,7 @@ class MainPage extends StatelessWidget {
                     ),
                     style: ElevatedButton.styleFrom(
                       primary: Colors.white,
+                      fixedSize: Size(0.9.sw, 48),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -79,6 +80,7 @@ class MainPage extends StatelessWidget {
                     ),
                     style: TextButton.styleFrom(
                       primary: const Color(0xFF3D5AF1),
+                      fixedSize: Size(0.9.sw, 48),
                     ),
                     onPressed: () {
                      Navigator.push(

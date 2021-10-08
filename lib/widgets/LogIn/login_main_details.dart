@@ -16,7 +16,7 @@ class _MainDetailsState extends State<MainDetails> {
   String? secondName;
   String? email;
   String? password;
-  String? userUID;
+  String? uid;
 
   TextEditingController nameController = TextEditingController();
   TextEditingController secondNameController = TextEditingController();
@@ -44,12 +44,14 @@ class _MainDetailsState extends State<MainDetails> {
     }
   }
 
-  void createUserWithEmailAndPassword() async {
+  createUserWithEmailAndPassword() async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
+      Future<UserCredential> userCredential = FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email!, password: password!);
 
-      userUID = userCredential.user?.uid;
+      UserCredential credentilas = await userCredential;
+      uid = credentilas.user?.uid;
+      print("UID: $uid");
     } on FirebaseAuthException catch (e) {
       if (e.code == "weak-passowrd") {
         print(e.code);
@@ -59,6 +61,15 @@ class _MainDetailsState extends State<MainDetails> {
     } catch (e) {
       print(e);
     }
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    secondNameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -174,15 +185,18 @@ class _MainDetailsState extends State<MainDetails> {
                         fixedSize: Size(0.88.sw, 48),
                         onSurface: const Color(0xFF3D5AF1)),
                     onPressed: enable
-                        ? () {
-                            createUserWithEmailAndPassword();
-                            Navigator.push(
+                        ? () async {
+                            await createUserWithEmailAndPassword();
+                            Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => SelectProfileType(
-                                  userUID: userUID!,
+                                  userUID: uid!,
+                                  firstName: name,
+                                  lastName: secondName,
                                 ),
                               ),
+                              (e) => false,
                             );
                           }
                         : null,
