@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:unicorn/widgets/LogIn/login_select_profile_type.dart';
 import 'package:unicorn/widgets/custom_input_text.dart';
 
 class MainDetails extends StatefulWidget {
@@ -15,6 +16,7 @@ class _MainDetailsState extends State<MainDetails> {
   String? secondName;
   String? email;
   String? password;
+  String? uid;
 
   TextEditingController nameController = TextEditingController();
   TextEditingController secondNameController = TextEditingController();
@@ -42,10 +44,14 @@ class _MainDetailsState extends State<MainDetails> {
     }
   }
 
-  void createUserWithEmailAndPassword() async {
+  createUserWithEmailAndPassword() async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
+      Future<UserCredential> userCredential = FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email!, password: password!);
+
+      UserCredential credentilas = await userCredential;
+      uid = credentilas.user?.uid;
+      print("UID: $uid");
     } on FirebaseAuthException catch (e) {
       if (e.code == "weak-passowrd") {
         print(e.code);
@@ -55,6 +61,15 @@ class _MainDetailsState extends State<MainDetails> {
     } catch (e) {
       print(e);
     }
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    secondNameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -99,12 +114,10 @@ class _MainDetailsState extends State<MainDetails> {
                 getText: (val) {
                   name = val;
                   if (name != "") {
-                    print(name);
                     fields["name"] = 1;
                   } else {
                     fields["name"] = 0;
                   }
-                  print(fields);
                   noEmptyFields();
                 },
               ),
@@ -172,9 +185,19 @@ class _MainDetailsState extends State<MainDetails> {
                         fixedSize: Size(0.88.sw, 48),
                         onSurface: const Color(0xFF3D5AF1)),
                     onPressed: enable
-                        ? () {
-                            createUserWithEmailAndPassword();
-                            print("account created");
+                        ? () async {
+                            await createUserWithEmailAndPassword();
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SelectProfileType(
+                                  userUID: uid!,
+                                  firstName: name,
+                                  lastName: secondName,
+                                ),
+                              ),
+                              (e) => false,
+                            );
                           }
                         : null,
                   ),
