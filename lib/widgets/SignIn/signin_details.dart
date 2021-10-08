@@ -1,29 +1,24 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import "package:flutter/material.dart";
+import "package:flutter_screenutil/flutter_screenutil.dart";
 import 'package:unicorn/widgets/custom_input_text.dart';
 
-class MainDetails extends StatefulWidget {
-  const MainDetails({Key? key}) : super(key: key);
+class SignInPage extends StatefulWidget {
+  const SignInPage({Key? key}) : super(key: key);
 
   @override
-  _MainDetailsState createState() => _MainDetailsState();
+  _SignInPageState createState() => _SignInPageState();
 }
 
-class _MainDetailsState extends State<MainDetails> {
-  String? name;
-  String? secondName;
+class _SignInPageState extends State<SignInPage> {
   String? email;
   String? password;
 
   TextEditingController nameController = TextEditingController();
   TextEditingController secondNameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
 
+  var fields = {"email": 0, "password": 0};
   bool enable = false;
-
-  var fields = {"name": 0, "secondName": 0, "email": 0, "password": 0};
 
   void noEmptyFields() {
     int sum = 0;
@@ -31,29 +26,27 @@ class _MainDetailsState extends State<MainDetails> {
       sum += v;
     }
 
-    if (sum == 4 && enable == false) {
+    if (sum == 2 && enable == false) {
       setState(() {
         enable = !enable;
       });
-    } else if (sum != 4 && enable == true) {
+    } else if (sum != 2 && enable == true) {
       setState(() {
         enable = !enable;
       });
     }
   }
 
-  void createUserWithEmailAndPassword() async {
+  void signInWithEmailAndPassword() async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email!, password: password!);
+          .signInWithEmailAndPassword(email: email!, password: password!);
     } on FirebaseAuthException catch (e) {
-      if (e.code == "weak-passowrd") {
-        print(e.code);
-      } else if (e.code == "email-already-in-use") {
-        print(e.code);
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
       }
-    } catch (e) {
-      print(e);
     }
   }
 
@@ -66,7 +59,7 @@ class _MainDetailsState extends State<MainDetails> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(
-            Icons.clear,
+            Icons.keyboard_backspace,
             color: Colors.black,
           ),
           onPressed: () {
@@ -76,81 +69,34 @@ class _MainDetailsState extends State<MainDetails> {
       ),
       body: SingleChildScrollView(
         child: SizedBox(
+          height: 0.6.sh,
           width: 1.sw,
-          height: 0.89.sh,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Container(
-                width: 1.sw,
-                padding: const EdgeInsets.only(left: 16, top: 2),
-                child: const Text(
-                  "Create Your Account",
-                  style: TextStyle(
-                      fontFamily: "Geometric Sans-Serif",
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-              CustomInputText(
-                labelName: "First Name",
-                password: false,
-                textController: nameController,
-                getText: (val) {
-                  name = val;
-                  if (name != "") {
-                    print(name);
-                    fields["name"] = 1;
-                  } else {
-                    fields["name"] = 0;
-                  }
-                  print(fields);
-                  noEmptyFields();
-                },
-              ),
-              CustomInputText(
-                labelName: "Second Name",
-                password: false,
-                textController: secondNameController,
-                getText: (val) {
-                  secondName = val;
-                  if (secondName!.isNotEmpty) {
-                    fields["secondName"] = 1;
-                  } else {
-                    fields["secondName"] = 0;
-                  }
-
-                  noEmptyFields();
-                },
-              ),
               CustomInputText(
                 labelName: "Email",
                 password: false,
-                textController: emailController,
                 getText: (val) {
                   email = val;
-                  if (email!.isNotEmpty) {
+                  if (email != "") {
                     fields["email"] = 1;
                   } else {
                     fields["email"] = 0;
                   }
-
                   noEmptyFields();
                 },
               ),
               CustomInputText(
                 labelName: "Password",
-                password: true,
-                textController: passwordController,
+                password: false,
                 getText: (val) {
                   password = val;
-
-                  if (password!.isNotEmpty) {
+                  if (email != "") {
                     fields["password"] = 1;
                   } else {
                     fields["password"] = 0;
                   }
-
                   noEmptyFields();
                 },
               ),
@@ -159,7 +105,7 @@ class _MainDetailsState extends State<MainDetails> {
                   padding: const EdgeInsets.only(top: 60),
                   child: ElevatedButton(
                     child: const Text(
-                      "Continue",
+                      "Sign In",
                       style: TextStyle(
                         fontFamily: "Geometric Sans-Serif",
                         fontSize: 20,
@@ -173,10 +119,20 @@ class _MainDetailsState extends State<MainDetails> {
                         onSurface: const Color(0xFF3D5AF1)),
                     onPressed: enable
                         ? () {
-                            createUserWithEmailAndPassword();
-                            print("account created");
+                            print("pressed");
                           }
                         : null,
+                  ),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 40),
+                child: Text(
+                  "Forgot password ?",
+                  style: TextStyle(
+                    fontFamily: "Geometric Sans-Serif",
+                    fontSize: 13,
+                    color: Color(0xFF3D5AF1),
                   ),
                 ),
               )
