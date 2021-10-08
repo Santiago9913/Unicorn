@@ -14,30 +14,81 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State {
   int _currentIndex = 0;
-  List _children = [
+  static final List _children = [
     PlaceholderWidget(
-        Colors.white,
-        'You don’t have posts right know. Follow some one to see news on your feed',
-        'assets/icons/Other04.png'),
+      child: Container(
+        height: 1.sh,
+        width: 1.sw,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/icons/Saly16.png',
+              height: 200.h,
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 20),
+              child: SizedBox(
+                width: 200,
+                child: Text(
+                  "You don’t have posts right know. Follow some one to see news on your feed",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFFB2B2B2),
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    ),
     PlaceholderWidget(
-        Colors.deepOrange, 'Hola mundo', 'assets/icons/Other04.png'),
+      child: Container(
+        height: 1.sh,
+        width: 1.sw,
+        child: Column(),
+      ),
+    ),
     PlaceholderWidget(
-        Colors.green,
-        "You don’t have pages created. Create one to see them in this",
-        'assets/icons/Other04.png'),
-    PlaceholderWidget(Colors.green, 'Hola mundo', 'assets/icons/Other04.png')
+      child: Container(
+        height: 1.sh,
+        width: 1.sw,
+        child: Column(),
+      ),
+    ),
+    PlaceholderWidget(
+      child: Container(
+        height: 1.sh,
+        width: 1.sw,
+        child: Column(),
+      ),
+    )
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.person_pin,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            print("Profile");
+          },
+        ),
         toolbarHeight: 55,
         systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: Color.fromRGBO(14, 21, 58, 1)),
+          statusBarColor: Color(0xFF0E153A),
+          statusBarIconBrightness: Brightness.light,
+        ),
         flexibleSpace: Container(
           margin: const EdgeInsets.only(top: 24),
-          color: const Color.fromRGBO(14, 21, 58, 1),
+          color: const Color(0xFF0E153A),
           height: 55,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -104,9 +155,14 @@ class _HomeScreenState extends State {
             icon: Icon(Icons.calendar_today),
             label: 'Weekly',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Pages'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.person_pin), label: 'Profile')
+            icon: Icon(Icons.book),
+            label: 'Pages',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_pin),
+            label: 'Profile',
+          )
         ],
       ),
     );
