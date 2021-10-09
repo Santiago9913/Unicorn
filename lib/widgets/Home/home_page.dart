@@ -45,24 +45,90 @@ class _HomeScreenState extends State {
       ),
     ),
     PlaceholderWidget(
-      child: Container(
+      child:  Container(
         height: 1.sh,
         width: 1.sw,
-        child: Column(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/icons/Other09.png',
+              height: 200.h,
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 20),
+              child: SizedBox(
+                width: 200,
+                child: Text(
+                  "You don’t have posts right know. Follow some one to see news on your feed",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFFB2B2B2),
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     ),
     PlaceholderWidget(
-      child: Container(
+      child:  Container(
         height: 1.sh,
         width: 1.sw,
-        child: Column(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/icons/Saly16.png',
+              height: 200.h,
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 20),
+              child: SizedBox(
+                width: 200,
+                child: Text(
+                  "You don’t have pages created. Create one to see them in this",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFFB2B2B2),
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     ),
     PlaceholderWidget(
-      child: Container(
+      child:  Container(
         height: 1.sh,
         width: 1.sw,
-        child: Column(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/icons/Saly16.png',
+              height: 200.h,
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 20),
+              child: SizedBox(
+                width: 200,
+                child: Text(
+                  "You don’t have posts right know. Follow some one to see news on your feed",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFFB2B2B2),
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     )
   ];
@@ -72,16 +138,7 @@ class _HomeScreenState extends State {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.person_pin,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            print("Profile");
-          },
-        ),
-        toolbarHeight: 55,
+        toolbarHeight: 55.sp,
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: Color(0xFF0E153A),
           statusBarIconBrightness: Brightness.light,
@@ -89,7 +146,7 @@ class _HomeScreenState extends State {
         flexibleSpace: Container(
           margin: const EdgeInsets.only(top: 24),
           color: const Color(0xFF0E153A),
-          height: 55,
+          height: 0.15.sh,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
