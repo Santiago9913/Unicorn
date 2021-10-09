@@ -1,8 +1,10 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:unicorn/widgets/LogIn/login_select_profile_type.dart';
 import 'package:unicorn/widgets/custom_input_text.dart';
+import 'package:device_info/device_info.dart';
 
 class MainDetails extends StatefulWidget {
   const MainDetails({Key? key}) : super(key: key);
@@ -17,6 +19,7 @@ class _MainDetailsState extends State<MainDetails> {
   String? email;
   String? password;
   String? uid;
+  AndroidDeviceInfo? androidInfo;
 
   TextEditingController nameController = TextEditingController();
   TextEditingController secondNameController = TextEditingController();
@@ -26,6 +29,9 @@ class _MainDetailsState extends State<MainDetails> {
   bool enable = false;
 
   var fields = {"name": 0, "secondName": 0, "email": 0, "password": 0};
+
+  final FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics();
+  DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 
   void noEmptyFields() {
     int sum = 0;
@@ -44,6 +50,11 @@ class _MainDetailsState extends State<MainDetails> {
     }
   }
 
+  Future<AndroidDeviceInfo> getAndroidInfo(DeviceInfoPlugin device) async {
+    AndroidDeviceInfo aDevice = await device.androidInfo;
+    return aDevice;
+  }
+
   createUserWithEmailAndPassword() async {
     try {
       Future<UserCredential> userCredential = FirebaseAuth.instance
@@ -51,7 +62,6 @@ class _MainDetailsState extends State<MainDetails> {
 
       UserCredential credentilas = await userCredential;
       uid = credentilas.user?.uid;
-      print("UID: $uid");
     } on FirebaseAuthException catch (e) {
       if (e.code == "weak-passowrd") {
         print(e.code);
@@ -187,6 +197,14 @@ class _MainDetailsState extends State<MainDetails> {
                     onPressed: enable
                         ? () async {
                             await createUserWithEmailAndPassword();
+                            androidInfo = await getAndroidInfo(deviceInfo);
+                            await firebaseAnalytics.logEvent(
+                              name: "os_distribution",
+                              parameters: {
+                                "os_version": androidInfo!.version.release,
+                                "sdk" : androidInfo!.version.sdkInt,
+                              },
+                            );
                             Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(

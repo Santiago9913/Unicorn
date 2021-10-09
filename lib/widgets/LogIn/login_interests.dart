@@ -104,7 +104,7 @@ class _InterestsPageState extends State<InterestsPage> {
       body: SingleChildScrollView(
       child: SizedBox(
       width: 1.sw,
-      height: 0.89.sh,
+      height: 1.sh,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
