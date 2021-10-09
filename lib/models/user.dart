@@ -50,7 +50,7 @@ class User {
         'firstName': name,
         'lastName': lastName,
         'type': type,
-        'survey': "false",
+        'survey': false,
       };
 
 
