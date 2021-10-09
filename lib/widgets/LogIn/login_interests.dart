@@ -1,8 +1,13 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:unicorn/models/user.dart';
+import 'package:unicorn/widgets/Home/home_page.dart';
 
 class InterestsPage extends StatefulWidget {
-  const InterestsPage({Key? key}) : super(key: key);
+  InterestsPage({Key? key, required this.user}) : super(key: key);
+
+  late final User user;
 
   @override
   State<InterestsPage> createState() => _InterestsPageState();
@@ -20,15 +25,32 @@ class _InterestsPageState extends State<InterestsPage> {
   Color bottonUnpressed = const Color(0xFF0E153A);
   Color textColorPressed = Colors.black;
 
-  var fields = {"Crypto": 0, "Fintech": 0, "Blockchain": 0, "Innovation": 0, "Random": 0};
+  Map<String, dynamic> getSelected() {
 
-  void getSelected() {
+    Map<String, dynamic> selected = {};
 
-    fields["Crypto"] =  hasBeenPressedCrypto ? 1 : 0;
-    fields["Fintech"] =  hasBeenPressedFintech ? 1 : 0;
-    fields["Blockchain"] =  hasBeenPressedBlockchain ? 1 : 0;
-    fields["Innovation"] =  hasBeenPressedInnovation ? 1 : 0;
-    fields["Random"] =  hasBeenPressedRandom ? 1 : 0;
+    if(hasBeenPressedCrypto)
+      {
+        selected["Crypto"] = "Crypto";
+      }
+    if(hasBeenPressedFintech)
+    {
+      selected["Fintech"] = "Fintech";
+    }
+    if(hasBeenPressedBlockchain)
+    {
+      selected["Blockchain"] = "Blockchain";
+    }
+    if(hasBeenPressedInnovation)
+    {
+      selected["Innovation"] = "Innovation";
+    }
+    if(hasBeenPressedRandom)
+    {
+      selected["Random"] = "Random";
+    }
+
+    return selected;
 
   }
 
@@ -42,6 +64,22 @@ class _InterestsPageState extends State<InterestsPage> {
       {
         enable = false;
       }
+
+  }
+
+  uploadUserInterests() async {
+
+    DatabaseReference dbReference = widget.user.getDBReference;
+    String userId = widget.user.getUserUID;
+    try{
+      DatabaseReference userReference = dbReference.child("users/$userId/interests/");
+      Map<String, dynamic> mapInterest = getSelected();
+      await userReference.update(mapInterest);
+    }
+    catch(e)
+    {
+      print(e);
+    }
 
   }
 
@@ -271,7 +309,15 @@ class _InterestsPageState extends State<InterestsPage> {
                         onSurface: const Color(0xFF3D5AF1)),
                     onPressed: enable
                         ? () async {
-                      getSelected();
+                      await uploadUserInterests();
+                      {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const HomeScreen(),
+                            ),
+                                (route) => false);
+                      }
                     }
                         : null,
                   ),

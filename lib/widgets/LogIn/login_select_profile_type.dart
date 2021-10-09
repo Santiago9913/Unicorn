@@ -4,6 +4,8 @@ import 'package:unicorn/models/user.dart';
 import 'package:unicorn/widgets/Home/home_page.dart';
 import 'package:unicorn/widgets/LogIn/profile_type_button.dart';
 
+import 'login_interests.dart';
+
 class SelectProfileType extends StatefulWidget {
   const SelectProfileType({
     Key? key,
@@ -27,9 +29,10 @@ class _SelectProfileTypeState extends State<SelectProfileType> {
   double entrepreneurElevation = 0;
   double investorElevation = 0;
   String type = "";
+  late User user;
 
   uploadUser() async {
-    User user = User(
+    user = User(
         name: widget.firstName!,
         lastName: widget.lastName!,
         userUID: widget.userUID,
@@ -149,7 +152,7 @@ class _SelectProfileTypeState extends State<SelectProfileType> {
                               Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const HomeScreen(),
+                                    builder: (context) => InterestsPage(user: user),
                                   ),
                                   (route) => false);
                             }
