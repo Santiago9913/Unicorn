@@ -1,25 +1,21 @@
-import 'dart:io';
-
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:unicorn/widgets/main_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:unicorn/widgets/splash_screen.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 
-late FirebaseAnalytics analytics;
-
-void main()  {
-  analytics = FirebaseAnalytics();
-  analytics.logAppOpen();
-  analytics.logEvent(name: "OS Distribution", parameters: {
-    "OS": Platform.operatingSystem,
-    "OS_V": Platform.operatingSystemVersion,
-  });
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const Unicorn());
+  await SentryFlutter.init(
+    (options) {
+      options.dsn =
+          'https://5d1e572a71054ba486c0ecda291b7bde@o1032593.ingest.sentry.io/5999553';
+    },
+    appRunner: () => runApp(const Unicorn()),
+  );
 }
 
 class Unicorn extends StatefulWidget {
