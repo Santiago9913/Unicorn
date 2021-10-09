@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import "package:flutter/material.dart";
 import "package:flutter_screenutil/flutter_screenutil.dart";
 import 'package:unicorn/widgets/Home/home_page.dart';
+import 'package:unicorn/widgets/Survey/survey.dart';
 import 'package:unicorn/widgets/custom_input_text.dart';
 
 class SignInPage extends StatefulWidget {
@@ -14,7 +16,10 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
   String? email;
   String? password;
+  String? uid;
   bool userSignedIn = false;
+  final dataBase = FirebaseDatabase.instance.reference();
+  bool answered = false;
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -39,11 +44,18 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-  signInWithEmailAndPassword() async {
+  Future<DataSnapshot> getSurveyFromDataBase() async {
+    DataSnapshot sn = await dataBase.child("users/$uid/survey").get();
+    return sn;
+  }
+
+  Future<void> signInWithEmailAndPassword() async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
+      Future<UserCredential> userCredential = FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email!, password: password!);
 
+      UserCredential credentilas = await userCredential;
+      uid = credentilas.user?.uid;
       userSignedIn = true;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -133,13 +145,27 @@ class _SignInPageState extends State<SignInPage> {
                     onPressed: enable
                         ? () async {
                             await signInWithEmailAndPassword();
+                            DataSnapshot snapshot = await getSurveyFromDataBase();
+                            bool val = snapshot.value;
+                            print("----------------------------------SANPSHOT:$val--------------------------------------");
+                            answered = snapshot.value;
                             if (userSignedIn) {
-                              Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const HomeScreen(),
-                                  ),
-                                  (route) => false);
+                              answered
+                                  ? Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const HomeScreen(),
+                                      ),
+                                      (route) => false,
+                                    )
+                                  : Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            Survey(uid: uid, db: dataBase),
+                                      ),
+                                    );
                             }
                           }
                         : null,
