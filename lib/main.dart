@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,8 +7,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:unicorn/widgets/main_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:unicorn/widgets/splash_screen.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
-void main() {
+late FirebaseAnalytics analytics;
+
+void main() async {
+  analytics = FirebaseAnalytics();
+  await analytics.logAppOpen();
+  await analytics.logEvent(name: "OS Distribution", parameters: {
+    "OS": Platform.operatingSystem,
+    "OS_V": Platform.operatingSystemVersion,
+  });
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const Unicorn());
 }
