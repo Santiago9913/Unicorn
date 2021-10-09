@@ -45,24 +45,90 @@ class _HomeScreenState extends State {
       ),
     ),
     PlaceholderWidget(
-      child: Container(
+      child:  Container(
         height: 1.sh,
         width: 1.sw,
-        child: Column(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/icons/Other09.png',
+              height: 200.h,
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 20),
+              child: SizedBox(
+                width: 200,
+                child: Text(
+                  "You don’t have posts right know. Follow some one to see news on your feed",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFFB2B2B2),
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     ),
     PlaceholderWidget(
-      child: Container(
+      child:  Container(
         height: 1.sh,
         width: 1.sw,
-        child: Column(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/icons/Saly16.png',
+              height: 200.h,
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 20),
+              child: SizedBox(
+                width: 200,
+                child: Text(
+                  "You don’t have pages created. Create one to see them in this",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFFB2B2B2),
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     ),
     PlaceholderWidget(
-      child: Container(
+      child:  Container(
         height: 1.sh,
         width: 1.sw,
-        child: Column(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/icons/Saly16.png',
+              height: 200.h,
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 20),
+              child: SizedBox(
+                width: 200,
+                child: Text(
+                  "You don’t have posts right know. Follow some one to see news on your feed",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFFB2B2B2),
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     )
   ];

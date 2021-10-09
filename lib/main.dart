@@ -11,10 +11,10 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 
 late FirebaseAnalytics analytics;
 
-void main() async {
+void main()  {
   analytics = FirebaseAnalytics();
-  await analytics.logAppOpen();
-  await analytics.logEvent(name: "OS Distribution", parameters: {
+  analytics.logAppOpen();
+  analytics.logEvent(name: "OS Distribution", parameters: {
     "OS": Platform.operatingSystem,
     "OS_V": Platform.operatingSystemVersion,
   });
