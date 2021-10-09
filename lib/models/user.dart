@@ -36,6 +36,9 @@ class User {
     return db.child('users/$userUID/');
   }
 
+  DatabaseReference get getDBReference {
+    return db;
+  }
   // User.fromJson(Map<dynamic, dynamic> json)
   //     : name = json["name"] as String,
   //       lastName = json["lastName"] as String,
@@ -48,4 +51,6 @@ class User {
         'lastName': lastName,
         'type': type,
       };
+
+
 }

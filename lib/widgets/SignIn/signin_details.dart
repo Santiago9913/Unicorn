@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/material.dart";
 import "package:flutter_screenutil/flutter_screenutil.dart";
+import 'package:unicorn/widgets/Home/home_page.dart';
 import 'package:unicorn/widgets/custom_input_text.dart';
 
 class SignInPage extends StatefulWidget {
@@ -13,9 +14,10 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
   String? email;
   String? password;
+  bool userSignedIn = false;
 
-  TextEditingController nameController = TextEditingController();
-  TextEditingController secondNameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
   var fields = {"email": 0, "password": 0};
   bool enable = false;
@@ -37,10 +39,12 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-  void signInWithEmailAndPassword() async {
+  signInWithEmailAndPassword() async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email!, password: password!);
+
+      userSignedIn = true;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
@@ -48,6 +52,13 @@ class _SignInPageState extends State<SignInPage> {
         print('Wrong password provided for that user.');
       }
     }
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -75,6 +86,7 @@ class _SignInPageState extends State<SignInPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               CustomInputText(
+                textController: emailController,
                 labelName: "Email",
                 password: false,
                 getText: (val) {
@@ -88,8 +100,9 @@ class _SignInPageState extends State<SignInPage> {
                 },
               ),
               CustomInputText(
+                textController: passwordController,
                 labelName: "Password",
-                password: false,
+                password: true,
                 getText: (val) {
                   password = val;
                   if (email != "") {
@@ -118,8 +131,16 @@ class _SignInPageState extends State<SignInPage> {
                         fixedSize: Size(0.88.sw, 48),
                         onSurface: const Color(0xFF3D5AF1)),
                     onPressed: enable
-                        ? () {
-                            print("pressed");
+                        ? () async {
+                            await signInWithEmailAndPassword();
+                            if (userSignedIn) {
+                              Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const HomeScreen(),
+                                  ),
+                                  (route) => false);
+                            }
                           }
                         : null,
                   ),

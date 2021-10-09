@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:unicorn/models/user.dart';
+import 'package:unicorn/widgets/Home/home_page.dart';
 import 'package:unicorn/widgets/LogIn/profile_type_button.dart';
+
+import 'login_interests.dart';
 
 class SelectProfileType extends StatefulWidget {
   const SelectProfileType({
@@ -26,9 +29,10 @@ class _SelectProfileTypeState extends State<SelectProfileType> {
   double entrepreneurElevation = 0;
   double investorElevation = 0;
   String type = "";
+  late User user;
 
-  void uploadUser() async {
-    User user = User(
+  uploadUser() async {
+    user = User(
         name: widget.firstName!,
         lastName: widget.lastName!,
         userUID: widget.userUID,
@@ -141,7 +145,19 @@ class _SelectProfileTypeState extends State<SelectProfileType> {
                         primary: const Color(0xFF3D5AF1),
                         fixedSize: Size(0.88.sw, 48),
                         onSurface: const Color(0xFF3D5AF1)),
-                    onPressed: enable ? uploadUser : null,
+                    onPressed: enable
+                        ? () async {
+                            await uploadUser();
+                            {
+                              Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => InterestsPage(user: user),
+                                  ),
+                                  (route) => false);
+                            }
+                          }
+                        : null,
                   ),
                 ),
               )

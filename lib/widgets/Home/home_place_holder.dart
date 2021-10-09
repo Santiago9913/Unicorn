@@ -1,36 +1,26 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class PlaceholderWidget extends StatelessWidget {
-  final Color color;
-  final String text;
-  final String asset;
+class PlaceholderWidget extends StatefulWidget {
+  final Color? color;
+  final String? text;
+  final String? asset;
+  late final  Widget child;
 
-  const PlaceholderWidget(
+  PlaceholderWidget({
+    Key? key,
     this.color,
     this.text,
     this.asset,
-  );
+    required this.child,
+  }) : super(key: key);
 
   @override
+  State<PlaceholderWidget> createState() => _PlaceholderWidgetState();
+}
+
+class _PlaceholderWidgetState extends State<PlaceholderWidget> {
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 1.sw,
-      color: color,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Image.asset(
-            asset,
-            width: 180,
-            height: 180,
-          ),
-          Container(
-            child: Text(text),
-          )
-        ],
-      ),
-    );
+    return widget.child;
   }
 }
