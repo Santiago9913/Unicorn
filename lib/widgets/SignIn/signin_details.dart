@@ -20,6 +20,7 @@ class _SignInPageState extends State<SignInPage> {
   bool userSignedIn = false;
   final dataBase = FirebaseDatabase.instance.reference();
   bool answered = false;
+  String error = "";
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -50,20 +51,12 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   Future<void> signInWithEmailAndPassword() async {
-    try {
-      Future<UserCredential> userCredential = FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email!, password: password!);
+    Future<UserCredential> userCredential = FirebaseAuth.instance
+        .signInWithEmailAndPassword(email: email!, password: password!);
 
-      UserCredential credentilas = await userCredential;
-      uid = credentilas.user?.uid;
-      userSignedIn = true;
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        print('No user found for that email.');
-      } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
-      }
-    }
+    UserCredential credentilas = await userCredential;
+    uid = credentilas.user?.uid;
+    userSignedIn = true;
   }
 
   @override
@@ -143,29 +136,46 @@ class _SignInPageState extends State<SignInPage> {
                         fixedSize: Size(0.88.sw, 48),
                         onSurface: const Color(0xFF3D5AF1)),
                     onPressed: enable
-                        ? () async {
-                            await signInWithEmailAndPassword();
-                            DataSnapshot snapshot = await getSurveyFromDataBase();
-                            bool val = snapshot.value;
-                            print("----------------------------------SANPSHOT:$val--------------------------------------");
-                            answered = snapshot.value;
-                            if (userSignedIn) {
-                              answered
-                                  ? Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const HomeScreen(),
-                                      ),
-                                      (route) => false,
-                                    )
-                                  : Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            Survey(uid: uid, db: dataBase),
-                                      ),
-                                    );
+                        ? 
+                        () async {
+                          FocusScope.of(context).requestFocus(FocusNode()); //Hide keyboard after pressed
+                            try {
+                              await signInWithEmailAndPassword();
+                              DataSnapshot snapshot =
+                                  await getSurveyFromDataBase();
+                              bool val = snapshot.value;
+                              answered = snapshot.value;
+                              if (userSignedIn) {
+                                answered
+                                    ? Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const HomeScreen(),
+                                        ),
+                                        (route) => false,
+                                      )
+                                    : Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              Survey(uid: uid, db: dataBase),
+                                        ),
+                                      );
+                              }
+                            } on FirebaseAuthException catch (e) {
+                              if (e.code == "user-not-found") {
+                                error = "Oops! User not found";
+                              } else if (e.code == "wrong-password") {
+                                error = "Oops! Wrong password :(";
+                              }
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(error),
+                                  backgroundColor: Colors.red.shade600,
+                                ),
+                              );
                             }
                           }
                         : null,
