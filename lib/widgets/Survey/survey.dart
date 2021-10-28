@@ -1,12 +1,17 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:unicorn/models/user.dart';
 import 'package:unicorn/widgets/Home/home_page.dart';
 
 class Survey extends StatefulWidget {
-  Survey({Key? key, required this.uid, required this.db}) : super(key: key);
+  const Survey({
+    Key? key,
+    required this.user,
+    required this.db,
+  }) : super(key: key);
 
-  final String? uid;
+  final User user;
   final DatabaseReference db;
 
   @override
@@ -25,7 +30,8 @@ class _SurveyState extends State<Survey> {
     }
   }
 
-  Future<void> updateSurveyStatus(String? id, DatabaseReference db, double score) async {
+  Future<void> updateSurveyStatus(
+      String? id, DatabaseReference db, double score) async {
     try {
       DatabaseReference userReference = db.child("users/$id/");
       Map<String, dynamic> mapSurvey = {"survey": true, "surveyScore": score};
@@ -54,9 +60,11 @@ class _SurveyState extends State<Survey> {
               Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const HomeScreen(),
+                    builder: (context) => HomeScreen(
+                      user: widget.user,
+                    ),
                   ),
-                      (route) => false);
+                  (route) => false);
             },
           ),
         ),
@@ -64,75 +72,86 @@ class _SurveyState extends State<Survey> {
           child: SizedBox(
             width: 1.sw,
             height: 0.89.sh,
-            child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-              Container(
-                width: 1.sw,
-                padding: const EdgeInsets.only(left: 16, top: 2),
-                child: const Text(
-                  "How relevant is the information displayed to you? (From 1 - 10)",
-                  style: TextStyle(
-                      fontFamily: "Geometric Sans-Serif",
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Container(
+                  width: 1.sw,
+                  padding: const EdgeInsets.only(left: 16, top: 2),
+                  child: const Text(
+                    "How relevant is the information displayed to you? (From 1 - 10)",
+                    style: TextStyle(
+                        fontFamily: "Geometric Sans-Serif",
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
+                  ),
                 ),
-              ),
-              Center(
+                Center(
                   child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 60, 0, 15),
-                      child: Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: Slider(
-                          value: _currentSliderValue,
-                          min: 0,
-                          max: 10,
-                          divisions: 10,
-                          label: _currentSliderValue.round().toString(),
-                          onChanged: (double value) {
-                            setState(() {
-                              _currentSliderValue = value;
-                              Selected();
-                            });
-                          },
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 40),
-                      child: ElevatedButton(
-                        child: const Text(
-                          "Start",
-                          style: TextStyle(
-                            fontFamily: "Geometric Sans-Serif",
-                            fontSize: 20,
-                            color: Colors.white,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 60, 0, 15),
+                        child: Directionality(
+                          textDirection: TextDirection.ltr,
+                          child: Slider(
+                            value: _currentSliderValue,
+                            min: 0,
+                            max: 10,
+                            divisions: 10,
+                            label: _currentSliderValue.round().toString(),
+                            onChanged: (double value) {
+                              setState(() {
+                                _currentSliderValue = value;
+                                Selected();
+                              });
+                            },
                           ),
                         ),
-                        style: ElevatedButton.styleFrom(
-                            elevation: 0,
-                            primary: const Color(0xFF3D5AF1),
-                            fixedSize: Size(0.88.sw, 48),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 40),
+                        child: ElevatedButton(
+                          child: const Text(
+                            "Start",
+                            style: TextStyle(
+                              fontFamily: "Geometric Sans-Serif",
+                              fontSize: 20,
+                              color: Colors.white,
                             ),
-                            onSurface: const Color(0xFF3D5AF1)),
-                        onPressed: enable
-                            ? () async {
-                                  await updateSurveyStatus(widget.uid, widget.db, _currentSliderValue);
+                          ),
+                          style: ElevatedButton.styleFrom(
+                              elevation: 0,
+                              primary: const Color(0xFF3D5AF1),
+                              fixedSize: Size(0.88.sw, 48),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              onSurface: const Color(0xFF3D5AF1)),
+                          onPressed: enable
+                              ? () async {
+                                  await updateSurveyStatus(
+                                    widget.user.getUserUID,
+                                    widget.db,
+                                    _currentSliderValue,
+                                  );
                                   Navigator.pushAndRemoveUntil(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => const HomeScreen(),
+                                        builder: (context) => HomeScreen(
+                                          user: widget.user,
+                                        ),
                                       ),
                                       (route) => false);
-                              }
-                            : null,
+                                }
+                              : null,
+                        ),
                       ),
-                    ),
-                  ]))
-            ]),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

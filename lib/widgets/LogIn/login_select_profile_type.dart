@@ -12,11 +12,13 @@ class SelectProfileType extends StatefulWidget {
     required this.userUID,
     required this.firstName,
     required this.lastName,
+    required this.email,
   }) : super(key: key);
 
   final String userUID;
-  final String? firstName;
-  final String? lastName;
+  final String firstName;
+  final String lastName;
+  final String email;
 
   @override
   _SelectProfileTypeState createState() => _SelectProfileTypeState();
@@ -33,10 +35,14 @@ class _SelectProfileTypeState extends State<SelectProfileType> {
 
   uploadUser() async {
     user = User(
-        name: widget.firstName!,
-        lastName: widget.lastName!,
-        userUID: widget.userUID,
-        type: type);
+      name: widget.firstName,
+      lastName: widget.lastName,
+      userUID: widget.userUID,
+      type: type,
+      email: widget.email,
+      bannerPicURL: "",
+      profilePicUrl: ""
+    );
 
     try {
       await user.getUserRef.set(user.toJSON());
@@ -152,7 +158,8 @@ class _SelectProfileTypeState extends State<SelectProfileType> {
                               Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => InterestsPage(user: user),
+                                    builder: (context) =>
+                                        InterestsPage(user: user),
                                   ),
                                   (route) => false);
                             }

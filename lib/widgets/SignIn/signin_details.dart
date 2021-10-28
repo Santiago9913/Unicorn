@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_performance/firebase_performance.dart';
 import "package:flutter/material.dart";
 import "package:flutter_screenutil/flutter_screenutil.dart";
+import 'package:unicorn/models/user.dart' as user_model;
 import 'package:unicorn/widgets/Home/home_page.dart';
 import 'package:unicorn/widgets/Survey/survey.dart';
 import 'package:unicorn/widgets/custom_input_text.dart';
@@ -18,9 +20,13 @@ class _SignInPageState extends State<SignInPage> {
   String? password;
   String? uid;
   bool userSignedIn = false;
+
   final dataBase = FirebaseDatabase.instance.reference();
+  final Trace trace = FirebasePerformance.instance.newTrace('signin_trace');
+
   bool answered = false;
   String error = "";
+  late user_model.User user;
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -57,6 +63,20 @@ class _SignInPageState extends State<SignInPage> {
     UserCredential credentilas = await userCredential;
     uid = credentilas.user?.uid;
     userSignedIn = true;
+  }
+
+  Future<void> createUser() async {
+    DataSnapshot sn = await dataBase.child("users/$uid/").get();
+    Map<dynamic, dynamic> val = await sn.value;
+    user = user_model.User(
+      name: val["firstName"],
+      lastName: val["lastName"],
+      userUID: uid!,
+      type: val["type"],
+      email: val["email"],
+      bannerPicURL: val["bannerPicUrl"],
+      profilePicUrl: val["profilePicUrl"],
+    );
   }
 
   @override
@@ -136,11 +156,15 @@ class _SignInPageState extends State<SignInPage> {
                         fixedSize: Size(0.88.sw, 48),
                         onSurface: const Color(0xFF3D5AF1)),
                     onPressed: enable
-                        ? 
-                        () async {
-                          FocusScope.of(context).requestFocus(FocusNode()); //Hide keyboard after pressed
+                        ? () async {
+                            FocusScope.of(context).requestFocus(
+                              FocusNode(),
+                            ); //Hide keyboard after pressed
                             try {
+                              await trace.start();
                               await signInWithEmailAndPassword();
+                              await trace.stop();
+                              await createUser();
                               DataSnapshot snapshot =
                                   await getSurveyFromDataBase();
                               bool val = snapshot.value;
@@ -150,8 +174,9 @@ class _SignInPageState extends State<SignInPage> {
                                     ? Navigator.pushAndRemoveUntil(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) =>
-                                              const HomeScreen(),
+                                          builder: (context) => HomeScreen(
+                                            user: user,
+                                          ),
                                         ),
                                         (route) => false,
                                       )
@@ -159,7 +184,7 @@ class _SignInPageState extends State<SignInPage> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              Survey(uid: uid, db: dataBase),
+                                              Survey(user: user, db: dataBase),
                                         ),
                                       );
                               }
