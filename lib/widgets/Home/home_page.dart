@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:unicorn/models/user.dart';
 import 'package:unicorn/widgets/Home/home_place_holder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:unicorn/widgets/profile/main_profile_page.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key key = const Key("any_key")}) : super(key: key);
+  const HomeScreen({
+    Key? key,
+    required this.user,
+  }) : super(key: key);
+
+  final User user;
 
   @override
   State createState() {
@@ -12,126 +19,8 @@ class HomeScreen extends StatefulWidget {
   }
 }
 
-class _HomeScreenState extends State {
+class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
-  static final List _children = [
-    PlaceholderWidget(
-      child: Container(
-        height: 1.sh,
-        width: 1.sw,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset(
-              'assets/icons/Saly16.png',
-              height: 200.h,
-            ),
-            const Padding(
-              padding: EdgeInsets.only(top: 20),
-              child: SizedBox(
-                width: 200,
-                child: Text(
-                  "You don’t have posts right know. Follow some one to see news on your feed",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Color(0xFFB2B2B2),
-                  ),
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    ),
-    PlaceholderWidget(
-      child:  Container(
-        height: 1.sh,
-        width: 1.sw,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset(
-              'assets/icons/Other09.png',
-              height: 200.h,
-            ),
-            const Padding(
-              padding: EdgeInsets.only(top: 20),
-              child: SizedBox(
-                width: 200,
-                child: Text(
-                  "You don’t have posts right know. Follow some one to see news on your feed",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Color(0xFFB2B2B2),
-                  ),
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    ),
-    PlaceholderWidget(
-      child:  Container(
-        height: 1.sh,
-        width: 1.sw,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset(
-              'assets/icons/Saly16.png',
-              height: 200.h,
-            ),
-            const Padding(
-              padding: EdgeInsets.only(top: 20),
-              child: SizedBox(
-                width: 200,
-                child: Text(
-                  "You don’t have pages created. Create one to see them in this",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Color(0xFFB2B2B2),
-                  ),
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    ),
-    PlaceholderWidget(
-      child:  Container(
-        height: 1.sh,
-        width: 1.sw,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset(
-              'assets/icons/Saly16.png',
-              height: 200.h,
-            ),
-            const Padding(
-              padding: EdgeInsets.only(top: 20),
-              child: SizedBox(
-                width: 200,
-                child: Text(
-                  "You don’t have posts right know. Follow some one to see news on your feed",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Color(0xFFB2B2B2),
-                  ),
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    )
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +40,42 @@ class _HomeScreenState extends State {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Icon(Icons.person_pin, color: Colors.white),
+              widget.user.getProfilePicURL.isEmpty
+                  ? IconButton(
+                      icon: const Icon(
+                        Icons.person,
+                        color: Colors.white,
+                      ),
+                      onPressed: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MainProfilePage(
+                              user: widget.user,
+                            ),
+                          ),
+                        );
+                      },
+                      padding: EdgeInsets.zero,
+                      constraints: BoxConstraints(),
+                    )
+                  : GestureDetector(
+                      onTap: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MainProfilePage(
+                              user: widget.user,
+                            ),
+                          ),
+                        );
+                      },
+                      child: CircleAvatar(
+                        backgroundImage:
+                            NetworkImage(widget.user.getProfilePicURL),
+                        radius: 16,
+                      ),
+                    ),
               Container(
                 width: 270,
                 decoration: BoxDecoration(
@@ -168,33 +92,129 @@ class _HomeScreenState extends State {
                     const Icon(Icons.search,
                         color: Color.fromRGBO(104, 106, 108, 1)),
                     Container(
-                        margin: const EdgeInsets.only(top: 10),
-                        width: 220.0,
-                        height: 15,
-                        child: const TextField(
-                          cursorColor: Colors.black,
-                          maxLines: 1,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                            errorBorder: InputBorder.none,
-                            disabledBorder: InputBorder.none,
-                            hintText: 'Search',
-                          ),
-                          style: TextStyle(
-                              color: Color.fromRGBO(104, 106, 108, 1),
-                              decoration: TextDecoration.none),
-                        ))
+                      margin: const EdgeInsets.only(top: 10),
+                      width: 220.0,
+                      height: 15,
+                      child: const TextField(
+                        cursorColor: Colors.black,
+                        maxLines: 1,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          hintText: 'Search',
+                        ),
+                        style: TextStyle(
+                          color: Color.fromRGBO(104, 106, 108, 1),
+                          decoration: TextDecoration.none,
+                        ),
+                      ),
+                    )
                   ],
                 ),
               ),
-              const Icon(Icons.filter_list, color: Colors.white)
+              const Icon(
+                Icons.filter_list,
+                color: Colors.white,
+              )
             ],
           ),
         ),
       ),
-      body: _children[_currentIndex], // new
+      body: IndexedStack(
+        children: [
+          PlaceholderWidget(
+            child: Container(
+              height: 1.sh,
+              width: 1.sw,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/icons/Saly16.png',
+                    height: 200.h,
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 20),
+                    child: SizedBox(
+                      width: 200,
+                      child: Text(
+                        "You don’t have posts right know. Follow some one to see news on your feed",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Color(0xFFB2B2B2),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+          PlaceholderWidget(
+            child: Container(
+              height: 1.sh,
+              width: 1.sw,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/icons/Other09.png',
+                    height: 200.h,
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 20),
+                    child: SizedBox(
+                      width: 200,
+                      child: Text(
+                        "You don’t have posts right know. Follow some one to see news on your feed",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Color(0xFFB2B2B2),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+          PlaceholderWidget(
+            child: Container(
+              height: 1.sh,
+              width: 1.sw,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/icons/Saly16.png',
+                    height: 200.h,
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 20),
+                    child: SizedBox(
+                      width: 200,
+                      child: Text(
+                        "You don’t have pages created. Create one to see them in this",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Color(0xFFB2B2B2),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ],
+        index: _currentIndex,
+      ), // new
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         backgroundColor: const Color.fromRGBO(14, 21, 58, 1),
@@ -215,10 +235,6 @@ class _HomeScreenState extends State {
           BottomNavigationBarItem(
             icon: Icon(Icons.book),
             label: 'Pages',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_pin),
-            label: 'Profile',
           )
         ],
       ),

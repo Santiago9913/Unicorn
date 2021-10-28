@@ -208,6 +208,7 @@ class _MainDetailsState extends State<MainDetails> {
                                       userUID: uid,
                                       firstName: name,
                                       lastName: secondName,
+                                      email: email,
                                     ),
                                   ),
                                   (e) => false,
