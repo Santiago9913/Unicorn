@@ -39,9 +39,13 @@ dependencies:
   firebase_auth: "^3.1.2"
   firebase_database: "^8.0.0"
   firebase_analytics: "^8.3.3"
+  firebase_storage: "^10.0.5"
+  firebase_performance: ^0.7.1+2
   sentry_flutter: ^6.0.1
   provider: ^6.0.1
   device_info: ^2.0.2
+  country_state_city_picker: ^1.2.8
+  image_picker: ^0.8.4+3
 
 dev_dependencies:
   flutter_test:
