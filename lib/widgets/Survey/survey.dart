@@ -37,7 +37,7 @@ class _SurveyState extends State<Survey> {
       Map<String, dynamic> mapSurvey = {"survey": true, "surveyScore": score};
       await userReference.update(mapSurvey);
     } catch (e) {
-      print(e);
+      print(e.toString());
     }
   }
 

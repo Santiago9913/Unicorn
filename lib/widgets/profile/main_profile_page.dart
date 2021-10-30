@@ -1,5 +1,3 @@
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,10 +20,6 @@ class MainProfilePage extends StatefulWidget {
 }
 
 class _MainProfilePageState extends State<MainProfilePage> {
-  // final db = FirebaseDatabase.instance.reference();
-
-  FirebaseStorage storage = FirebaseStorage.instance;
-
   String bannerPicUrl = "";
   String profilePicUrl = "";
 
@@ -33,11 +27,8 @@ class _MainProfilePageState extends State<MainProfilePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    if (widget.user.getBannerPicURL.isNotEmpty &&
-        widget.user.getProfilePicURL.isNotEmpty) {
-      bannerPicUrl = widget.user.getBannerPicURL;
-      profilePicUrl = widget.user.getProfilePicURL;
-    }
+    bannerPicUrl = widget.user.getBannerPicURL;
+    profilePicUrl = widget.user.getProfilePicURL;
   }
 
   @override
@@ -225,7 +216,7 @@ class _MainProfilePageState extends State<MainProfilePage> {
                             margin: EdgeInsets.only(left: 37.w),
                             child: ElevatedButton(
                               child: const Text(
-                                "Create Page",
+                                "Promote me",
                                 style: TextStyle(
                                   fontFamily: "Geometric Sans-Serif",
                                   fontSize: 12,
@@ -243,7 +234,7 @@ class _MainProfilePageState extends State<MainProfilePage> {
                                 ),
                               ),
                               onPressed: () {
-                                print("Create page");
+                                print("Promote me");
                               },
                             ),
                           ),
@@ -254,10 +245,10 @@ class _MainProfilePageState extends State<MainProfilePage> {
                         child: const Text("0 Followers | 0 Investments"),
                       ),
                       Container(
-                        child: const TabBar(
-                          indicatorColor: Color(0xFF3D5AF1),
+                        child: TabBar(
+                          indicatorColor: const Color(0xFF3D5AF1),
                           tabs: [
-                            Tab(
+                            const Tab(
                               child: Text(
                                 "Information",
                                 style: TextStyle(color: Colors.black),
@@ -265,14 +256,14 @@ class _MainProfilePageState extends State<MainProfilePage> {
                             ),
                             Tab(
                               child: Text(
-                                "Investments",
-                                style: TextStyle(color: Colors.black),
+                                widget.user.getUserType == 'Investor' ? "Investments" : 'Startups',
+                                style: const TextStyle(color: Colors.black),
                               ),
                             ),
                             Tab(
                               child: Text(
-                                "Investors",
-                                style: TextStyle(color: Colors.black),
+                                widget.user.getUserType == 'Investor' ? "Investors" : "Interests",
+                                style: const TextStyle(color: Colors.black),
                               ),
                             ),
                           ],
@@ -287,15 +278,20 @@ class _MainProfilePageState extends State<MainProfilePage> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.start,
-                                  children: const [
-                                    CustomDisplayInfoCard(
+                                  children: [
+                                    const CustomDisplayInfoCard(
                                       title: "Location",
                                       info: "Info",
+                                      isLink: false,
                                     ),
-                                    CustomDisplayInfoCard(
-                                      title: "LinkedIn Profile",
-                                      info: "Info",
-                                    ),
+                                    widget.user.getLinkedInProfile.isNotEmpty
+                                        ? CustomDisplayInfoCard(
+                                            title: "LinkedIn Profile",
+                                            info:
+                                                widget.user.getLinkedInProfile,
+                                            isLink: true,
+                                          )
+                                        : const Text(""),
                                   ],
                                 ),
                               ),
@@ -304,26 +300,14 @@ class _MainProfilePageState extends State<MainProfilePage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.start,
-                                children: const [
-                                  CustomDisplayCard(
-                                    name: "Startup 1",
-                                    email: "email@gmail.com",
-                                    color: Color(0xFF3D5AF1),
-                                  ),
-                                ],
+                                children: const [],
                               ),
                             ),
                             SingleChildScrollView(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.start,
-                                children: const [
-                                  CustomDisplayCard(
-                                    name: "Daniel Galindo",
-                                    email: "daneil@gmail.com",
-                                    color: Color(0xFF0E153A),
-                                  ),
-                                ],
+                                children: const [],
                               ),
                             ),
                           ],

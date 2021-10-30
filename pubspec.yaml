@@ -44,8 +44,9 @@ dependencies:
   sentry_flutter: ^6.0.1
   provider: ^6.0.1
   device_info: ^2.0.2
-  country_state_city_picker: ^1.2.8
+  permission_handler: ^8.2.5
   image_picker: ^0.8.4+3
+  url_launcher: ^6.0.12
 
 dev_dependencies:
   flutter_test:
