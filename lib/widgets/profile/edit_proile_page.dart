@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:unicorn/controllers/firebase_storage_controller.dart';
 import 'package:unicorn/models/user.dart';
 import 'package:unicorn/widgets/profile/main_profile_page.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -23,8 +25,8 @@ class EditProfilePage extends StatefulWidget {
 
 class _EditProfilePageState extends State<EditProfilePage> {
   TextEditingController nameController = TextEditingController();
-  TextEditingController secondNameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
+  TextEditingController lastNameController = TextEditingController();
+  TextEditingController linkedInProfileController = TextEditingController();
 
   String bannerPicUrl = "";
   String profilePicUrl = "";
@@ -34,39 +36,24 @@ class _EditProfilePageState extends State<EditProfilePage> {
   FirebaseStorage storage = FirebaseStorage.instance;
   final db = FirebaseDatabase.instance.reference();
 
-  Future<void> uploadImage(String path, String name) async {
-    File file = File(path);
-
-    try {
-      await storage
-          .ref('users/${widget.user.getUserUID}/$name.jpeg')
-          .putFile(file);
-
-      if (name == "profile") {}
-    } on FirebaseException catch (e) {
-      print(e.message);
-    } catch (e) {
-      print(e.toString());
-    }
-  }
-
   _imgFromCamera(String name) async {
+    // var status = await Permission.camera.status;
+
+    // if (await Permission.camera.isDenied) {
+    //   await Permission.camera.request();
+    // }
+
+    // if (await Permission.camera.isGranted) {
     XFile? image =
         await _picker.pickImage(source: ImageSource.camera, imageQuality: 50);
 
     if (image != null) {
-      await uploadImage(image.path, name);
-      String url = await storage
-          .ref('users/${widget.user.getUserUID}/$name.jpeg')
-          .getDownloadURL();
+      String storagePath = 'users/${widget.user.getUserUID}';
+      String filePath = image.path;
+      String fileName = name;
 
-      if (name == 'profile') {
-        Map<String, String> mapImage = {"profilePicUrl": url};
-        await db.child('users/${widget.user.getUserUID}/').update(mapImage);
-      } else if (name == 'banner') {
-        Map<String, String> mapImage = {"bannerPicUrl": url};
-        await db.child('users/${widget.user.getUserUID}/').update(mapImage);
-      }
+      String url = await FirebaseStorageController.uploadImageToStorage(
+          storagePath, filePath, fileName);
 
       setState(() {
         if (name == 'profile') {
@@ -78,6 +65,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         }
       });
     }
+    // }
   }
 
   _imgFromGallery(String name) async {
@@ -85,18 +73,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
         await _picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
 
     if (image != null) {
-      await uploadImage(image.path, name);
-      String url = await storage
-          .ref('users/${widget.user.getUserUID}/$name.jpeg')
-          .getDownloadURL();
+      String storagePath = 'users/${widget.user.getUserUID}';
+      String filePath = image.path;
+      String fileName = name;
 
-      if (name == 'profile') {
-        Map<String, String> mapImage = {"profilePicUrl": url};
-        await db.child('users/${widget.user.getUserUID}/').update(mapImage);
-      } else if (name == 'banner') {
-        Map<String, String> mapImage = {"bannerPicUrl": url};
-        await db.child('users/${widget.user.getUserUID}/').update(mapImage);
-      }
+      String url = await FirebaseStorageController.uploadImageToStorage(
+          storagePath, filePath, fileName);
 
       setState(() {
         if (name == 'profile') {
@@ -145,10 +127,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
   void initState() {
     super.initState();
     nameController.text = widget.user.getName;
-    secondNameController.text = widget.user.getlastName;
-    emailController.text = widget.user.getEmail;
+    lastNameController.text = widget.user.getlastName;
+    linkedInProfileController.text = widget.user.getLinkedInProfile;
     bannerPicUrl = widget.user.getBannerPicURL;
     profilePicUrl = widget.user.getProfilePicURL;
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    nameController.dispose();
+    lastNameController.dispose();
   }
 
   @override
@@ -169,7 +159,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
             highlightColor: Colors.transparent,
             color: const Color(0xFF3D5AF1),
             icon: const Icon(Icons.check),
-            onPressed: () {
+            onPressed: () async {
+              if (nameController.text != widget.user.getName) {
+                await widget.user.setName(nameController.text);
+              }
+              if (lastNameController.text != widget.user.getlastName) {
+                await widget.user.setLastName(lastNameController.text);
+              }
+              if (linkedInProfileController.text !=
+                  widget.user.getLinkedInProfile) {
+                await widget.user
+                    .setLinkedInProfile(linkedInProfileController.text);
+              }
               Navigator.push(
                 context,
                 PageRouteBuilder(
@@ -301,7 +302,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ),
                 TextField(
                   decoration: const InputDecoration(
-                    labelText: "Second Name",
+                    labelText: "Last Name",
                     labelStyle: TextStyle(color: Colors.grey),
                     enabledBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.grey),
@@ -312,11 +313,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
                   cursorColor: Color(0xFF3D5AF1),
                   maxLines: 1,
-                  controller: secondNameController,
+                  controller: lastNameController,
                 ),
                 TextField(
                   decoration: const InputDecoration(
-                    labelText: "Email",
+                    labelText: "LinkendIn",
                     labelStyle: TextStyle(color: Colors.grey),
                     enabledBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.grey),
@@ -327,7 +328,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
                   cursorColor: const Color(0xFF3D5AF1),
                   maxLines: 1,
-                  controller: emailController,
+                  controller: linkedInProfileController,
                 ),
               ],
             ),

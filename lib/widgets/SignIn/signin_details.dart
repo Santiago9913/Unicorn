@@ -42,11 +42,11 @@ class _SignInPageState extends State<SignInPage> {
 
     if (sum == 2 && enable == false) {
       setState(() {
-        enable = !enable;
+        enable = true;
       });
     } else if (sum != 2 && enable == true) {
       setState(() {
-        enable = !enable;
+        enable = false;
       });
     }
   }
@@ -57,6 +57,7 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   Future<void> signInWithEmailAndPassword() async {
+    email = email!.replaceAll(' ', '');
     Future<UserCredential> userCredential = FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email!, password: password!);
 
@@ -69,14 +70,14 @@ class _SignInPageState extends State<SignInPage> {
     DataSnapshot sn = await dataBase.child("users/$uid/").get();
     Map<dynamic, dynamic> val = await sn.value;
     user = user_model.User(
-      name: val["firstName"],
-      lastName: val["lastName"],
-      userUID: uid!,
-      type: val["type"],
-      email: val["email"],
-      bannerPicURL: val["bannerPicUrl"],
-      profilePicUrl: val["profilePicUrl"],
-    );
+        name: val["firstName"],
+        lastName: val["lastName"],
+        userUID: uid!,
+        type: val["type"],
+        email: val["email"],
+        bannerPicURL: val["bannerPicUrl"],
+        profilePicUrl: val["profilePicUrl"],
+        linkedInProfile: val['linkedInProfile']);
   }
 
   @override
@@ -130,7 +131,7 @@ class _SignInPageState extends State<SignInPage> {
                 password: true,
                 getText: (val) {
                   password = val;
-                  if (email != "") {
+                  if (password != "") {
                     fields["password"] = 1;
                   } else {
                     fields["password"] = 0;

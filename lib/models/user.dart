@@ -8,6 +8,7 @@ class User {
   String email;
   String bannerPicURL;
   String profilePicUrl;
+  String linkedInProfile = "";
 
   final db = FirebaseDatabase.instance.reference();
 
@@ -19,6 +20,7 @@ class User {
     required this.email,
     required this.bannerPicURL,
     required this.profilePicUrl,
+    this.linkedInProfile = "",
   });
 
   String get getName {
@@ -49,12 +51,49 @@ class User {
     return profilePicUrl;
   }
 
+  String get getLinkedInProfile {
+    return linkedInProfile;
+  }
+
   void setProfilePicture(String url) {
     profilePicUrl = url;
   }
 
   void setBannerPicture(String url) {
-    bannerPicURL = url; 
+    bannerPicURL = url;
+  }
+
+  Future<void> setLinkedInProfile(String url) async {
+    try {
+      DatabaseReference userReference = getUserRef;
+      Map<String, String> mapName = {"linkedInProfile": url};
+      await userReference.update(mapName);
+      linkedInProfile = url;
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  Future<void> setName(String nName) async {
+    try {
+      DatabaseReference userReference = getUserRef;
+      Map<String, String> mapName = {"firstName": nName};
+      await userReference.update(mapName);
+      name = nName;
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  Future<void> setLastName(String nName) async {
+    try {
+      DatabaseReference userReference = getUserRef;
+      Map<String, String> mapName = {"lastName": nName};
+      await userReference.update(mapName);
+      lastName = nName;
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   DatabaseReference get getUserRef {
@@ -79,5 +118,6 @@ class User {
         'survey': false,
         'bannerPicUrl': '',
         'profilePicUrl': '',
+        'linkedInProfile': '',
       };
 }

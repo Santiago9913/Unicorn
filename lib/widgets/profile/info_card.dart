@@ -1,15 +1,19 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CustomDisplayInfoCard extends StatelessWidget {
   const CustomDisplayInfoCard({
     Key? key,
     required this.title,
     required this.info,
+    required this.isLink,
   }) : super(key: key);
 
   final String title;
   final String info;
+  final bool isLink;
 
   @override
   Widget build(BuildContext context) {
@@ -45,14 +49,38 @@ class CustomDisplayInfoCard extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0),
-                  child: Text(
-                    info,
-                    style: const TextStyle(
-                      fontFamily: "Geometric Sans-Serif",
-                      fontSize: 16,
-                      color: Colors.black,
-                    ),
-                  ),
+                  child: isLink
+                      ? RichText(
+                          text: TextSpan(
+                              style: const TextStyle(
+                                fontFamily: "Geometric Sans-Serif",
+                                fontSize: 16,
+                                color: Colors.black,
+                              ),
+                              text: info,
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () async {
+                                  if (await canLaunch(info)) {
+                                    await launch(info);
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: const Text(
+                                            "Link couldn't be opened"),
+                                        backgroundColor: Colors.red.shade600,
+                                      ),
+                                    );
+                                  }
+                                }),
+                        )
+                      : Text(
+                          info,
+                          style: const TextStyle(
+                            fontFamily: "Geometric Sans-Serif",
+                            fontSize: 16,
+                            color: Colors.black,
+                          ),
+                        ),
                 ),
               ],
             ),
