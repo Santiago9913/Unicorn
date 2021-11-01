@@ -37,6 +37,13 @@ class _MainProfilePageState extends State<MainProfilePage> {
       initialIndex: 0,
       length: 3,
       child: Scaffold(
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            print("create post");
+          },
+          child: const Icon(Icons.post_add),
+          backgroundColor: const Color(0xFF3D5AF1),
+        ),
         resizeToAvoidBottomInset: false,
         body: Container(
           height: 1.sh,
@@ -256,13 +263,17 @@ class _MainProfilePageState extends State<MainProfilePage> {
                             ),
                             Tab(
                               child: Text(
-                                widget.user.getUserType == 'Investor' ? "Investments" : 'Startups',
+                                widget.user.getUserType == 'Investor'
+                                    ? "Investments"
+                                    : 'Startups',
                                 style: const TextStyle(color: Colors.black),
                               ),
                             ),
                             Tab(
                               child: Text(
-                                widget.user.getUserType == 'Investor' ? "Investors" : "Interests",
+                                widget.user.getUserType == 'Investor'
+                                    ? "Investors"
+                                    : "Interests",
                                 style: const TextStyle(color: Colors.black),
                               ),
                             ),
