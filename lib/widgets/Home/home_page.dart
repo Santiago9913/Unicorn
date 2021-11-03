@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:unicorn/models/user.dart';
 import 'package:unicorn/widgets/Home/home_place_holder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:unicorn/widgets/post/post_main_widget.dart';
 import 'package:unicorn/widgets/profile/main_profile_page.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
@@ -41,7 +42,8 @@ class _HomeScreenState extends State<HomeScreen> {
         WidgetsBinding.instance!.addPostFrameCallback((_) {
           _scaffoldKey.currentState!.showSnackBar(
             SnackBar(
-              content: Text("There are ${widget.totalPages} startups in ${widget.location}"),
+              content: Text(
+                  "There are ${widget.totalPages} startups in ${widget.location}"),
               backgroundColor: const Color(0xFF0E153A),
               duration: const Duration(seconds: 10),
             ),
@@ -167,32 +169,40 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             PlaceholderWidget(
               child: Container(
-                height: 1.sh,
-                width: 1.sw,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/icons/Saly16.png',
-                      height: 200.h,
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 20),
-                      child: SizedBox(
-                        width: 200,
-                        child: Text(
-                          "You don’t have posts right know. Follow some one to see news on your feed",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Color(0xFFB2B2B2),
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
+                  color: const Color(0xFFC4C4C4),
+                  height: 1.sh,
+                  width: 1.sw,
+                  child: ListView.builder(
+                    itemCount: 5,
+                    itemBuilder: (context, index) {
+                      return PostWidget();
+                    },
+                  )
+
+                  //Column(
+                  // mainAxisAlignment: MainAxisAlignment.center,
+                  // crossAxisAlignment: CrossAxisAlignment.center,
+                  // children: [
+                  //   Image.asset(
+                  //     'assets/icons/Saly16.png',
+                  //     height: 200.h,
+                  //   ),
+                  //   const Padding(
+                  //     padding: EdgeInsets.only(top: 20),
+                  //     child: SizedBox(
+                  //       width: 200,
+                  //       child: Text(
+                  //         "You don’t have posts right know. Follow some one to see news on your feed",
+                  //         textAlign: TextAlign.center,
+                  //         style: TextStyle(
+                  //           color: Color(0xFFB2B2B2),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   )
+                  // ],
+                  //),
+                  ),
             ),
             PlaceholderWidget(
               child: Container(
