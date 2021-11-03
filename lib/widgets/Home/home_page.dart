@@ -4,14 +4,22 @@ import 'package:unicorn/models/user.dart';
 import 'package:unicorn/widgets/Home/home_place_holder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:unicorn/widgets/profile/main_profile_page.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
     Key? key,
     required this.user,
+    this.locationAccess,
+    this.location,
+    this.totalPages,
   }) : super(key: key);
 
   final User user;
+  final bool? locationAccess;
+  final String? location;
+  final int? totalPages;
 
   @override
   State createState() {
@@ -21,12 +29,42 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
+  bool locationGranted = true;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if (widget.locationAccess != null) {
+      if (widget.locationAccess! && widget.location != "") {
+        WidgetsBinding.instance!.addPostFrameCallback((_) {
+          _scaffoldKey.currentState!.showSnackBar(
+            SnackBar(
+              content: Text("There are ${widget.totalPages} startups in ${widget.location}"),
+              backgroundColor: const Color(0xFF0E153A),
+              duration: const Duration(seconds: 10),
+            ),
+          );
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
+        key: _scaffoldKey,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            print("create post");
+          },
+          child: const Icon(Icons.post_add),
+          backgroundColor: const Color(0xFF0E153A),
+        ),
+
         appBar: AppBar(
           elevation: 0,
           toolbarHeight: 55.sp,
@@ -242,28 +280,33 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
           index: _currentIndex,
         ), // new
-        bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: const Color.fromRGBO(14, 21, 58, 1),
-          selectedItemColor: const Color.fromRGBO(61, 90, 241, 1),
-          unselectedItemColor: Colors.white,
-          onTap: onTabTapped, // new
-          currentIndex: _currentIndex, // new
-          items: const [
-            BottomNavigationBarItem(
-              backgroundColor: Colors.red,
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_today),
-              label: 'Weekly',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.book),
-              label: 'Pages',
-            )
-          ],
+        bottomNavigationBar: Theme(
+          data: ThemeData(
+            splashColor: Colors.transparent,
+          ),
+          child: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            backgroundColor: const Color(0xFF0E153A),
+            selectedItemColor: const Color(0xFF3D5AF1),
+            unselectedItemColor: Colors.white,
+            onTap: onTabTapped, // new
+            currentIndex: _currentIndex, // new
+            items: const [
+              BottomNavigationBarItem(
+                backgroundColor: Colors.red,
+                icon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.calendar_today),
+                label: 'Weekly',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.book),
+                label: 'Pages',
+              )
+            ],
+          ),
         ),
       ),
     );

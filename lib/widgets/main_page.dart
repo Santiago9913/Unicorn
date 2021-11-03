@@ -1,21 +1,29 @@
 import "package:flutter/material.dart";
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:unicorn/widgets/LogIn/login_main_details.dart';
 import 'package:unicorn/widgets/SignIn/signin_details.dart';
 
 class MainPage extends StatelessWidget {
   const MainPage({Key? key}) : super(key: key);
 
+  final bool locationGranted = false;
+
+  void askLocationsPermission() async {
+    await Permission.location.request();
+  }
+
   @override
   Widget build(BuildContext context) {
-
     //Change the color of the notification bar, to match the main color in this view
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Color(0xFF3D5AF1),
       ),
     );
+
+    askLocationsPermission();
 
     return Scaffold(
       backgroundColor: const Color(0xFF3D5AF1),
@@ -70,28 +78,28 @@ class MainPage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
                   child: TextButton(
-                      child: const Text(
-                        "Sign In",
-                        style: TextStyle(
-                          fontFamily: "Geometric Sans-Serif",
-                          fontSize: 20,
-                          color: Colors.white,
+                    child: const Text(
+                      "Sign In",
+                      style: TextStyle(
+                        fontFamily: "Geometric Sans-Serif",
+                        fontSize: 20,
+                        color: Colors.white,
+                      ),
+                    ),
+                    style: TextButton.styleFrom(
+                      primary: const Color(0xFF3D5AF1),
+                      fixedSize: Size(0.9.sw, 48),
+                    ),
+                    onPressed: () async {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SignInPage(),
                         ),
-                      ),
-                      style: TextButton.styleFrom(
-                        primary: const Color(0xFF3D5AF1),
-                        fixedSize: Size(0.9.sw, 48),
-                      ),
-                      onPressed: () async  {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SignInPage(),
-                          ),
-                        );
-                        ;
-                      },
-                      ),
+                      );
+                      ;
+                    },
+                  ),
                 ),
               ],
             ),
