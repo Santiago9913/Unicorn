@@ -5,8 +5,6 @@ import 'package:unicorn/widgets/Home/home_place_holder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:unicorn/widgets/post/post_main_widget.dart';
 import 'package:unicorn/widgets/profile/main_profile_page.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:geocoding/geocoding.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
