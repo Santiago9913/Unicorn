@@ -33,24 +33,6 @@ class _SelectProfileTypeState extends State<SelectProfileType> {
   String type = "";
   late User user;
 
-  uploadUser() async {
-    user = User(
-      name: widget.firstName,
-      lastName: widget.lastName,
-      userUID: widget.userUID,
-      type: type,
-      email: widget.email,
-      bannerPicURL: "",
-      profilePicUrl: ""
-    );
-
-    try {
-      await user.getUserRef.set(user.toJSON());
-    } catch (e) {
-      print(e);
-    }
-  }
-
   void toggleEntrepreneur() {
     setState(() {
       entrepreneurSelected = true;
@@ -77,6 +59,17 @@ class _SelectProfileTypeState extends State<SelectProfileType> {
       investorElevation = investorSelected ? 40 : 0;
       type = "Investor";
     });
+  }
+
+  void createUser() {
+    user = User(
+        name: widget.firstName,
+        lastName: widget.lastName,
+        userUID: widget.userUID,
+        type: type,
+        email: widget.email,
+        bannerPicURL: "",
+        profilePicUrl: "");
   }
 
   @override
@@ -152,8 +145,8 @@ class _SelectProfileTypeState extends State<SelectProfileType> {
                         fixedSize: Size(0.88.sw, 48),
                         onSurface: const Color(0xFF3D5AF1)),
                     onPressed: enable
-                        ? () async {
-                            await uploadUser();
+                        ? () {
+                            createUser();
                             {
                               Navigator.pushAndRemoveUntil(
                                   context,

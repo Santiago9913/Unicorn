@@ -1,11 +1,15 @@
-import 'package:firebase_database/firebase_database.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:unicorn/controllers/firebase_storage_controller.dart';
 import 'package:unicorn/models/user.dart';
 import 'package:unicorn/widgets/Home/home_page.dart';
 
 class InterestsPage extends StatefulWidget {
-  InterestsPage({Key? key, required this.user}) : super(key: key);
+  InterestsPage({
+    Key? key,
+    required this.user,
+  }) : super(key: key);
 
   late final User user;
 
@@ -24,8 +28,8 @@ class _InterestsPageState extends State<InterestsPage> {
   Color bottonUnpressed = const Color(0xFF0E153A);
   Color textColorPressed = Colors.black;
 
-  Map<String, dynamic> getSelected() {
-    Map<String, dynamic> selected = {};
+  Map<String, String> getSelected() {
+    Map<String, String> selected = {};
 
     if (hasBeenPressedCrypto) {
       selected["Crypto"] = "Crypto";
@@ -58,17 +62,8 @@ class _InterestsPageState extends State<InterestsPage> {
     }
   }
 
-  uploadUserInterests() async {
-    DatabaseReference dbReference = widget.user.getDBReference;
-    String userId = widget.user.getUserUID;
-    try {
-      DatabaseReference userReference =
-          dbReference.child("users/$userId/interests/");
-      Map<String, dynamic> mapInterest = getSelected();
-      await userReference.update(mapInterest);
-    } catch (e) {
-      print(e);
-    }
+  void setUserInterests() {
+    widget.user.setInterests(getSelected());
   }
 
   @override
@@ -316,7 +311,9 @@ class _InterestsPageState extends State<InterestsPage> {
                           onSurface: const Color(0xFF3D5AF1)),
                       onPressed: enable
                           ? () async {
-                              await uploadUserInterests();
+                              setUserInterests();
+                              await FirebaseStorageController.uploadUser(
+                                  widget.user);
                               {
                                 Navigator.pushAndRemoveUntil(
                                     context,
