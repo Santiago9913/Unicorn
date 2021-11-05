@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:unicorn/models/user.dart';
 import 'package:unicorn/widgets/Home/home_place_holder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:unicorn/widgets/post/post_create_view.dart';
 import 'package:unicorn/widgets/post/post_main_widget.dart';
 import 'package:unicorn/widgets/profile/main_profile_page.dart';
 
@@ -33,7 +34,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     if (widget.locationAccess != null) {
       if (widget.locationAccess! && widget.location != "") {
@@ -59,7 +59,14 @@ class _HomeScreenState extends State<HomeScreen> {
         key: _scaffoldKey,
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            print("create post");
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CratePostPage(
+                  user: widget.user,
+                ),
+              ),
+            );
           },
           child: const Icon(Icons.post_add),
           backgroundColor: const Color(0xFF0E153A),
@@ -97,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           );
                         },
                         padding: EdgeInsets.zero,
-                        constraints: BoxConstraints(),
+                        constraints: const BoxConstraints(),
                       )
                     : GestureDetector(
                         onTap: () async {
@@ -173,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: ListView.builder(
                     itemCount: 5,
                     itemBuilder: (context, index) {
-                      return PostWidget();
+                      return const PostWidget();
                     },
                   )
 
@@ -203,7 +210,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
             ),
             PlaceholderWidget(
-              child: Container(
+              child: SizedBox(
                 height: 1.sh,
                 width: 1.sw,
                 child: Column(
@@ -232,7 +239,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             PlaceholderWidget(
-              child: Container(
+              child: SizedBox(
                 height: 1.sh,
                 width: 1.sw,
                 child: Column(

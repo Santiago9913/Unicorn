@@ -37,15 +37,21 @@ class PostWidget extends StatelessWidget {
                 "Eu exercitation voluptate laboris ex pariatur id sunt et fugiat amet. Amet et occaecat ut."),
           ),
           Flexible(
+            flex: 6,
             child: Container(
-              height: 0.26.sh,
               decoration: const BoxDecoration(
                 image: DecorationImage(
                   image: NetworkImage(
                       "https://images.unsplash.com/photo-1508556497405-ed7dcd94acfc?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80"),
-                  fit: BoxFit.fill,
+                  fit: BoxFit.fitWidth,
                 ),
               ),
+            ),
+          ),
+          Flexible(
+            flex: 1,
+            child: Container(
+              color: Colors.green.shade100,
             ),
           )
         ],

@@ -10,6 +10,7 @@ class User {
   String profilePicUrl;
   String linkedInProfile;
   Map<String, String> interests;
+  List<String> posts;
 
   User({
     required this.name,
@@ -21,6 +22,7 @@ class User {
     required this.profilePicUrl,
     this.linkedInProfile = "",
     this.interests = const {},
+    this.posts = const <String>[],
   });
 
   String get getName {
@@ -53,6 +55,10 @@ class User {
 
   String get getLinkedInProfile {
     return linkedInProfile;
+  }
+
+  List<String> get getPosts {
+    return posts;
   }
 
   void setProfilePicture(String url) {
@@ -107,5 +113,6 @@ class User {
         'profilePicUrl': '',
         'linkedInProfile': '',
         'interests': interests,
+        'posts': posts
       };
 }
