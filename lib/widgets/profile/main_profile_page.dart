@@ -81,49 +81,6 @@ class _MainProfilePageState extends State<MainProfilePage> {
                         },
                       ),
                     ),
-                    title: Container(
-                      margin: const EdgeInsets.only(bottom: 40),
-                      width: 250.w,
-                      height: 30.h,
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.4),
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(5),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.search,
-                            color: Colors.grey.shade400,
-                          ),
-                          Container(
-                            width: 220.w,
-                            height: 15.h,
-                            margin: const EdgeInsets.only(top: 10),
-                            padding: const EdgeInsets.only(left: 5),
-                            child: TextField(
-                              maxLines: 1,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                errorBorder: InputBorder.none,
-                                disabledBorder: InputBorder.none,
-                                hintText: "Search",
-                                hintStyle: TextStyle(
-                                  color: Colors.grey.shade400,
-                                  decoration: TextDecoration.none,
-                                ),
-                              ),
-                              style: const TextStyle(
-                                color: Colors.white,
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
                     flexibleSpace: Container(
                       height: 0.183.sh,
                       decoration: bannerPicUrl.isEmpty

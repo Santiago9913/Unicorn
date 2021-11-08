@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _scaffoldKey.currentState!.showSnackBar(
             SnackBar(
               content: Text(
-                  "There are ${widget.totalPages} startups in ${widget.location}"),
+                  "There are ${widget.totalPages} ${widget.user.type == "Entrepreneur" ? "startups" : "ventures"} in ${widget.location}"),
               backgroundColor: const Color(0xFF0E153A),
               duration: const Duration(seconds: 10),
             ),
@@ -174,11 +174,11 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             PlaceholderWidget(
               child: Container(
-                  // color: const Color(0xFFC4C4C4),
-                  color: Colors.white,
-                  height: 1.sh,
-                  width: 1.sw,
-                  child: Column(
+                // color: const Color(0xFFC4C4C4),
+                color: Colors.white,
+                height: 1.sh,
+                width: 1.sw,
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -200,8 +200,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     )
                   ],
-                  ),
-                  ),
+                ),
+              ),
             ),
             PlaceholderWidget(
               child: SizedBox(
