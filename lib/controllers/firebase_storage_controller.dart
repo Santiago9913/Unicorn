@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_performance/firebase_performance.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:unicorn/models/post.dart';
 import 'package:unicorn/models/user.dart';
@@ -39,13 +40,21 @@ class FirebaseStorageController {
 
   static Future<String> uploadPostImageAndPost(
       Post post, File file, String uid) async {
+    final Trace getImageTrace =
+        FirebasePerformance.instance.newTrace('get_image');
+    final Trace uploadImageTrace =
+        FirebasePerformance.instance.newTrace('upload_image');
     String id = await uploadPost(post);
     String url = "";
     String urlToUpload = "posts/$uid/$id/post.jpeg";
 
     try {
+      await uploadImageTrace.start();
       await _storage.ref(urlToUpload).putFile(file);
+      await uploadImageTrace.stop();
+      await getImageTrace.start();
       url = await _storage.ref(urlToUpload).getDownloadURL();
+      await getImageTrace.stop();
       await updatePost(id, {"imgUrl": url});
 
       await _db.collection("users").doc(uid).update({
