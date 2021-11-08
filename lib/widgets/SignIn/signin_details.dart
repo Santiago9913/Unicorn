@@ -7,6 +7,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:unicorn/controllers/firebase_storage_controller.dart';
+import 'package:unicorn/controllers/location_controller.dart';
 import 'package:unicorn/models/user.dart' as user_model;
 import 'package:unicorn/widgets/Home/home_page.dart';
 import 'package:unicorn/widgets/Survey/survey.dart';
@@ -54,17 +55,6 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-  Future<String> getLocation() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (serviceEnabled) {
-      Position pos = await Geolocator.getCurrentPosition();
-      String lat = pos.latitude.toString();
-      String lon = pos.longitude.toString();
-      return "$lat,$lon";
-    }
-    return "";
-  }
-
   Future<dynamic> getSurveyFromDataBase() async {
     dynamic value =
         await FirebaseStorageController.getFieldInUser(uid!, "survey");
@@ -95,12 +85,6 @@ class _SignInPageState extends State<SignInPage> {
         bannerPicURL: val["bannerPicUrl"],
         profilePicUrl: val["profilePicUrl"],
         linkedInProfile: val['linkedInProfile']);
-  }
-
-  Future<int> getPagesInMyLocation(String location) async {
-    QuerySnapshot obj =
-        await FirebaseStorageController.getPagesInMyLocation(location);
-    return obj.size;
   }
 
   @override
@@ -190,15 +174,15 @@ class _SignInPageState extends State<SignInPage> {
                               await signInWithEmailAndPassword();
                               await trace.stop();
                               await createUser();
-                              bool answered =
-                                  await getSurveyFromDataBase();
+                              bool answered = await getSurveyFromDataBase();
                               if (userSignedIn) {
                                 bool locationGranted =
                                     await Permission.location.status.isGranted;
-                                String location = await getLocation();
+                                String location = "";
                                 late String country;
                                 late int totalPages;
                                 if (locationGranted) {
+                                  location = await LocationController.getLocation();
                                   if (location != "") {
                                     List<String> posArr = location.split(",");
                                     List<Placemark> placemarkers =
@@ -206,8 +190,8 @@ class _SignInPageState extends State<SignInPage> {
                                             double.parse(posArr[0]),
                                             double.parse(posArr[1]));
                                     country = placemarkers[4].country!;
-                                    totalPages =
-                                        await getPagesInMyLocation(country);
+                                    totalPages = await LocationController
+                                        .getPagesInMyLocation(country);
                                   }
                                 }
                                 answered

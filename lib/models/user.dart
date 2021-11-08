@@ -9,7 +9,7 @@ class User {
   String bannerPicURL;
   String profilePicUrl;
   String linkedInProfile;
-  Map<String, String> interests;
+  List<String> interests;
   List<String> posts;
 
   User({
@@ -21,7 +21,7 @@ class User {
     required this.bannerPicURL,
     required this.profilePicUrl,
     this.linkedInProfile = "",
-    this.interests = const {},
+    this.interests = const <String>[],
     this.posts = const <String>[],
   });
 
@@ -69,7 +69,7 @@ class User {
     bannerPicURL = url;
   }
 
-  void setInterests(Map<String, String> nInterests) {
+  void setInterests(List<String> nInterests) {
     interests = nInterests;
   }
 

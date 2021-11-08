@@ -1,7 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:unicorn/controllers/firebase_storage_controller.dart';
+import 'package:unicorn/controllers/location_controller.dart';
 import 'package:unicorn/models/user.dart';
 import 'package:unicorn/widgets/Home/home_page.dart';
 
@@ -63,7 +65,11 @@ class _InterestsPageState extends State<InterestsPage> {
   }
 
   void setUserInterests() {
-    widget.user.setInterests(getSelected());
+    List<String> interests = [];
+    getSelected().forEach((key, value) {
+      interests.add(value);
+    });
+    widget.user.setInterests(interests);
   }
 
   @override
@@ -313,13 +319,39 @@ class _InterestsPageState extends State<InterestsPage> {
                           ? () async {
                               setUserInterests();
                               await FirebaseStorageController.uploadUser(
-                                  widget.user);
+                                widget.user,
+                              );
+                              bool locationGranted =
+                                  await Permission.location.status.isGranted;
+                              String location = "";
+                              late String country;
+                              late int totalPages;
+                              if (locationGranted) {
+                                location =
+                                    await LocationController.getLocation();
+                                if (location != "") {
+                                  List<String> posArr = location.split(",");
+                                  List<Placemark> placemarkers =
+                                      await placemarkFromCoordinates(
+                                          double.parse(posArr[0]),
+                                          double.parse(posArr[1]));
+                                  country = placemarkers[4].country!;
+                                  totalPages = await LocationController
+                                      .getPagesInMyLocation(country);
+                                }
+                              }
+
                               {
                                 Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => HomeScreen(
                                         user: widget.user,
+                                        locationAccess: locationGranted,
+                                        location:
+                                            location != "" ? country : null,
+                                        totalPages:
+                                            location != "" ? totalPages : null,
                                       ),
                                     ),
                                     (route) => false);
