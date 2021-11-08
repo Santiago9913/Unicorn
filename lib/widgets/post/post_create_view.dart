@@ -24,7 +24,6 @@ class _CratePostPageState extends State<CratePostPage> {
   final TextEditingController contentController = TextEditingController();
 
   final ImagePicker _picker = ImagePicker();
-
   late File imageFile;
   String imagePath = "";
   String content = "";

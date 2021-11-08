@@ -174,39 +174,33 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             PlaceholderWidget(
               child: Container(
-                  color: const Color(0xFFC4C4C4),
+                  // color: const Color(0xFFC4C4C4),
+                  color: Colors.white,
                   height: 1.sh,
                   width: 1.sw,
-                  child: ListView.builder(
-                    itemCount: 5,
-                    itemBuilder: (context, index) {
-                      return const PostWidget();
-                    },
-                  )
-
-                  //Column(
-                  // mainAxisAlignment: MainAxisAlignment.center,
-                  // crossAxisAlignment: CrossAxisAlignment.center,
-                  // children: [
-                  //   Image.asset(
-                  //     'assets/icons/Saly16.png',
-                  //     height: 200.h,
-                  //   ),
-                  //   const Padding(
-                  //     padding: EdgeInsets.only(top: 20),
-                  //     child: SizedBox(
-                  //       width: 200,
-                  //       child: Text(
-                  //         "You don’t have posts right know. Follow some one to see news on your feed",
-                  //         textAlign: TextAlign.center,
-                  //         style: TextStyle(
-                  //           color: Color(0xFFB2B2B2),
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   )
-                  // ],
-                  //),
+                  child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/icons/Saly16.png',
+                      height: 200.h,
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 20),
+                      child: SizedBox(
+                        width: 200,
+                        child: Text(
+                          "You don’t have posts right know. Follow some one to see news on your feed",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Color(0xFFB2B2B2),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                  ),
                   ),
             ),
             PlaceholderWidget(
