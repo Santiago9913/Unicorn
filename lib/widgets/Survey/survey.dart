@@ -1,6 +1,6 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:unicorn/controllers/firebase_storage_controller.dart';
 import 'package:unicorn/models/user.dart';
 import 'package:unicorn/widgets/Home/home_page.dart';
 
@@ -8,11 +8,9 @@ class Survey extends StatefulWidget {
   const Survey({
     Key? key,
     required this.user,
-    required this.db,
   }) : super(key: key);
 
   final User user;
-  final DatabaseReference db;
 
   @override
   _SurveyState createState() => _SurveyState();
@@ -31,11 +29,11 @@ class _SurveyState extends State<Survey> {
   }
 
   Future<void> updateSurveyStatus(
-      String? id, DatabaseReference db, double score) async {
+      String? id, double score) async {
     try {
-      DatabaseReference userReference = db.child("users/$id/");
       Map<String, dynamic> mapSurvey = {"survey": true, "surveyScore": score};
-      await userReference.update(mapSurvey);
+      await FirebaseStorageController.updateUser(
+          widget.user.userUID, mapSurvey);
     } catch (e) {
       print(e.toString());
     }
@@ -132,7 +130,6 @@ class _SurveyState extends State<Survey> {
                               ? () async {
                                   await updateSurveyStatus(
                                     widget.user.getUserUID,
-                                    widget.db,
                                     _currentSliderValue,
                                   );
                                   Navigator.pushAndRemoveUntil(

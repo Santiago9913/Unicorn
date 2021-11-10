@@ -1,11 +1,17 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:unicorn/controllers/firebase_storage_controller.dart';
+import 'package:unicorn/controllers/location_controller.dart';
 import 'package:unicorn/models/user.dart';
 import 'package:unicorn/widgets/Home/home_page.dart';
 
 class InterestsPage extends StatefulWidget {
-  InterestsPage({Key? key, required this.user}) : super(key: key);
+  InterestsPage({
+    Key? key,
+    required this.user,
+  }) : super(key: key);
 
   late final User user;
 
@@ -24,8 +30,8 @@ class _InterestsPageState extends State<InterestsPage> {
   Color bottonUnpressed = const Color(0xFF0E153A);
   Color textColorPressed = Colors.black;
 
-  Map<String, dynamic> getSelected() {
-    Map<String, dynamic> selected = {};
+  Map<String, String> getSelected() {
+    Map<String, String> selected = {};
 
     if (hasBeenPressedCrypto) {
       selected["Crypto"] = "Crypto";
@@ -58,17 +64,12 @@ class _InterestsPageState extends State<InterestsPage> {
     }
   }
 
-  uploadUserInterests() async {
-    DatabaseReference dbReference = widget.user.getDBReference;
-    String userId = widget.user.getUserUID;
-    try {
-      DatabaseReference userReference =
-          dbReference.child("users/$userId/interests/");
-      Map<String, dynamic> mapInterest = getSelected();
-      await userReference.update(mapInterest);
-    } catch (e) {
-      print(e);
-    }
+  void setUserInterests() {
+    List<String> interests = [];
+    getSelected().forEach((key, value) {
+      interests.add(value);
+    });
+    widget.user.setInterests(interests);
   }
 
   @override
@@ -316,13 +317,41 @@ class _InterestsPageState extends State<InterestsPage> {
                           onSurface: const Color(0xFF3D5AF1)),
                       onPressed: enable
                           ? () async {
-                              await uploadUserInterests();
+                              setUserInterests();
+                              await FirebaseStorageController.uploadUser(
+                                widget.user,
+                              );
+                              bool locationGranted =
+                                  await Permission.location.status.isGranted;
+                              String location = "";
+                              late String country;
+                              late int totalPages;
+                              if (locationGranted) {
+                                location =
+                                    await LocationController.getLocation();
+                                if (location != "") {
+                                  List<String> posArr = location.split(",");
+                                  List<Placemark> placemarkers =
+                                      await placemarkFromCoordinates(
+                                          double.parse(posArr[0]),
+                                          double.parse(posArr[1]));
+                                  country = placemarkers[4].country!;
+                                  totalPages = await LocationController
+                                      .getPagesInMyLocation(country);
+                                }
+                              }
+
                               {
                                 Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => HomeScreen(
                                         user: widget.user,
+                                        locationAccess: locationGranted,
+                                        location:
+                                            location != "" ? country : null,
+                                        totalPages:
+                                            location != "" ? totalPages : null,
                                       ),
                                     ),
                                     (route) => false);

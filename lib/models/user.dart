@@ -1,4 +1,4 @@
-import 'package:firebase_database/firebase_database.dart';
+import 'package:unicorn/controllers/firebase_storage_controller.dart';
 
 class User {
   String name;
@@ -8,9 +8,9 @@ class User {
   String email;
   String bannerPicURL;
   String profilePicUrl;
-  String linkedInProfile = "";
-
-  final db = FirebaseDatabase.instance.reference();
+  String linkedInProfile;
+  List<String> interests;
+  List<String> posts;
 
   User({
     required this.name,
@@ -21,6 +21,8 @@ class User {
     required this.bannerPicURL,
     required this.profilePicUrl,
     this.linkedInProfile = "",
+    this.interests = const <String>[],
+    this.posts = const <String>[],
   });
 
   String get getName {
@@ -55,6 +57,10 @@ class User {
     return linkedInProfile;
   }
 
+  List<String> get getPosts {
+    return posts;
+  }
+
   void setProfilePicture(String url) {
     profilePicUrl = url;
   }
@@ -63,11 +69,14 @@ class User {
     bannerPicURL = url;
   }
 
+  void setInterests(List<String> nInterests) {
+    interests = nInterests;
+  }
+
   Future<void> setLinkedInProfile(String url) async {
     try {
-      DatabaseReference userReference = getUserRef;
       Map<String, String> mapName = {"linkedInProfile": url};
-      await userReference.update(mapName);
+      await FirebaseStorageController.updateUser(userUID, mapName);
       linkedInProfile = url;
     } catch (e) {
       print(e.toString());
@@ -76,9 +85,8 @@ class User {
 
   Future<void> setName(String nName) async {
     try {
-      DatabaseReference userReference = getUserRef;
       Map<String, String> mapName = {"firstName": nName};
-      await userReference.update(mapName);
+      await FirebaseStorageController.updateUser(userUID, mapName);
       name = nName;
     } catch (e) {
       print(e.toString());
@@ -87,30 +95,15 @@ class User {
 
   Future<void> setLastName(String nName) async {
     try {
-      DatabaseReference userReference = getUserRef;
       Map<String, String> mapName = {"lastName": nName};
-      await userReference.update(mapName);
+      await FirebaseStorageController.updateUser(userUID, mapName);
       lastName = nName;
     } catch (e) {
       print(e.toString());
     }
   }
 
-  DatabaseReference get getUserRef {
-    return db.child('users/$userUID/');
-  }
-
-  DatabaseReference get getDBReference {
-    return db;
-  }
-  // User.fromJson(Map<dynamic, dynamic> json)
-  //     : name = json["name"] as String,
-  //       lastName = json["lastName"] as String,
-  //       email = json["email"] as String,
-  //       type = json["type"] as String,
-  //       userUID = json["userUID"] as String;
-
-  Map<dynamic, dynamic> toJSON() => <dynamic, dynamic>{
+  Map<String, dynamic> toJSON() => <String, dynamic>{
         'email': email,
         'firstName': name,
         'lastName': lastName,
@@ -119,5 +112,7 @@ class User {
         'bannerPicUrl': '',
         'profilePicUrl': '',
         'linkedInProfile': '',
+        'interests': interests,
+        'posts': posts
       };
 }

@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,7 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:unicorn/controllers/firebase_storage_controller.dart';
 import 'package:unicorn/models/user.dart';
 import 'package:unicorn/widgets/profile/main_profile_page.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({
@@ -33,9 +30,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   final ImagePicker _picker = ImagePicker();
 
-  FirebaseStorage storage = FirebaseStorage.instance;
-  final db = FirebaseDatabase.instance.reference();
-
   _imgFromCamera(String name) async {
     // var status = await Permission.camera.status;
 
@@ -53,7 +47,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       String fileName = name;
 
       String url = await FirebaseStorageController.uploadImageToStorage(
-          storagePath, filePath, fileName);
+          storagePath, filePath, fileName, widget.user.userUID);
 
       setState(() {
         if (name == 'profile') {
@@ -78,7 +72,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       String fileName = name;
 
       String url = await FirebaseStorageController.uploadImageToStorage(
-          storagePath, filePath, fileName);
+          storagePath, filePath, fileName, widget.user.userUID);
 
       setState(() {
         if (name == 'profile') {

@@ -1,4 +1,3 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -27,7 +26,6 @@ class Unicorn extends StatefulWidget {
 
 class _UnicornState extends State<Unicorn> {
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
-  final db = FirebaseDatabase.instance.reference();
 
   @override
   Widget build(BuildContext context) {
