@@ -77,14 +77,16 @@ class _SignInPageState extends State<SignInPage> {
   Future<void> createUser() async {
     Map<dynamic, dynamic> val = await FirebaseStorageController.getUser(uid!);
     user = user_model.User(
-        name: val["firstName"],
-        lastName: val["lastName"],
-        userUID: uid!,
-        type: val["type"],
-        email: val["email"],
-        bannerPicURL: val["bannerPicUrl"],
-        profilePicUrl: val["profilePicUrl"],
-        linkedInProfile: val['linkedInProfile']);
+      name: val["firstName"],
+      lastName: val["lastName"],
+      userUID: uid!,
+      type: val["type"],
+      email: val["email"],
+      bannerPicURL: val["bannerPicUrl"],
+      profilePicUrl: val["profilePicUrl"],
+      linkedInProfile: val['linkedInProfile'],
+      interests: val['interests'],
+    );
   }
 
   @override
@@ -182,7 +184,8 @@ class _SignInPageState extends State<SignInPage> {
                                 late String country;
                                 late int totalPages;
                                 if (locationGranted) {
-                                  location = await LocationController.getLocation();
+                                  location =
+                                      await LocationController.getLocation();
                                   if (location != "") {
                                     List<String> posArr = location.split(",");
                                     List<Placemark> placemarkers =
