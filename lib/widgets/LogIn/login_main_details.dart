@@ -59,7 +59,7 @@ class _MainDetailsState extends State<MainDetails> {
   createUserWithEmailAndPassword() async {
     // try {
     Future<UserCredential> userCredential = FirebaseAuth.instance
-        .createUserWithEmailAndPassword(email: email, password: password);
+        .createUserWithEmailAndPassword(email: email.replaceAll(" ", ""), password: password);
 
     UserCredential credentilas = await userCredential;
     uid = credentilas.user!.uid;
@@ -206,9 +206,9 @@ class _MainDetailsState extends State<MainDetails> {
                                   MaterialPageRoute(
                                     builder: (context) => SelectProfileType(
                                       userUID: uid,
-                                      firstName: name,
-                                      lastName: secondName,
-                                      email: email,
+                                      firstName: name.replaceAll(" ", ""),
+                                      lastName: secondName.replaceAll(" ", ""),
+                                      email: email.replaceAll(" ", ""),
                                     ),
                                   ),
                                   (e) => false,

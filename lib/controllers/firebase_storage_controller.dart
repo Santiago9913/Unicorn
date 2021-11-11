@@ -119,4 +119,40 @@ class FirebaseStorageController {
       String id, Map<String, dynamic> newInfo) async {
     await _db.collection("posts").doc(id).update(newInfo);
   }
+
+  //Query Controllers
+  static Future<List<User>> queryOnUserName(String name, User user) async {
+    List<dynamic> userInterests = user.interests;
+
+    QuerySnapshot<Map<String, dynamic>> resultUsers =
+        await _db.collection("users").where("firstName", isEqualTo: name).get();
+
+    // QuerySnapshot<Map<String, dynamic>> resultPages =
+    //     await _db.collection("users").where("name", isEqualTo: name).get();
+
+    QuerySnapshot<Map<String, dynamic>> recommendedUsers = await _db
+        .collection("users")
+        .where("interests", arrayContainsAny: userInterests)
+        .get();
+
+    List<User> users = [];
+
+    for (var e in recommendedUsers.docs) {
+      String uid = e.id;
+      if (uid != user.userUID) {
+        User nUser = User.fromJson(e.data(), uid);
+        users.add(nUser);
+      }
+    }
+
+    for (var e in resultUsers.docs) {
+      String uid = e.id;
+      if (uid != user.userUID) {
+        User nUser = User.fromJson(e.data(), uid);
+        users.add(nUser);
+      }
+    }
+
+    return users;
+  }
 }
