@@ -1,4 +1,3 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -31,7 +30,6 @@ class _MainDetailsState extends State<MainDetails> {
 
   var fields = {"name": 0, "secondName": 0, "email": 0, "password": 0};
 
-  final FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics();
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 
   void noEmptyFields() {
@@ -193,13 +191,6 @@ class _MainDetailsState extends State<MainDetails> {
                               await createUserWithEmailAndPassword();
 
                               androidInfo = await getAndroidInfo(deviceInfo);
-                              await firebaseAnalytics.logEvent(
-                                name: "os_distribution",
-                                parameters: {
-                                  "os_version": androidInfo.version.release,
-                                  "sdk": androidInfo.version.sdkInt,
-                                },
-                              );
                               if (uid.isNotEmpty) {
                                 Navigator.pushAndRemoveUntil(
                                   context,

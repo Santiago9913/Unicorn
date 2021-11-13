@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:unicorn/widgets/Contact/contact_page.dart';
 import 'package:unicorn/widgets/main_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:unicorn/widgets/splash_screen.dart';
@@ -45,7 +46,7 @@ class _UnicornState extends State<Unicorn> {
         if (snapshot.connectionState == ConnectionState.done) {
           return ScreenUtilInit(
             builder: () => const MaterialApp(
-              home: MainPage(),
+              home: ContactPage(),
               debugShowCheckedModeBanner: false,
             ),
           );
