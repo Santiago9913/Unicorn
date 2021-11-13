@@ -297,7 +297,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         onPressed: () {
-                          print("Create page");
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CreatePage(
+                                user: widget.user,
+                              ),
+                            ),
+                          );
                         },
                       ),
                     )
