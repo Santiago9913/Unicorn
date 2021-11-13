@@ -9,7 +9,7 @@ class User {
   String bannerPicURL;
   String profilePicUrl;
   String linkedInProfile;
-  List<String> interests;
+  List<dynamic> interests;
   List<String> posts;
 
   User({
@@ -69,7 +69,7 @@ class User {
     bannerPicURL = url;
   }
 
-  void setInterests(List<String> nInterests) {
+  void setInterests(List<dynamic> nInterests) {
     interests = nInterests;
   }
 
@@ -115,4 +115,18 @@ class User {
         'interests': interests,
         'posts': posts
       };
+
+  static User fromJson(Map<String, dynamic> map, String uid) {
+    return User(
+      name: map["firstName"],
+      lastName: map["lastName"],
+      userUID: uid,
+      type: map["type"],
+      email: map["email"],
+      bannerPicURL: map["bannerPicUrl"] ?? "",
+      profilePicUrl: map["profilePicUrl"] ?? "",
+      linkedInProfile: map['linkedInProfile'] ?? "",
+      interests: map['interests'],
+    );
+  }
 }
