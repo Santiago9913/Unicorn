@@ -11,11 +11,12 @@ class User {
   String profilePicUrl;
   String linkedInProfile;
   List<dynamic> interests;
-  List<String> posts;
+  List<dynamic> posts;
   DateTime created;
-  List<String> pages;
+  List<dynamic> pages;
   int numContacts;
   int numPosts;
+  int numLinkedin;
 
   User({
     required this.name,
@@ -27,11 +28,12 @@ class User {
     required this.profilePicUrl,
     this.linkedInProfile = "",
     this.interests = const <String>[],
-    this.posts = const <String>[],
+    this.posts = const <dynamic>[],
     required this.created,
-    this.pages = const <String>[],
+    this.pages = const <dynamic>[],
     this.numContacts = 0,
     this.numPosts = 0,
+    this.numLinkedin = 0,
   });
 
   String get getName {
@@ -66,11 +68,11 @@ class User {
     return linkedInProfile;
   }
 
-  List<String> get getPosts {
+  List<dynamic> get getPosts {
     return posts;
   }
 
-  List<String> get getPages {
+  List<dynamic> get getPages {
     return posts;
   }
 
@@ -139,6 +141,7 @@ class User {
         "pages": pages,
         "numContacts": numContacts,
         "numPosts": numPosts,
+        "numLinkedin" : numLinkedin,
       };
 
   static User fromJson(Map<String, dynamic> map, String uid) {
@@ -157,8 +160,9 @@ class User {
           : DateTime(DateTime.now().year),
       pages: map["pages"] ?? [],
       posts: map["posts"] ?? [],
-      numContacts: map["numContacts"] ?? 0,
-      numPosts: map["numPosts"] ?? 0,
+      numContacts: map["numContacts"] ??= 0,
+      numPosts: map["numPosts"] ??= 0,
+      numLinkedin: map["numLinkedin"] ??=0
     );
   }
 }
