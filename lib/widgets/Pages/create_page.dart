@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:device_info/device_info.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -48,8 +47,6 @@ class _CreatePageState extends State<CreatePage> {
 
   TextEditingController nameController = TextEditingController();
 
-  final FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics();
-  DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 
   void checkOrder() {
     enable = true;
