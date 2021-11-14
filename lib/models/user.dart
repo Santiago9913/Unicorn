@@ -131,7 +131,7 @@ class User {
       profilePicUrl: map["profilePicUrl"] ?? "",
       linkedInProfile: map['linkedInProfile'] ?? "",
       interests: map['interests'],
-      created: map['created']
+      created: map['created'] ?? DateTime(DateTime.now().year),
     );
   }
 }

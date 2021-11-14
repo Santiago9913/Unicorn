@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:unicorn/api/api.dart';
 import 'package:unicorn/models/user.dart';
 import 'package:unicorn/widgets/Home/home_place_holder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -33,12 +34,21 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   bool locationGranted = true;
+  String selectedValueTrends = "United States";
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   
+
+  Api mApi = Api();
+  List<DropdownMenuItem<String>> countriesListMenu = <DropdownMenuItem<String>>[];
+  List<Widget> inversionsChildrenList = <Widget>[];
+  List<Widget> trendsChildrenList = <Widget>[];
 
   @override
   void initState() {
     super.initState();
+    loadCountriesDropdownMenu();
+    loadInversions();
+    loadTrend(selectedValueTrends);
     if (widget.locationAccess != null) {
       if (widget.locationAccess! && widget.location != "") {
         WidgetsBinding.instance!.addPostFrameCallback((_) {
@@ -314,6 +324,62 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
+            PlaceholderWidget(
+              child: SizedBox(
+                height: 1.sh,
+                width: 1.sw,
+                child: ListView(
+                  children: inversionsChildrenList,
+                ),
+              ),
+            ),
+            PlaceholderWidget(
+              child: SizedBox(
+                height: 1.sh,
+                width: 1.sw,
+                child: Padding(
+                  padding: EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      DropdownButtonFormField(
+                        menuMaxHeight: 400,
+                        style: TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Color(0xFF0E153A), width: 2),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(color: Color(0xFF0E153A), width: 2),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          filled: true,
+                          fillColor: Color(0xFF0E153A),
+                        ),
+                        dropdownColor: Color(0xFF0E153A),
+                        value: selectedValueTrends,
+                        items: countriesListMenu,
+                        onChanged: (String? newValue){
+                          loadTrend(newValue!);
+                          setState(() {
+                            selectedValueTrends = newValue!;
+                          });
+                        },
+                      ),
+                      SizedBox(
+                          height: 0.65.sh,
+                          width: 1.sw,
+                          child: ListView(
+                            children: trendsChildrenList,
+                          )
+                      )
+                    ],
+                  ),
+                )
+              ),
+            ),
           ],
           index: _currentIndex,
         ), // new
@@ -341,6 +407,14 @@ class _HomeScreenState extends State<HomeScreen> {
               BottomNavigationBarItem(
                 icon: Icon(Icons.book),
                 label: 'Pages',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.precision_manufacturing),
+                label: 'Industries',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.trending_up),
+                label: 'Trends',
               )
             ],
           ),
@@ -349,9 +423,106 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void loadCountriesDropdownMenu () {
+    mApi.getCountries().then((countries) {
+      List<DropdownMenuItem<String>> mCountries = <DropdownMenuItem<String>>[];
+      for (int i = 0; i < countries.length; i++) {
+        mCountries.add(
+            DropdownMenuItem(
+                child: Text(
+                  countries[i].name,
+                  style: TextStyle(
+                    color: Colors.white
+                  ),
+                ),
+                value: countries[i].name
+            )
+        );
+      }
+      setState(() {
+        countriesListMenu = mCountries;
+      });
+    });
+  }
+
+  void loadTrend (String country) {
+    mApi.getTrends(country).then((trends) {
+      List<Widget> mTrends = [];
+      for (int i = 0; i < trends.length; i++) {
+        var mName = trends[i].name;
+        var mFunding = trends[i].funding.toString();
+        var mStartups = trends[i].startups.toString();
+        var mItem = Card(
+            elevation: 4,
+            margin: EdgeInsets.fromLTRB(0, 7, 0, 7),
+            child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Wrap(
+                    spacing: 7,
+                    direction: Axis.vertical,
+                    children: [
+                      Text(
+                        'Trend: ' + mName,
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text('Funding: \$' + mFunding),
+                      Text('Amount of Startups: ' + mStartups)
+                    ]
+                )
+            )
+        );
+        mTrends.add(mItem);
+      }
+      setState(() {
+        trendsChildrenList = mTrends;
+      });
+    });
+  }
+
+  void loadInversions () {
+    mApi.getInversion().then((industries) {
+      List<Widget> mInversions = [];
+      for (int i = 0; i < industries.length; i++) {
+        var mName = industries[i].name;
+        var mFunding = industries[i].funding.toString();
+        var mStartups = industries[i].startups.toString();
+        var mItem = Card(
+            elevation: 4,
+            margin: EdgeInsets.fromLTRB(14, 7, 14, 7),
+            child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Wrap(
+                    spacing: 7,
+                    direction: Axis.vertical,
+                    children: [
+                      Text(
+                        'Industry: ' + mName,
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text('Funding: \$' + mFunding),
+                      Text('Amount of Startups: ' + mStartups)
+                    ]
+                )
+            )
+        );
+        mInversions.add(mItem);
+      }
+      setState(() {
+        inversionsChildrenList = mInversions;
+      });
+    });
+  }
+
   void onTabTapped(int index) {
-    setState(
-      () {
+    setState(() {
         _currentIndex = index;
       },
     );
