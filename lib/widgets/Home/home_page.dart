@@ -21,7 +21,7 @@ class HomeScreen extends StatefulWidget {
     this.totalPages,
   }) : super(key: key);
 
-  final User user;
+  final User? user;
   final bool? locationAccess;
   final String? location;
   final int? totalPages;
@@ -56,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _scaffoldKey.currentState!.showSnackBar(
             SnackBar(
               content: Text(
-                  "There are ${widget.totalPages} ${widget.user.type == "Entrepreneur" ? "startups" : "ventures"} in ${widget.location}"),
+                  "There are ${widget.totalPages} ${widget.user!.type == "Entrepreneur" ? "startups" : "ventures"} in ${widget.location}"),
               backgroundColor: const Color(0xFF0E153A),
               duration: const Duration(seconds: 10),
             ),
@@ -84,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
               context,
               MaterialPageRoute(
                 builder: (context) => CratePostPage(
-                  user: widget.user,
+                  user: widget.user!,
                 ),
               ),
             );
@@ -108,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                widget.user.getProfilePicURL.isEmpty
+                widget.user!.getProfilePicURL.isEmpty
                     ? IconButton(
                         icon: const Icon(
                           Icons.person,
@@ -119,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => MainProfilePage(
-                                user: widget.user,
+                                user: widget.user!,
                               ),
                             ),
                           );
@@ -133,14 +133,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => MainProfilePage(
-                                user: widget.user,
+                                user: widget.user!,
                               ),
                             ),
                           );
                         },
                         child: CircleAvatar(
                           backgroundImage:
-                              CachedNetworkImageProvider(widget.user.getProfilePicURL),
+                              CachedNetworkImageProvider(widget.user!.getProfilePicURL),
                           radius: 16,
                         ),
                       ),
@@ -173,7 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => SearchPage(input: input, user: widget.user,),
+                                builder: (context) => SearchPage(input: input, user: widget.user!,),
                               ),
                             );
                           },
@@ -314,7 +314,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => CreatePage(
-                                user: widget.user,
+                                user: widget.user!,
                               ),
                             ),
                           );
