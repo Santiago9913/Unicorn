@@ -55,15 +55,35 @@ class _EditProfilePageState extends State<EditProfilePage> {
       String url = await FirebaseStorageController.uploadImageToStorage(
           storagePath, filePath, fileName, widget.user.userUID);
 
-      HiveController.storeImage(url, file);
-
       setState(() {
         if (name == 'profile') {
           profilePicUrl = url;
           widget.user.setProfilePicture(url);
+          HiveController.storeImage(
+              "${widget.user.userUID}/profile.jpeg", file);
+          HiveController.retrieveImage("${widget.user.userUID}/profile.jpeg")
+              .then((value) {
+            setState(() {
+              profileImageDecode = value.isEmpty
+                  ? Image.asset("assets/icons/blank.png")
+                  : Image.memory(value);
+            });
+          });
         } else if (name == 'banner') {
           bannerPicUrl = url;
           widget.user.setBannerPicture(url);
+          HiveController.storeImage("${widget.user.userUID}/banner.jpeg", file);
+          HiveController.retrieveImage("${widget.user.userUID}/banner.jpeg")
+              .then((value) {
+            setState(() {
+              bannerImageDecode = BoxDecoration(
+                image: DecorationImage(
+                  image: Image.memory(value).image,
+                  fit: BoxFit.fill,
+                ),
+              );
+            });
+          });
         }
       });
     }
@@ -86,8 +106,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
       if (name == 'profile') {
         profilePicUrl = url;
         widget.user.setProfilePicture(url);
-        HiveController.storeImage("profile.jpeg", file);
-        HiveController.retrieveImage("profile.jpeg").then((value) {
+        HiveController.storeImage("${widget.user.userUID}/profile.jpeg", file);
+        HiveController.retrieveImage("${widget.user.userUID}/profile.jpeg")
+            .then((value) {
           setState(() {
             profileImageDecode = value.isEmpty
                 ? Image.asset("assets/icons/blank.png")
@@ -97,8 +118,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
       } else if (name == 'banner') {
         bannerPicUrl = url;
         widget.user.setBannerPicture(url);
-        HiveController.storeImage("banner.jpeg", file);
-        HiveController.retrieveImage("banner.jpeg").then((value) {
+        HiveController.storeImage("${widget.user.userUID}/banner.jpeg", file);
+        HiveController.retrieveImage("${widget.user.userUID}/banner.jpeg")
+            .then((value) {
           setState(() {
             bannerImageDecode = BoxDecoration(
               image: DecorationImage(
@@ -152,26 +174,32 @@ class _EditProfilePageState extends State<EditProfilePage> {
     bannerPicUrl = widget.user.getBannerPicURL;
     profilePicUrl = widget.user.getProfilePicURL;
 
-    HiveController.retrieveImage("banner.jpeg").then((value) {
-      setState(() {
-        bannerImageDecode = value.isEmpty
-            ? null
-            : BoxDecoration(
-                image: DecorationImage(
-                  image: Image.memory(value).image,
-                  fit: BoxFit.fill,
-                ),
-              );
+    if (widget.user.bannerPicURL != "") {
+      HiveController.retrieveImage("${widget.user.userUID}/banner.jpeg")
+          .then((value) {
+        setState(() {
+          bannerImageDecode = value.isEmpty
+              ? null
+              : BoxDecoration(
+                  image: DecorationImage(
+                    image: Image.memory(value).image,
+                    fit: BoxFit.fill,
+                  ),
+                );
+        });
       });
-    });
+    }
 
-    HiveController.retrieveImage("profile.jpeg").then((value) {
-      setState(() {
-        profileImageDecode = value.isEmpty
-            ? Image.asset("assets/icons/blank.png")
-            : Image.memory(value);
+    if (widget.user.profilePicUrl != "") {
+      HiveController.retrieveImage("${widget.user.userUID}/profile.jpeg")
+          .then((value) {
+        setState(() {
+          profileImageDecode = value.isEmpty
+              ? Image.asset("assets/icons/blank.png")
+              : Image.memory(value);
+        });
       });
-    });
+    }
   }
 
   @override

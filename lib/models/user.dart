@@ -13,19 +13,22 @@ class User {
   List<dynamic> interests;
   List<String> posts;
   DateTime created;
+  List<String> pages;
 
-  User(
-      {required this.name,
-      required this.lastName,
-      required this.userUID,
-      required this.type,
-      required this.email,
-      required this.bannerPicURL,
-      required this.profilePicUrl,
-      this.linkedInProfile = "",
-      this.interests = const <String>[],
-      this.posts = const <String>[],
-      required this.created});
+  User({
+    required this.name,
+    required this.lastName,
+    required this.userUID,
+    required this.type,
+    required this.email,
+    required this.bannerPicURL,
+    required this.profilePicUrl,
+    this.linkedInProfile = "",
+    this.interests = const <String>[],
+    this.posts = const <String>[],
+    required this.created,
+    this.pages = const <String>[],
+  });
 
   String get getName {
     return name;
@@ -60,6 +63,10 @@ class User {
   }
 
   List<String> get getPosts {
+    return posts;
+  }
+
+  List<String> get getPages {
     return posts;
   }
 
@@ -116,7 +123,8 @@ class User {
         'linkedInProfile': '',
         'interests': interests,
         'posts': posts,
-        'created': created
+        'created': created,
+        "pages" : pages
       };
 
   static User fromJson(Map<String, dynamic> map, String uid) {
@@ -133,6 +141,7 @@ class User {
       created: map['created'] != null
           ? (map['created'] as Timestamp).toDate()
           : DateTime(DateTime.now().year),
+      pages: map["pages"] ?? [],
     );
   }
 }

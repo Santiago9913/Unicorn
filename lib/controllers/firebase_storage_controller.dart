@@ -11,7 +11,6 @@ class FirebaseStorageController {
   static final FirebaseStorage _storage = FirebaseStorage.instance;
   static final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-
   static Future<String> uploadImageToStorage(
       String storagePath, String filePath, String fileName, String uid) async {
     File file = File(filePath);
@@ -87,9 +86,13 @@ class FirebaseStorageController {
       bannerURL =
           await _storage.ref("${urlToUpload}banner.jpeg").getDownloadURL();
 
-      await updatePost(id, {
+      await updatePage(id, {
         "bannerPicURL": bannerURL,
         "profilePicUrl": profileURL,
+      });
+
+      await _db.collection("users").doc(uid).update({
+        "pages": FieldValue.arrayUnion([id])
       });
     } catch (e) {
       print(e.toString());
