@@ -117,171 +117,172 @@ class _MainProfilePageState extends State<MainProfilePage> {
                 ],
                 clipBehavior: Clip.none,
               ),
-              Container(
-                height: 0.815.sh,
-                width: 1.sw,
-                color: Colors.transparent,
+              Expanded(
                 child: Container(
-                  margin: EdgeInsets.only(left: 20.w, top: 50.h, right: 30),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          SizedBox(
-                            width: 0.35.sw,
-                            child: FittedBox(
-                              fit: BoxFit.fill,
-                              child: Text(
-                                "${widget.user.getName} ${widget.user.getlastName}",
-                                maxLines: 1,
-                                style: const TextStyle(
-                                    fontFamily: "Geometric Sans-Serif",
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ),
-                          IconButton(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            iconSize: 18,
-                            icon: const Icon(
-                              Icons.edit,
-                            ),
-                            onPressed: () {
-                              Navigator.pushAndRemoveUntil(
-                                  context,
-                                  PageRouteBuilder(
-                                    pageBuilder: (context, animation,
-                                            secondaryAnimation) =>
-                                        EditProfilePage(
-                                      user: widget.user,
-                                    ),
-                                    transitionsBuilder: (context, animation,
-                                        secondaryAnimation, child) {
-                                      const begin = Offset(0.0, 1.0);
-                                      const end = Offset.zero;
-                                      const curve = Curves.ease;
-
-                                      var tween = Tween(begin: begin, end: end)
-                                          .chain(CurveTween(curve: curve));
-
-                                      return SlideTransition(
-                                        position: animation.drive(tween),
-                                        child: child,
-                                      );
-                                    },
-                                  ),
-                                  (route) => false);
-                            },
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(left: 37.w),
-                            child: ElevatedButton(
-                              child: const Text(
-                                "Promote me",
-                                style: TextStyle(
-                                  fontFamily: "Geometric Sans-Serif",
-                                  fontSize: 12,
-                                  color: Colors.white,
+                  width: 1.sw,
+                  color: Colors.transparent,
+                  child: Container(
+                    margin: EdgeInsets.only(left: 20.w, top: 50.h, right: 30),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 0.35.sw,
+                              child: FittedBox(
+                                fit: BoxFit.fill,
+                                child: Text(
+                                  "${widget.user.getName} ${widget.user.getlastName}",
+                                  maxLines: 1,
+                                  style: const TextStyle(
+                                      fontFamily: "Geometric Sans-Serif",
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold),
                                 ),
                               ),
-                              style: ElevatedButton.styleFrom(
-                                splashFactory: NoSplash.splashFactory,
-                                elevation: 0,
-                                primary: const Color(0xFF3D5AF1),
-                                fixedSize: Size(0.3.sw, 20),
-                                onSurface: const Color(0xFF3D5AF1),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
+                            ),
+                            IconButton(
+                              splashColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              iconSize: 18,
+                              icon: const Icon(
+                                Icons.edit,
                               ),
                               onPressed: () {
-                                print("Promote me");
+                                Navigator.pushAndRemoveUntil(
+                                    context,
+                                    PageRouteBuilder(
+                                      pageBuilder: (context, animation,
+                                              secondaryAnimation) =>
+                                          EditProfilePage(
+                                        user: widget.user,
+                                      ),
+                                      transitionsBuilder: (context, animation,
+                                          secondaryAnimation, child) {
+                                        const begin = Offset(0.0, 1.0);
+                                        const end = Offset.zero;
+                                        const curve = Curves.ease;
+
+                                        var tween = Tween(begin: begin, end: end)
+                                            .chain(CurveTween(curve: curve));
+
+                                        return SlideTransition(
+                                          position: animation.drive(tween),
+                                          child: child,
+                                        );
+                                      },
+                                    ),
+                                    (route) => false);
                               },
                             ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(top: 20),
-                        child: const Text("0 Followers | 0 Investments"),
-                      ),
-                      Container(
-                        child: TabBar(
-                          indicatorColor: const Color(0xFF3D5AF1),
-                          tabs: [
-                            const Tab(
-                              child: Text(
-                                "Information",
-                                style: TextStyle(color: Colors.black),
-                              ),
-                            ),
-                            Tab(
-                              child: Text(
-                                widget.user.getUserType == 'Investor'
-                                    ? "Investments"
-                                    : 'Startups',
-                                style: const TextStyle(color: Colors.black),
-                              ),
-                            ),
-                            Tab(
-                              child: Text(
-                                widget.user.getUserType == 'Investor'
-                                    ? "Investors"
-                                    : "Interests",
-                                style: const TextStyle(color: Colors.black),
+                            Container(
+                              margin: EdgeInsets.only(left: 37.w),
+                              child: ElevatedButton(
+                                child: const Text(
+                                  "Promote me",
+                                  style: TextStyle(
+                                    fontFamily: "Geometric Sans-Serif",
+                                    fontSize: 12,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  splashFactory: NoSplash.splashFactory,
+                                  elevation: 0,
+                                  primary: const Color(0xFF3D5AF1),
+                                  fixedSize: Size(0.3.sw, 20),
+                                  onSurface: const Color(0xFF3D5AF1),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  print("Promote me");
+                                },
                               ),
                             ),
                           ],
                         ),
-                      ),
-                      Expanded(
-                        child: TabBarView(
-                          children: <Widget>[
-                            SingleChildScrollView(
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 5),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    const CustomDisplayInfoCard(
-                                      title: "Location",
-                                      info: "Info",
-                                      isLink: false,
-                                    ),
-                                    widget.user.getLinkedInProfile.isNotEmpty
-                                        ? CustomDisplayInfoCard(
-                                            title: "LinkedIn Profile",
-                                            info:
-                                                widget.user.getLinkedInProfile,
-                                            isLink: true,
-                                          )
-                                        : const Text(""),
-                                  ],
+                        Container(
+                          margin: const EdgeInsets.only(top: 20),
+                          child: const Text("0 Followers | 0 Investments"),
+                        ),
+                        Container(
+                          child: TabBar(
+                            indicatorColor: const Color(0xFF3D5AF1),
+                            tabs: [
+                              const Tab(
+                                child: Text(
+                                  "Information",
+                                  style: TextStyle(color: Colors.black),
                                 ),
                               ),
-                            ),
-                            SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: const [],
+                              Tab(
+                                child: Text(
+                                  widget.user.getUserType == 'Investor'
+                                      ? "Investments"
+                                      : 'Startups',
+                                  style: const TextStyle(color: Colors.black),
+                                ),
                               ),
-                            ),
-                            SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: const [],
+                              Tab(
+                                child: Text(
+                                  widget.user.getUserType == 'Investor'
+                                      ? "Investors"
+                                      : "Interests",
+                                  style: const TextStyle(color: Colors.black),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      )
-                    ],
+                        Flexible(
+                          child: TabBarView(
+                            children: <Widget>[
+                              SingleChildScrollView(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 5),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const CustomDisplayInfoCard(
+                                        title: "Location",
+                                        info: "Info",
+                                        isLink: false,
+                                      ),
+                                      widget.user.getLinkedInProfile.isNotEmpty
+                                          ? CustomDisplayInfoCard(
+                                              title: "LinkedIn Profile",
+                                              info:
+                                                  widget.user.getLinkedInProfile,
+                                              isLink: true,
+                                            )
+                                          : const Text(""),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: const [],
+                                ),
+                              ),
+                              SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: const [],
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
