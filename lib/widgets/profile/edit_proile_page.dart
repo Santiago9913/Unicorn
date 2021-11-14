@@ -1,12 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:unicorn/controllers/firebase_storage_controller.dart';
+import 'package:unicorn/controllers/hive_controller.dart';
 import 'package:unicorn/models/user.dart';
 import 'package:unicorn/widgets/profile/main_profile_page.dart';
-
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({
@@ -14,7 +16,7 @@ class EditProfilePage extends StatefulWidget {
     required this.user,
   }) : super(key: key);
 
-  final User user;
+  final User? user;
 
   @override
   _EditProfilePageState createState() => _EditProfilePageState();
@@ -27,6 +29,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   String bannerPicUrl = "";
   String profilePicUrl = "";
+
+  BoxDecoration? bannerImageDecode = const BoxDecoration();
+  Image profileImageDecode = Image.asset("assets/icons/blank.png");
 
   final ImagePicker _picker = ImagePicker();
 
@@ -42,20 +47,43 @@ class _EditProfilePageState extends State<EditProfilePage> {
         await _picker.pickImage(source: ImageSource.camera, imageQuality: 50);
 
     if (image != null) {
-      String storagePath = 'users/${widget.user.getUserUID}';
+      String storagePath = 'users/${widget.user!.getUserUID}';
       String filePath = image.path;
+      File file = File(image.path);
       String fileName = name;
 
       String url = await FirebaseStorageController.uploadImageToStorage(
-          storagePath, filePath, fileName, widget.user.userUID);
+          storagePath, filePath, fileName, widget.user!.userUID);
 
       setState(() {
         if (name == 'profile') {
           profilePicUrl = url;
-          widget.user.setProfilePicture(url);
+          widget.user!.setProfilePicture(url);
+          HiveController.storeImage(
+              "${widget.user!.userUID}/profile.jpeg", file);
+          HiveController.retrieveImage("${widget.user!.userUID}/profile.jpeg")
+              .then((value) {
+            setState(() {
+              profileImageDecode = value.isEmpty
+                  ? Image.asset("assets/icons/blank.png")
+                  : Image.memory(value);
+            });
+          });
         } else if (name == 'banner') {
           bannerPicUrl = url;
-          widget.user.setBannerPicture(url);
+          widget.user!.setBannerPicture(url);
+          HiveController.storeImage("${widget.user!.userUID}/banner.jpeg", file);
+          HiveController.retrieveImage("${widget.user!.userUID}/banner.jpeg")
+              .then((value) {
+            setState(() {
+              bannerImageDecode = BoxDecoration(
+                image: DecorationImage(
+                  image: Image.memory(value).image,
+                  fit: BoxFit.fill,
+                ),
+              );
+            });
+          });
         }
       });
     }
@@ -67,22 +95,42 @@ class _EditProfilePageState extends State<EditProfilePage> {
         await _picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
 
     if (image != null) {
-      String storagePath = 'users/${widget.user.getUserUID}';
+      String storagePath = 'users/${widget.user!.getUserUID}';
+      File file = File(image.path);
       String filePath = image.path;
       String fileName = name;
 
       String url = await FirebaseStorageController.uploadImageToStorage(
-          storagePath, filePath, fileName, widget.user.userUID);
+          storagePath, filePath, fileName, widget.user!.userUID);
 
-      setState(() {
-        if (name == 'profile') {
-          profilePicUrl = url;
-          widget.user.setProfilePicture(url);
-        } else if (name == 'banner') {
-          bannerPicUrl = url;
-          widget.user.setBannerPicture(url);
-        }
-      });
+      if (name == 'profile') {
+        profilePicUrl = url;
+        widget.user!.setProfilePicture(url);
+        HiveController.storeImage("${widget.user!.userUID}/profile.jpeg", file);
+        HiveController.retrieveImage("${widget.user!.userUID}/profile.jpeg")
+            .then((value) {
+          setState(() {
+            profileImageDecode = value.isEmpty
+                ? Image.asset("assets/icons/blank.png")
+                : Image.memory(value);
+          });
+        });
+      } else if (name == 'banner') {
+        bannerPicUrl = url;
+        widget.user!.setBannerPicture(url);
+        HiveController.storeImage("${widget.user!.userUID}/banner.jpeg", file);
+        HiveController.retrieveImage("${widget.user!.userUID}/banner.jpeg")
+            .then((value) {
+          setState(() {
+            bannerImageDecode = BoxDecoration(
+              image: DecorationImage(
+                image: Image.memory(value).image,
+                fit: BoxFit.fill,
+              ),
+            );
+          });
+        });
+      }
     }
   }
 
@@ -120,11 +168,38 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   void initState() {
     super.initState();
-    nameController.text = widget.user.getName;
-    lastNameController.text = widget.user.getlastName;
-    linkedInProfileController.text = widget.user.getLinkedInProfile;
-    bannerPicUrl = widget.user.getBannerPicURL;
-    profilePicUrl = widget.user.getProfilePicURL;
+    nameController.text = widget.user!.getName;
+    lastNameController.text = widget.user!.getlastName;
+    linkedInProfileController.text = widget.user!.getLinkedInProfile;
+    bannerPicUrl = widget.user!.getBannerPicURL;
+    profilePicUrl = widget.user!.getProfilePicURL;
+
+    if (widget.user!.bannerPicURL != "") {
+      HiveController.retrieveImage("${widget.user!.userUID}/banner.jpeg")
+          .then((value) {
+        setState(() {
+          bannerImageDecode = value.isEmpty
+              ? null
+              : BoxDecoration(
+                  image: DecorationImage(
+                    image: Image.memory(value).image,
+                    fit: BoxFit.fill,
+                  ),
+                );
+        });
+      });
+    }
+
+    if (widget.user!.profilePicUrl != "") {
+      HiveController.retrieveImage("${widget.user!.userUID}/profile.jpeg")
+          .then((value) {
+        setState(() {
+          profileImageDecode = value.isEmpty
+              ? Image.asset("assets/icons/blank.png")
+              : Image.memory(value);
+        });
+      });
+    }
   }
 
   @override
@@ -154,15 +229,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
             color: const Color(0xFF3D5AF1),
             icon: const Icon(Icons.check),
             onPressed: () async {
-              if (nameController.text != widget.user.getName) {
-                await widget.user.setName(nameController.text);
+              if (nameController.text != widget.user!.getName) {
+                await widget.user!.setName(nameController.text);
               }
-              if (lastNameController.text != widget.user.getlastName) {
-                await widget.user.setLastName(lastNameController.text);
+              if (lastNameController.text != widget.user!.getlastName) {
+                await widget.user!.setLastName(lastNameController.text);
               }
               if (linkedInProfileController.text !=
-                  widget.user.getLinkedInProfile) {
-                await widget.user
+                  widget.user!.getLinkedInProfile) {
+                await widget.user!
                     .setLinkedInProfile(linkedInProfileController.text);
               }
               Navigator.push(
@@ -170,7 +245,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 PageRouteBuilder(
                   pageBuilder: (context, animation, secondaryAnimation) =>
                       MainProfilePage(
-                    user: widget.user,
+                    user: widget.user!,
                   ),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
@@ -224,14 +299,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     Container(
                       height: 0.183.sh,
                       width: 0.8.sw,
-                      decoration: bannerPicUrl.isEmpty
-                          ? null
-                          : BoxDecoration(
-                              image: DecorationImage(
-                                image: NetworkImage(bannerPicUrl),
-                                fit: BoxFit.fill,
-                              ),
-                            ),
+                      decoration: bannerImageDecode,
                       child: Center(
                         child: Container(
                           width: 0.8.sw,
@@ -256,9 +324,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       backgroundColor: const Color(0xFF3D5AF1),
                       radius: 50,
                       child: CircleAvatar(
-                        backgroundImage: profilePicUrl.isEmpty
-                            ? null
-                            : NetworkImage(profilePicUrl),
+                        backgroundImage: profileImageDecode.image,
                         radius: 48,
                         child: Container(
                           height: 100,

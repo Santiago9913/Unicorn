@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_performance/firebase_performance.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:unicorn/models/page.dart';
 import 'package:unicorn/models/post.dart';
 import 'package:unicorn/models/user.dart';
 
@@ -69,6 +70,35 @@ class FirebaseStorageController {
     return url;
   }
 
+  static Future<void> uploadPageAndImages(UserPage page, File profilePicFile,
+      File bannerPicFile, String uid) async {
+    String id = await uploadPage(page, uid);
+    String profileURL = "";
+    String bannerURL = "";
+    String urlToUpload = "pages/$uid/$id/";
+
+    try {
+      await _storage.ref("${urlToUpload}profile.jpeg").putFile(profilePicFile);
+      await _storage.ref("${urlToUpload}banner.jpeg").putFile(bannerPicFile);
+      profileURL =
+          await _storage.ref("${urlToUpload}profile.jpeg").getDownloadURL();
+
+      bannerURL =
+          await _storage.ref("${urlToUpload}banner.jpeg").getDownloadURL();
+
+      await updatePage(id, {
+        "bannerPicURL": bannerURL,
+        "profilePicUrl": profileURL,
+      });
+
+      await _db.collection("users").doc(uid).update({
+        "pages": FieldValue.arrayUnion([id])
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
   //User Controllers
 
   static Future<void> uploadUser(User user) async {
@@ -106,8 +136,20 @@ class FirebaseStorageController {
         .get();
   }
 
-  //Posts controllers
+  //Pages controllers
+  static Future<String> uploadPage(UserPage page, String ownerUID) async {
+    DocumentReference uploaded =
+        await _db.collection("pages").add(page.toJSON());
+    DocumentSnapshot snapshot = await uploaded.get();
+    return snapshot.reference.id;
+  }
 
+  static Future<void> updatePage(
+      String id, Map<String, dynamic> newInfo) async {
+    await _db.collection("pages").doc(id).update(newInfo);
+  }
+
+  //Posts controllers
   static Future<String> uploadPost(Post post) async {
     DocumentReference uploaded =
         await _db.collection("posts").add(post.toJSON());

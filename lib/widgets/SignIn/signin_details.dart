@@ -86,7 +86,34 @@ class _SignInPageState extends State<SignInPage> {
       profilePicUrl: val["profilePicUrl"],
       linkedInProfile: val['linkedInProfile'],
       interests: val['interests'],
+      created: (val['created'] as Timestamp).toDate(),
     );
+  }
+
+  bool timePassed(DateTime created) {
+    DateTime now = DateTime.now();
+    bool correct = false;
+    if(created.year - now.year != 0)
+    {
+      correct = true;
+    }
+    if(created.month - now.month != 0)
+    {
+      correct = true;
+    }
+    if(created.day - now.day != 0)
+    {
+      correct = true;
+    }
+    if(created.hour - now.hour != 0)
+    {
+      correct = true;
+    }
+    if(now.minute - created.minute > 5)
+    {
+      correct = true;
+    }
+    return correct;
   }
 
   @override
@@ -177,6 +204,7 @@ class _SignInPageState extends State<SignInPage> {
                               await trace.stop();
                               await createUser();
                               bool answered = await getSurveyFromDataBase();
+                              bool time = timePassed(user.created);
                               if (userSignedIn) {
                                 bool locationGranted =
                                     await Permission.location.status.isGranted;
@@ -213,13 +241,28 @@ class _SignInPageState extends State<SignInPage> {
                                         ),
                                         (route) => false,
                                       )
-                                    : Navigator.push(
+                                    : time
+                                    ? Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
                                               Survey(user: user),
                                         ),
-                                      );
+                                      ):  Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => HomeScreen(
+                                      user: user,
+                                      locationAccess: locationGranted,
+                                      location:
+                                      location != "" ? country : null,
+                                      totalPages: location != ""
+                                          ? totalPages
+                                          : null,
+                                    ),
+                                  ),
+                                      (route) => false,
+                                );
                               }
                             } on FirebaseAuthException catch (e) {
                               if (e.code == "user-not-found") {
@@ -257,4 +300,6 @@ class _SignInPageState extends State<SignInPage> {
       ),
     );
   }
+
+
 }

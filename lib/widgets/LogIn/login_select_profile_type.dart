@@ -62,6 +62,8 @@ class _SelectProfileTypeState extends State<SelectProfileType> {
   }
 
   void createUser() {
+    DateTime now = DateTime.now();
+    DateTime date = DateTime(now.year, now.month, now.day, now.hour, now.minute);
     user = User(
         name: widget.firstName,
         lastName: widget.lastName,
@@ -69,7 +71,9 @@ class _SelectProfileTypeState extends State<SelectProfileType> {
         type: type,
         email: widget.email,
         bannerPicURL: "",
-        profilePicUrl: "");
+        profilePicUrl: "",
+        created: date,
+    );
   }
 
   @override

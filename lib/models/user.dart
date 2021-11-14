@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:unicorn/controllers/firebase_storage_controller.dart';
 
 class User {
@@ -11,6 +12,8 @@ class User {
   String linkedInProfile;
   List<dynamic> interests;
   List<String> posts;
+  DateTime created;
+  List<String> pages;
 
   User({
     required this.name,
@@ -23,6 +26,8 @@ class User {
     this.linkedInProfile = "",
     this.interests = const <String>[],
     this.posts = const <String>[],
+    required this.created,
+    this.pages = const <String>[],
   });
 
   String get getName {
@@ -58,6 +63,10 @@ class User {
   }
 
   List<String> get getPosts {
+    return posts;
+  }
+
+  List<String> get getPages {
     return posts;
   }
 
@@ -113,7 +122,9 @@ class User {
         'profilePicUrl': '',
         'linkedInProfile': '',
         'interests': interests,
-        'posts': posts
+        'posts': posts,
+        'created': created,
+        "pages" : pages
       };
 
   static User fromJson(Map<String, dynamic> map, String uid) {
@@ -127,6 +138,10 @@ class User {
       profilePicUrl: map["profilePicUrl"] ?? "",
       linkedInProfile: map['linkedInProfile'] ?? "",
       interests: map['interests'],
+      created: map['created'] != null
+          ? (map['created'] as Timestamp).toDate()
+          : DateTime(DateTime.now().year),
+      pages: map["pages"] ?? [],
     );
   }
 }
