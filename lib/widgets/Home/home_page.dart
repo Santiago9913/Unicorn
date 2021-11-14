@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:unicorn/models/user.dart';
 import 'package:unicorn/widgets/Home/home_place_holder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:unicorn/widgets/Pages/create_page.dart';
 import 'package:unicorn/widgets/Search/search_view.dart';
 import 'package:unicorn/widgets/post/post_create_view.dart';
 import 'package:unicorn/widgets/post/post_main_widget.dart';
