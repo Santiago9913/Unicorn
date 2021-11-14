@@ -455,7 +455,7 @@ class _HomeScreenState extends State<HomeScreen> {
         var mStartups = trends[i].startups.toString();
         var mItem = Card(
             elevation: 4,
-            margin: EdgeInsets.fromLTRB(0, 7, 0, 7),
+            margin: const EdgeInsets.fromLTRB(0, 7, 0, 7),
             child: Padding(
                 padding: const EdgeInsets.all(14),
                 child: Wrap(
@@ -464,7 +464,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Text(
                         'Trend: ' + mName,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16.0,
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
@@ -493,7 +493,7 @@ class _HomeScreenState extends State<HomeScreen> {
         var mStartups = industries[i].startups.toString();
         var mItem = Card(
             elevation: 4,
-            margin: EdgeInsets.fromLTRB(14, 7, 14, 7),
+            margin: const EdgeInsets.fromLTRB(14, 7, 14, 7),
             child: Padding(
                 padding: const EdgeInsets.all(14),
                 child: Wrap(
@@ -502,7 +502,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Text(
                         'Industry: ' + mName,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16.0,
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
