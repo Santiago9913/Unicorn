@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:unicorn/api/api.dart';
 import 'package:unicorn/models/user.dart';
 import 'package:unicorn/widgets/Home/home_place_holder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -37,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   
 
-  Api mApi = new Api();
+  Api mApi = Api();
   List<DropdownMenuItem<String>> countriesListMenu = <DropdownMenuItem<String>>[];
   List<Widget> inversionsChildrenList = <Widget>[];
   List<Widget> trendsChildrenList = <Widget>[];

@@ -46,7 +46,7 @@ class _UnicornState extends State<Unicorn> {
         if (snapshot.connectionState == ConnectionState.done) {
           return ScreenUtilInit(
             builder: () => const MaterialApp(
-              home: ContactPage(),
+              home: MainPage(),
               debugShowCheckedModeBanner: false,
             ),
           );

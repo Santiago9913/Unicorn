@@ -86,7 +86,7 @@ class _SignInPageState extends State<SignInPage> {
       profilePicUrl: val["profilePicUrl"],
       linkedInProfile: val['linkedInProfile'],
       interests: val['interests'],
-      created: val['created']
+      created: (val['created'] as Timestamp).toDate(),
     );
   }
 
