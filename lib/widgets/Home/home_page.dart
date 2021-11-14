@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:unicorn/api/api.dart';
@@ -139,7 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                         child: CircleAvatar(
                           backgroundImage:
-                              NetworkImage(widget.user.getProfilePicURL),
+                              CachedNetworkImageProvider(widget.user.getProfilePicURL),
                           radius: 16,
                         ),
                       ),
@@ -364,7 +365,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         onChanged: (String? newValue){
                           loadTrend(newValue!);
                           setState(() {
-                            selectedValueTrends = newValue!;
+                            selectedValueTrends = newValue;
                           });
                         },
                       ),

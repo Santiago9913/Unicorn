@@ -1,6 +1,9 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:unicorn/controllers/hive_controller.dart';
 import 'package:unicorn/models/user.dart';
 import 'package:unicorn/widgets/Home/home_page.dart';
 import 'package:unicorn/widgets/profile/display_card.dart';
@@ -23,12 +26,45 @@ class _MainProfilePageState extends State<MainProfilePage> {
   String bannerPicUrl = "";
   String profilePicUrl = "";
 
+  BoxDecoration? bannerImageDecode = const BoxDecoration();
+  Widget profileImageDecode = const Icon(
+    Icons.person,
+    color: Colors.black,
+  );
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     bannerPicUrl = widget.user.getBannerPicURL;
     profilePicUrl = widget.user.getProfilePicURL;
+
+    HiveController.retrieveImage("banner.jpeg").then((value) {
+      setState(() {
+        bannerImageDecode = value.isEmpty
+            ? null
+            : BoxDecoration(
+                image: DecorationImage(
+                  image: Image.memory(value).image,
+                  fit: BoxFit.fill,
+                ),
+              );
+      });
+    });
+
+    HiveController.retrieveImage("profile.jpeg").then((value) {
+      setState(() {
+        profileImageDecode = value.isEmpty
+            ? const Icon(
+                Icons.person,
+                color: Colors.black,
+              )
+            : CircleAvatar(
+                backgroundImage: Image.memory(value).image,
+                radius: 38,
+              );
+      });
+    });
   }
 
   @override
@@ -83,14 +119,7 @@ class _MainProfilePageState extends State<MainProfilePage> {
                     ),
                     flexibleSpace: Container(
                       height: 0.183.sh,
-                      decoration: bannerPicUrl.isEmpty
-                          ? null
-                          : BoxDecoration(
-                              image: DecorationImage(
-                                image: NetworkImage(bannerPicUrl),
-                                fit: BoxFit.fill,
-                              ),
-                            ),
+                      decoration: bannerImageDecode,
                     ),
                     elevation: 0,
                     toolbarHeight: 0.15.sh,
@@ -102,15 +131,7 @@ class _MainProfilePageState extends State<MainProfilePage> {
                       child: CircleAvatar(
                         backgroundColor: Colors.white,
                         radius: 40,
-                        child: profilePicUrl.isEmpty
-                            ? const Icon(
-                                Icons.person,
-                                color: Colors.black,
-                              )
-                            : CircleAvatar(
-                                backgroundImage: NetworkImage(profilePicUrl),
-                                radius: 38,
-                              ),
+                        child: profileImageDecode,
                       ),
                     ),
                   ),
@@ -164,7 +185,8 @@ class _MainProfilePageState extends State<MainProfilePage> {
                                         const end = Offset.zero;
                                         const curve = Curves.ease;
 
-                                        var tween = Tween(begin: begin, end: end)
+                                        var tween = Tween(
+                                                begin: begin, end: end)
                                             .chain(CurveTween(curve: curve));
 
                                         return SlideTransition(
@@ -244,7 +266,8 @@ class _MainProfilePageState extends State<MainProfilePage> {
                                 child: Padding(
                                   padding: const EdgeInsets.only(left: 5),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       const CustomDisplayInfoCard(
@@ -255,8 +278,8 @@ class _MainProfilePageState extends State<MainProfilePage> {
                                       widget.user.getLinkedInProfile.isNotEmpty
                                           ? CustomDisplayInfoCard(
                                               title: "LinkedIn Profile",
-                                              info:
-                                                  widget.user.getLinkedInProfile,
+                                              info: widget
+                                                  .user.getLinkedInProfile,
                                               isLink: true,
                                             )
                                           : const Text(""),

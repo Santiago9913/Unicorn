@@ -11,6 +11,7 @@ class FirebaseStorageController {
   static final FirebaseStorage _storage = FirebaseStorage.instance;
   static final FirebaseFirestore _db = FirebaseFirestore.instance;
 
+
   static Future<String> uploadImageToStorage(
       String storagePath, String filePath, String fileName, String uid) async {
     File file = File(filePath);

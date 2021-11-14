@@ -128,7 +128,7 @@ class _SearchPageState extends State<SearchPage> {
               return Container(
                 child: const Center(
                   child: Text(
-                      "No Connection, please check your internet connection"),
+                      "Ups, no information could be found"),
                 ),
               );
               ;

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:unicorn/controllers/firebase_storage_controller.dart';
 
 class User {
@@ -13,20 +14,18 @@ class User {
   List<String> posts;
   DateTime created;
 
-
-  User({
-    required this.name,
-    required this.lastName,
-    required this.userUID,
-    required this.type,
-    required this.email,
-    required this.bannerPicURL,
-    required this.profilePicUrl,
-    this.linkedInProfile = "",
-    this.interests = const <String>[],
-    this.posts = const <String>[],
-    required this.created
-  });
+  User(
+      {required this.name,
+      required this.lastName,
+      required this.userUID,
+      required this.type,
+      required this.email,
+      required this.bannerPicURL,
+      required this.profilePicUrl,
+      this.linkedInProfile = "",
+      this.interests = const <String>[],
+      this.posts = const <String>[],
+      required this.created});
 
   String get getName {
     return name;
@@ -131,7 +130,9 @@ class User {
       profilePicUrl: map["profilePicUrl"] ?? "",
       linkedInProfile: map['linkedInProfile'] ?? "",
       interests: map['interests'],
-      created: map['created'] ?? DateTime(DateTime.now().year),
+      created: map['created'] != null
+          ? (map['created'] as Timestamp).toDate()
+          : DateTime(DateTime.now().year),
     );
   }
 }
