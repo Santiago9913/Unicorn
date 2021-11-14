@@ -2,17 +2,16 @@ import 'dart:io';
 
 import 'package:device_info/device_info.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-
-//import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:unicorn/controllers/firebase_storage_controller.dart';
+import 'package:unicorn/models/page.dart';
 import 'package:unicorn/models/user.dart';
+import 'package:unicorn/widgets/Home/home_page.dart';
 import 'package:unicorn/widgets/profile/main_profile_page.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 import '../custom_input_text.dart';
 
@@ -27,12 +26,6 @@ class CreatePage extends StatefulWidget {
 
 class _CreatePageState extends State<CreatePage> {
   String name = "";
-
-  //String secondName = "";
-  //String email = "";
-  //String password = "";
-  String uid = "";
-  late AndroidDeviceInfo androidInfo;
   String error = "";
   String dropdownValue = 'Colombia';
   String dropdownValue1 = '1';
@@ -44,7 +37,9 @@ class _CreatePageState extends State<CreatePage> {
   String dropdownValue7 = 'Bank funding';
 
   String bannerPicUrl = "";
+  late File bannerPicFile;
   String profilePicUrl = "";
+  late File profilePicFile;
 
   final ImagePicker _picker = ImagePicker();
 
@@ -53,113 +48,90 @@ class _CreatePageState extends State<CreatePage> {
 
   TextEditingController nameController = TextEditingController();
 
-  //TextEditingController secondNameController = TextEditingController();
-  //TextEditingController emailController = TextEditingController();
-  //TextEditingController passwordController = TextEditingController();
-
-
-  var fields = {"name": 0, "secondName": 0, "email": 0, "password": 0};
-
   final FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics();
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 
-  void noEmptyFields() {
-    int sum = 0;
-    for (int v in fields.values) {
-      sum += v;
-    }
-
-    if (sum == 4 && enable == false) {
-      setState(() {
-        enable = !enable;
-      });
-    } else if (sum != 4 && enable == true) {
-      setState(() {
-        enable = !enable;
-      });
-    }
-  }
-
-  void checkOrder(){
-
+  void checkOrder() {
     enable = true;
 
-    if(dropdownValue1 == dropdownValue2)
-      {
-        enable = false;
-      }
-    if(dropdownValue1 == dropdownValue3)
-    {
+    if (dropdownValue1 == dropdownValue2) {
       enable = false;
     }
-    if(dropdownValue1 == dropdownValue4)
-    {
+    if (dropdownValue1 == dropdownValue3) {
       enable = false;
     }
-    if(dropdownValue1 == dropdownValue5)
-    {
+    if (dropdownValue1 == dropdownValue4) {
       enable = false;
     }
-    if(dropdownValue1 == dropdownValue6)
-    {
+    if (dropdownValue1 == dropdownValue5) {
       enable = false;
     }
-    if(dropdownValue2 == dropdownValue3)
-    {
+    if (dropdownValue1 == dropdownValue6) {
       enable = false;
     }
-    if(dropdownValue2 == dropdownValue4)
-    {
+    if (dropdownValue2 == dropdownValue3) {
       enable = false;
     }
-    if(dropdownValue2 == dropdownValue5)
-    {
+    if (dropdownValue2 == dropdownValue4) {
       enable = false;
     }
-    if(dropdownValue2 == dropdownValue6)
-    {
+    if (dropdownValue2 == dropdownValue5) {
       enable = false;
     }
-    if(dropdownValue3 == dropdownValue4)
-    {
+    if (dropdownValue2 == dropdownValue6) {
       enable = false;
     }
-    if(dropdownValue3 == dropdownValue5)
-    {
+    if (dropdownValue3 == dropdownValue4) {
       enable = false;
     }
-    if(dropdownValue3 == dropdownValue6)
-    {
+    if (dropdownValue3 == dropdownValue5) {
       enable = false;
     }
-    if(dropdownValue4 == dropdownValue5)
-    {
+    if (dropdownValue3 == dropdownValue6) {
       enable = false;
     }
-    if(dropdownValue4 == dropdownValue6)
-    {
+    if (dropdownValue4 == dropdownValue5) {
       enable = false;
     }
-    if(dropdownValue5 == dropdownValue6)
-    {
+    if (dropdownValue4 == dropdownValue6) {
       enable = false;
     }
-
+    if (dropdownValue5 == dropdownValue6) {
+      enable = false;
+    }
   }
 
-  Future<AndroidDeviceInfo> getAndroidInfo(DeviceInfoPlugin device) async {
-    AndroidDeviceInfo aDevice = await device.androidInfo;
-    return aDevice;
+  Future<void> uploadPage() async {
+    Map<String, int> pref = {
+      "Bank Funding": int.parse(dropdownValue1),
+      "Business Angel": int.parse(dropdownValue2),
+      "Venture Capital": int.parse(dropdownValue3),
+      "Goverment": int.parse(dropdownValue4),
+      "Funding": int.parse(dropdownValue5),
+      "Crowdfunding": int.parse(dropdownValue6),
+    };
+
+    UserPage page = UserPage(
+      name: nameController.text,
+      country: dropdownValue,
+      ownerUID: widget.user.userUID,
+      preferences: pref,
+      preferredFinancial: dropdownValue7,
+      useICO: _checked,
+      type: widget.user.type == "Entrepreneur" ? "Startup" : "VC",
+    );
+
+    try {
+      await FirebaseStorageController.uploadPageAndImages(
+        page,
+        profilePicFile,
+        bannerPicFile,
+        widget.user.userUID,
+      );
+    } catch (e) {
+      print(e.toString());
+    }
   }
-
-  //createUserWithEmailAndPassword() async {
-  // try {
-  //Future<UserCredential> userCredential = FirebaseAuth.instance
-  //.createUserWithEmailAndPassword(email: email, password: password);
-
-  //UserCredential credentilas = await userCredential;
-//uid = credentilas.user!.uid;
-  //}
 
   _imgFromCamera(String name) async {
     // var status = await Permission.camera.status;
@@ -173,20 +145,14 @@ class _CreatePageState extends State<CreatePage> {
         await _picker.pickImage(source: ImageSource.camera, imageQuality: 50);
 
     if (image != null) {
-      String storagePath = 'users/${widget.user.getUserUID}';
-      String filePath = image.path;
-      String fileName = name;
-
-      String url = ""; //await FirebaseStorageController.uploadImageToStorage(
-      //storagePath, filePath, fileName);
-
+      File file = File(image.path);
       setState(() {
         if (name == 'profile') {
-          profilePicUrl = url;
-          widget.user.setProfilePicture(url);
+          profilePicFile = file;
+          profilePicUrl = file.path;
         } else if (name == 'banner') {
-          bannerPicUrl = url;
-          widget.user.setBannerPicture(url);
+          bannerPicFile = file;
+          bannerPicUrl = file.path;
         }
       });
     }
@@ -198,20 +164,14 @@ class _CreatePageState extends State<CreatePage> {
         await _picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
 
     if (image != null) {
-      String storagePath = 'users/${widget.user.getUserUID}';
-      String filePath = image.path;
-      String fileName = name;
-
-      String url = ""; //await FirebaseStorageController.uploadImageToStorage(
-      //storagePath, filePath, fileName);
-
+      File file = File(image.path);
       setState(() {
         if (name == 'profile') {
-          profilePicUrl = url;
-          widget.user.setProfilePicture(url);
+          profilePicFile = file;
+          profilePicUrl = file.path;
         } else if (name == 'banner') {
-          bannerPicUrl = url;
-          widget.user.setBannerPicture(url);
+          bannerPicFile = file;
+          bannerPicUrl = file.path;
         }
       });
     }
@@ -249,19 +209,8 @@ class _CreatePageState extends State<CreatePage> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    nameController.text = widget.user.getName;
-    bannerPicUrl = widget.user.getBannerPicURL;
-    profilePicUrl = widget.user.getProfilePicURL;
-  }
-
-  @override
   void dispose() {
     nameController.dispose();
-    //secondNameController.dispose();
-    //emailController.dispose();
-    //passwordController.dispose();
     super.dispose();
   }
 
@@ -270,6 +219,10 @@ class _CreatePageState extends State<CreatePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: Colors.white,
+          statusBarIconBrightness: Brightness.dark,
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
@@ -307,12 +260,6 @@ class _CreatePageState extends State<CreatePage> {
                   textController: nameController,
                   getText: (val) {
                     name = val;
-                    if (name != "") {
-                      fields["name"] = 1;
-                    } else {
-                      fields["name"] = 0;
-                    }
-                    noEmptyFields();
                   },
                 ),
                 Container(
@@ -395,7 +342,7 @@ class _CreatePageState extends State<CreatePage> {
                               ? null
                               : BoxDecoration(
                                   image: DecorationImage(
-                                    image: NetworkImage(bannerPicUrl),
+                                    image: Image.file(bannerPicFile).image,
                                     fit: BoxFit.fill,
                                   ),
                                 ),
@@ -437,7 +384,7 @@ class _CreatePageState extends State<CreatePage> {
                           child: CircleAvatar(
                             backgroundImage: profilePicUrl.isEmpty
                                 ? null
-                                : NetworkImage(profilePicUrl),
+                                : Image.file(profilePicFile).image,
                             radius: 48,
                             child: Container(
                               height: 100,
@@ -461,7 +408,7 @@ class _CreatePageState extends State<CreatePage> {
                     Padding(
                       padding: const EdgeInsets.only(top: 40),
                       child: CheckboxListTile(
-                        title: Text(
+                        title: const Text(
                           "Is your startup using international funding resources (ICO)?",
                           style: TextStyle(
                             fontFamily: "Geometric Sans-Serif",
@@ -865,17 +812,17 @@ class _CreatePageState extends State<CreatePage> {
                                 borderRadius: BorderRadius.circular(15),
                               ),
                               onSurface: const Color(0xFF3D5AF1)),
-                          onPressed: enable ? ()  {
-                            Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => MainProfilePage(
-                                    user: widget.user,
-                                  ),
-                                ),
-                                (route) => false);
-
-                          } : null ),
+                          onPressed: enable
+                              ? () async {
+                                  await uploadPage();
+                                  Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              HomeScreen(user: widget.user)),
+                                      (route) => false);
+                                }
+                              : null),
                     ),
                   ],
                 ),
