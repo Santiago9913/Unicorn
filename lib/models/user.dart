@@ -14,6 +14,8 @@ class User {
   List<String> posts;
   DateTime created;
   List<String> pages;
+  int numContacts;
+  int numPosts;
 
   User({
     required this.name,
@@ -28,6 +30,8 @@ class User {
     this.posts = const <String>[],
     required this.created,
     this.pages = const <String>[],
+    this.numContacts = 0,
+    this.numPosts = 0,
   });
 
   String get getName {
@@ -68,6 +72,14 @@ class User {
 
   List<String> get getPages {
     return posts;
+  }
+
+  int get getNumPosts {
+    return numPosts;
+  }
+
+  int get getNumContacts {
+    return numContacts;
   }
 
   void setProfilePicture(String url) {
@@ -124,7 +136,9 @@ class User {
         'interests': interests,
         'posts': posts,
         'created': created,
-        "pages" : pages
+        "pages": pages,
+        "numContacts": numContacts,
+        "numPosts": numPosts,
       };
 
   static User fromJson(Map<String, dynamic> map, String uid) {
@@ -142,6 +156,9 @@ class User {
           ? (map['created'] as Timestamp).toDate()
           : DateTime(DateTime.now().year),
       pages: map["pages"] ?? [],
+      posts: map["posts"] ?? [],
+      numContacts: map["numContacts"] ?? 0,
+      numPosts: map["numPosts"] ?? 0,
     );
   }
 }
