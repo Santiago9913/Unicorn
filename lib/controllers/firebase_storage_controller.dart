@@ -86,9 +86,13 @@ class FirebaseStorageController {
       bannerURL =
           await _storage.ref("${urlToUpload}banner.jpeg").getDownloadURL();
 
-      await updatePost(id, {
+      await updatePage(id, {
         "bannerPicURL": bannerURL,
         "profilePicUrl": profileURL,
+      });
+
+      await _db.collection("users").doc(uid).update({
+        "pages": FieldValue.arrayUnion([id])
       });
     } catch (e) {
       print(e.toString());
