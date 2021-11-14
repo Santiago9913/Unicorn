@@ -16,7 +16,7 @@ class EditProfilePage extends StatefulWidget {
     required this.user,
   }) : super(key: key);
 
-  final User? user;
+  final User user;
 
   @override
   _EditProfilePageState createState() => _EditProfilePageState();
@@ -47,21 +47,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
         await _picker.pickImage(source: ImageSource.camera, imageQuality: 50);
 
     if (image != null) {
-      String storagePath = 'users/${widget.user!.getUserUID}';
+      String storagePath = 'users/${widget.user.getUserUID}';
       String filePath = image.path;
       File file = File(image.path);
       String fileName = name;
 
       String url = await FirebaseStorageController.uploadImageToStorage(
-          storagePath, filePath, fileName, widget.user!.userUID);
+          storagePath, filePath, fileName, widget.user.userUID);
 
       setState(() {
         if (name == 'profile') {
           profilePicUrl = url;
-          widget.user!.setProfilePicture(url);
+          widget.user.setProfilePicture(url);
           HiveController.storeImage(
-              "${widget.user!.userUID}/profile.jpeg", file);
-          HiveController.retrieveImage("${widget.user!.userUID}/profile.jpeg")
+              "${widget.user.userUID}/profile.jpeg", file);
+          HiveController.retrieveImage("${widget.user.userUID}/profile.jpeg")
               .then((value) {
             setState(() {
               profileImageDecode = value.isEmpty
@@ -71,9 +71,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
           });
         } else if (name == 'banner') {
           bannerPicUrl = url;
-          widget.user!.setBannerPicture(url);
-          HiveController.storeImage("${widget.user!.userUID}/banner.jpeg", file);
-          HiveController.retrieveImage("${widget.user!.userUID}/banner.jpeg")
+          widget.user.setBannerPicture(url);
+          HiveController.storeImage("${widget.user.userUID}/banner.jpeg", file);
+          HiveController.retrieveImage("${widget.user.userUID}/banner.jpeg")
               .then((value) {
             setState(() {
               bannerImageDecode = BoxDecoration(
@@ -95,19 +95,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
         await _picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
 
     if (image != null) {
-      String storagePath = 'users/${widget.user!.getUserUID}';
+      String storagePath = 'users/${widget.user.getUserUID}';
       File file = File(image.path);
       String filePath = image.path;
       String fileName = name;
 
       String url = await FirebaseStorageController.uploadImageToStorage(
-          storagePath, filePath, fileName, widget.user!.userUID);
+          storagePath, filePath, fileName, widget.user.userUID);
 
       if (name == 'profile') {
         profilePicUrl = url;
-        widget.user!.setProfilePicture(url);
-        HiveController.storeImage("${widget.user!.userUID}/profile.jpeg", file);
-        HiveController.retrieveImage("${widget.user!.userUID}/profile.jpeg")
+        widget.user.setProfilePicture(url);
+        HiveController.storeImage("${widget.user.userUID}/profile.jpeg", file);
+        HiveController.retrieveImage("${widget.user.userUID}/profile.jpeg")
             .then((value) {
           setState(() {
             profileImageDecode = value.isEmpty
@@ -117,9 +117,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
         });
       } else if (name == 'banner') {
         bannerPicUrl = url;
-        widget.user!.setBannerPicture(url);
-        HiveController.storeImage("${widget.user!.userUID}/banner.jpeg", file);
-        HiveController.retrieveImage("${widget.user!.userUID}/banner.jpeg")
+        widget.user.setBannerPicture(url);
+        HiveController.storeImage("${widget.user.userUID}/banner.jpeg", file);
+        HiveController.retrieveImage("${widget.user.userUID}/banner.jpeg")
             .then((value) {
           setState(() {
             bannerImageDecode = BoxDecoration(
@@ -168,14 +168,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   void initState() {
     super.initState();
-    nameController.text = widget.user!.getName;
-    lastNameController.text = widget.user!.getlastName;
-    linkedInProfileController.text = widget.user!.getLinkedInProfile;
-    bannerPicUrl = widget.user!.getBannerPicURL;
-    profilePicUrl = widget.user!.getProfilePicURL;
+    nameController.text = widget.user.getName;
+    lastNameController.text = widget.user.getlastName;
+    linkedInProfileController.text = widget.user.getLinkedInProfile;
+    bannerPicUrl = widget.user.getBannerPicURL;
+    profilePicUrl = widget.user.getProfilePicURL;
 
-    if (widget.user!.bannerPicURL != "") {
-      HiveController.retrieveImage("${widget.user!.userUID}/banner.jpeg")
+    if (widget.user.bannerPicURL != "") {
+      HiveController.retrieveImage("${widget.user.userUID}/banner.jpeg")
           .then((value) {
         setState(() {
           bannerImageDecode = value.isEmpty
@@ -190,8 +190,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
       });
     }
 
-    if (widget.user!.profilePicUrl != "") {
-      HiveController.retrieveImage("${widget.user!.userUID}/profile.jpeg")
+    if (widget.user.profilePicUrl != "") {
+      HiveController.retrieveImage("${widget.user.userUID}/profile.jpeg")
           .then((value) {
         setState(() {
           profileImageDecode = value.isEmpty
@@ -229,15 +229,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
             color: const Color(0xFF3D5AF1),
             icon: const Icon(Icons.check),
             onPressed: () async {
-              if (nameController.text != widget.user!.getName) {
-                await widget.user!.setName(nameController.text);
+              if (nameController.text != widget.user.getName) {
+                await widget.user.setName(nameController.text);
               }
-              if (lastNameController.text != widget.user!.getlastName) {
-                await widget.user!.setLastName(lastNameController.text);
+              if (lastNameController.text != widget.user.getlastName) {
+                await widget.user.setLastName(lastNameController.text);
               }
               if (linkedInProfileController.text !=
-                  widget.user!.getLinkedInProfile) {
-                await widget.user!
+                  widget.user.getLinkedInProfile) {
+                await widget.user
                     .setLinkedInProfile(linkedInProfileController.text);
               }
               Navigator.push(
@@ -245,7 +245,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 PageRouteBuilder(
                   pageBuilder: (context, animation, secondaryAnimation) =>
                       MainProfilePage(
-                    user: widget.user!,
+                    user: widget.user,
                   ),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {

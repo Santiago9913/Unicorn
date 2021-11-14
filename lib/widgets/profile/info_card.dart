@@ -1,19 +1,27 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:unicorn/controllers/firebase_storage_controller.dart';
+import 'package:unicorn/models/user.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CustomDisplayInfoCard extends StatelessWidget {
-  const CustomDisplayInfoCard({
+  CustomDisplayInfoCard({
     Key? key,
     required this.title,
     required this.info,
     required this.isLink,
+    this.uid,
+    required this.isOwner,
+    this.user,
   }) : super(key: key);
 
   final String title;
   final String info;
   final bool isLink;
+  final String? uid;
+  bool isOwner = false;
+  final User? user;
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +69,12 @@ class CustomDisplayInfoCard extends StatelessWidget {
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () async {
                                   if (await canLaunch(info)) {
+                                    if (isOwner == false) {
+                                      await FirebaseStorageController
+                                          .updateUser(uid!, {
+                                        "numLinkedin": user!.numLinkedin++
+                                      });
+                                    }
                                     await launch(info);
                                   } else {
                                     ScaffoldMessenger.of(context).showSnackBar(

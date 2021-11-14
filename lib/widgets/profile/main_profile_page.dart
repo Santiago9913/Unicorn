@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:unicorn/controllers/hive_controller.dart';
 import 'package:unicorn/models/user.dart';
+import 'package:unicorn/widgets/Contact/contact_page.dart';
 import 'package:unicorn/widgets/Home/home_page.dart';
 import 'package:unicorn/widgets/profile/display_card.dart';
 import 'package:unicorn/widgets/profile/edit_proile_page.dart';
@@ -221,7 +222,7 @@ class _MainProfilePageState extends State<MainProfilePage> {
                                             pageBuilder: (context, animation,
                                                     secondaryAnimation) =>
                                                 EditProfilePage(
-                                              user: widget.userOwner,
+                                              user: widget.user,
                                             ),
                                             transitionsBuilder: (context,
                                                 animation,
@@ -253,7 +254,9 @@ class _MainProfilePageState extends State<MainProfilePage> {
                               margin: EdgeInsets.only(left: 37.w),
                               child: ElevatedButton(
                                 child: Text(
-                                  widget.ownerUID == "" ?  "Promote me" : "Contact me",
+                                  widget.ownerUID == ""
+                                      ? "Promote me"
+                                      : "Contact me",
                                   style: const TextStyle(
                                     fontFamily: "Geometric Sans-Serif",
                                     fontSize: 12,
@@ -271,7 +274,16 @@ class _MainProfilePageState extends State<MainProfilePage> {
                                   ),
                                 ),
                                 onPressed: () {
-                                  print("Promote me");
+                                  widget.ownerUID == ""
+                                      ? print("Promote me")
+                                      : Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => ContactPage(
+                                              user: widget.user,
+                                            ),
+                                          ),
+                                        );
                                 },
                               ),
                             ),
@@ -321,19 +333,35 @@ class _MainProfilePageState extends State<MainProfilePage> {
                                         CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
-                                      const CustomDisplayInfoCard(
+                                      CustomDisplayInfoCard(
                                         title: "Location",
                                         info: "Info",
                                         isLink: false,
+                                        isOwner: false,
                                       ),
-                                      widget.user.getLinkedInProfile.isNotEmpty
-                                          ? CustomDisplayInfoCard(
-                                              title: "LinkedIn Profile",
-                                              info: widget
-                                                  .user.getLinkedInProfile,
-                                              isLink: true,
-                                            )
-                                          : const Text(""),
+                                      widget.ownerUID == ""
+                                          ? widget.user.getLinkedInProfile
+                                                  .isNotEmpty
+                                              ? CustomDisplayInfoCard(
+                                                  title: "LinkedIn Profile",
+                                                  info: widget
+                                                      .user.getLinkedInProfile,
+                                                  isLink: true,
+                                                  isOwner: true,
+                                                )
+                                              : const Text("")
+                                          : widget.user.getLinkedInProfile
+                                                  .isNotEmpty
+                                              ? CustomDisplayInfoCard(
+                                                  title: "LinkedIn Profile",
+                                                  info: widget
+                                                      .user.getLinkedInProfile,
+                                                  isLink: true,
+                                                  isOwner: false,
+                                                  uid: widget.user.userUID,
+                                                  user: widget.user,
+                                                )
+                                              : const Text(""),
                                     ],
                                   ),
                                 ),

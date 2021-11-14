@@ -75,42 +75,39 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   Future<void> createUser() async {
-    Map<dynamic, dynamic> val = await FirebaseStorageController.getUser(uid!);
-    user = user_model.User(
-      name: val["firstName"],
-      lastName: val["lastName"],
-      userUID: uid!,
-      type: val["type"],
-      email: val["email"],
-      bannerPicURL: val["bannerPicUrl"],
-      profilePicUrl: val["profilePicUrl"],
-      linkedInProfile: val['linkedInProfile'],
-      interests: val['interests'],
-      created: (val['created'] as Timestamp).toDate(),
-    );
+    Map<String, dynamic> val = await FirebaseStorageController.getUser(uid!);
+    // user = user_model.User(
+    //   name: val["firstName"],
+    //   lastName: val["lastName"],
+    //   userUID: uid!,
+    //   type: val["type"],
+    //   email: val["email"],
+    //   bannerPicURL: val["bannerPicUrl"],
+    //   profilePicUrl: val["profilePicUrl"],
+    //   linkedInProfile: val['linkedInProfile'],
+    //   interests: val['interests'],
+    //   created: (val['created'] as Timestamp).toDate(),
+    // );
+
+    user = user_model.User.fromJson(val, uid!);
   }
 
   bool timePassed(DateTime created) {
     DateTime now = DateTime.now();
     bool correct = false;
-    if(created.year - now.year != 0)
-    {
+    if (created.year - now.year != 0) {
       correct = true;
     }
-    if(created.month - now.month != 0)
-    {
+    if (created.month - now.month != 0) {
       correct = true;
     }
-    if(created.day - now.day != 0)
-    {
+    if (created.day - now.day != 0) {
       correct = true;
     }
-    if(created.hour - now.hour != 0)
-    {
+    if (created.hour - now.hour != 0) {
       correct = true;
     }
-    if(now.minute - created.minute > 5)
-    {
+    if (now.minute - created.minute > 5) {
       correct = true;
     }
     return correct;
@@ -242,27 +239,29 @@ class _SignInPageState extends State<SignInPage> {
                                         (route) => false,
                                       )
                                     : time
-                                    ? Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              Survey(user: user),
-                                        ),
-                                      ):  Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => HomeScreen(
-                                      user: user,
-                                      locationAccess: locationGranted,
-                                      location:
-                                      location != "" ? country : null,
-                                      totalPages: location != ""
-                                          ? totalPages
-                                          : null,
-                                    ),
-                                  ),
-                                      (route) => false,
-                                );
+                                        ? Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  Survey(user: user),
+                                            ),
+                                          )
+                                        : Navigator.pushAndRemoveUntil(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => HomeScreen(
+                                                user: user,
+                                                locationAccess: locationGranted,
+                                                location: location != ""
+                                                    ? country
+                                                    : null,
+                                                totalPages: location != ""
+                                                    ? totalPages
+                                                    : null,
+                                              ),
+                                            ),
+                                            (route) => false,
+                                          );
                               }
                             } on FirebaseAuthException catch (e) {
                               if (e.code == "user-not-found") {
@@ -300,6 +299,4 @@ class _SignInPageState extends State<SignInPage> {
       ),
     );
   }
-
-
 }

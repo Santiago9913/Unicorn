@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:unicorn/controllers/firebase_storage_controller.dart';
+import 'package:unicorn/models/user.dart';
 
 class ContactPage extends StatefulWidget {
-  const ContactPage({Key? key}) : super(key: key);
+  const ContactPage({
+    Key? key,
+    required this.user,
+  }) : super(key: key);
+
+  final User user;
 
   @override
   State<ContactPage> createState() => _ContactPageState();
@@ -16,6 +23,7 @@ class _ContactPageState extends State<ContactPage> {
   @override
   void dispose() {
     // TODO: implement dispose
+    super.dispose();
     subjetcController.dispose();
     contentController.dispose();
   }
@@ -40,6 +48,10 @@ class _ContactPageState extends State<ContactPage> {
               FocusNode(),
             );
             print("send");
+            await FirebaseStorageController.updateUser(widget.user.userUID,
+                {"numContacts": widget.user.numContacts++});
+
+            Navigator.of(context).pop();
           },
         ),
         title: const Center(
