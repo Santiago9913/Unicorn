@@ -3,11 +3,12 @@ import 'package:flutter/services.dart';
 import 'package:unicorn/models/user.dart';
 import 'package:unicorn/widgets/Home/home_place_holder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:unicorn/widgets/Pages/create_page.dart';
+import 'package:unicorn/widgets/Search/search_view.dart';
 import 'package:unicorn/widgets/post/post_create_view.dart';
 import 'package:unicorn/widgets/post/post_main_widget.dart';
 import 'package:unicorn/widgets/profile/main_profile_page.dart';
 
-import 'package:unicorn/api/api.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -34,6 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool locationGranted = true;
   String selectedValueTrends = "United States";
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  
 
   Api mApi = new Api();
   List<DropdownMenuItem<String>> countriesListMenu = <DropdownMenuItem<String>>[];
@@ -60,6 +62,12 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     }
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
@@ -147,16 +155,27 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.search,
-                          color: Color.fromRGBO(104, 106, 108, 1)),
+                      const Icon(
+                        Icons.search,
+                        color: Color.fromRGBO(104, 106, 108, 1),
+                      ),
                       Container(
                         margin: const EdgeInsets.only(top: 10),
                         width: 220.0,
                         height: 15,
-                        child: const TextField(
+                        child: TextField(
                           cursorColor: Colors.black,
                           maxLines: 1,
-                          decoration: InputDecoration(
+                          textInputAction: TextInputAction.search,
+                          onSubmitted: (String input) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SearchPage(input: input, user: widget.user,),
+                              ),
+                            );
+                          },
+                          decoration: const InputDecoration(
                             border: InputBorder.none,
                             focusedBorder: InputBorder.none,
                             enabledBorder: InputBorder.none,
@@ -164,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             disabledBorder: InputBorder.none,
                             hintText: 'Search',
                           ),
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Color.fromRGBO(104, 106, 108, 1),
                             decoration: TextDecoration.none,
                           ),
@@ -289,7 +308,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         onPressed: () {
-                          print("Create page");
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CreatePage(
+                                user: widget.user,
+                              ),
+                            ),
+                          );
                         },
                       ),
                     )

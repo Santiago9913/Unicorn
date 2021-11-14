@@ -9,8 +9,10 @@ class User {
   String bannerPicURL;
   String profilePicUrl;
   String linkedInProfile;
-  List<String> interests;
+  List<dynamic> interests;
   List<String> posts;
+  DateTime created;
+
 
   User({
     required this.name,
@@ -23,6 +25,7 @@ class User {
     this.linkedInProfile = "",
     this.interests = const <String>[],
     this.posts = const <String>[],
+    required this.created
   });
 
   String get getName {
@@ -69,7 +72,7 @@ class User {
     bannerPicURL = url;
   }
 
-  void setInterests(List<String> nInterests) {
+  void setInterests(List<dynamic> nInterests) {
     interests = nInterests;
   }
 
@@ -113,6 +116,22 @@ class User {
         'profilePicUrl': '',
         'linkedInProfile': '',
         'interests': interests,
-        'posts': posts
+        'posts': posts,
+        'created': created
       };
+
+  static User fromJson(Map<String, dynamic> map, String uid) {
+    return User(
+      name: map["firstName"],
+      lastName: map["lastName"],
+      userUID: uid,
+      type: map["type"],
+      email: map["email"],
+      bannerPicURL: map["bannerPicUrl"] ?? "",
+      profilePicUrl: map["profilePicUrl"] ?? "",
+      linkedInProfile: map['linkedInProfile'] ?? "",
+      interests: map['interests'],
+      created: map['created']
+    );
+  }
 }
