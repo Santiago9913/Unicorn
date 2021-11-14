@@ -39,32 +39,38 @@ class _MainProfilePageState extends State<MainProfilePage> {
     bannerPicUrl = widget.user.getBannerPicURL;
     profilePicUrl = widget.user.getProfilePicURL;
 
-    HiveController.retrieveImage("banner.jpeg").then((value) {
-      setState(() {
-        bannerImageDecode = value.isEmpty
-            ? null
-            : BoxDecoration(
-                image: DecorationImage(
-                  image: Image.memory(value).image,
-                  fit: BoxFit.fill,
-                ),
-              );
+    if (bannerPicUrl != "") {
+      HiveController.retrieveImage("${widget.user.userUID}/banner.jpeg")
+          .then((value) {
+        setState(() {
+          bannerImageDecode = value.isEmpty
+              ? null
+              : BoxDecoration(
+                  image: DecorationImage(
+                    image: Image.memory(value).image,
+                    fit: BoxFit.fill,
+                  ),
+                );
+        });
       });
-    });
+    }
 
-    HiveController.retrieveImage("profile.jpeg").then((value) {
-      setState(() {
-        profileImageDecode = value.isEmpty
-            ? const Icon(
-                Icons.person,
-                color: Colors.black,
-              )
-            : CircleAvatar(
-                backgroundImage: Image.memory(value).image,
-                radius: 38,
-              );
+    if (profilePicUrl != "") {
+      HiveController.retrieveImage("${widget.user.userUID}/profile.jpeg")
+          .then((value) {
+        setState(() {
+          profileImageDecode = value.isEmpty
+              ? const Icon(
+                  Icons.person,
+                  color: Colors.black,
+                )
+              : CircleAvatar(
+                  backgroundImage: Image.memory(value).image,
+                  radius: 38,
+                );
+        });
       });
-    });
+    }
   }
 
   @override
