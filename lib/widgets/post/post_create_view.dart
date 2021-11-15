@@ -129,6 +129,8 @@ class _CratePostPageState extends State<CratePostPage> {
                 );
               } else {
                 await uploadPost();
+                await FirebaseStorageController.updateUser(
+                    widget.user.userUID, {"numPosts": widget.user.numPosts++});
                 Navigator.of(context).pop();
               }
             },

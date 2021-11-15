@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_performance/firebase_performance.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:unicorn/models/ico.dart';
 import 'package:unicorn/models/page.dart';
 import 'package:unicorn/models/post.dart';
+import 'package:unicorn/models/preferred_founding.dart';
 import 'package:unicorn/models/user.dart';
 
 class FirebaseStorageController {
@@ -86,9 +88,13 @@ class FirebaseStorageController {
       bannerURL =
           await _storage.ref("${urlToUpload}banner.jpeg").getDownloadURL();
 
-      await updatePost(id, {
+      await updatePage(id, {
         "bannerPicURL": bannerURL,
         "profilePicUrl": profileURL,
+      });
+
+      await _db.collection("users").doc(uid).update({
+        "pages": FieldValue.arrayUnion([id])
       });
     } catch (e) {
       print(e.toString());
@@ -192,5 +198,75 @@ class FirebaseStorageController {
     }
 
     return users;
+  }
+
+  static Future<List<ICO>> queryICO() async {
+    List<ICO> results = [];
+    int trueTotal = 0;
+    int falseTotal = 0;
+
+    QuerySnapshot<Map<String, dynamic>> trueICO =
+        await _db.collection("pages").where("useICO", isEqualTo: true).get();
+
+    QuerySnapshot<Map<String, dynamic>> falseICO =
+        await _db.collection("pages").where("useICO", isEqualTo: false).get();
+
+    trueTotal = trueICO.size;
+    falseTotal = falseICO.size;
+
+    results.add(ICO(used: "Use ICO", value: trueTotal));
+    results.add(ICO(used: "No ICO", value: falseTotal));
+
+    return results;
+  }
+
+  static Future<List<PreferredFounding>> queryPreferredFounding() async {
+    List<PreferredFounding> results = [];
+    int bankFunding = 0;
+    int businessAngel = 0;
+    int vc = 0;
+    int govermentFounding = 0;
+    int crowdfounding = 0;
+
+    QuerySnapshot<Map<String, dynamic>> bank = await _db
+        .collection("pages")
+        .where("preferredFinancial", isEqualTo: 'Bank funding')
+        .get();
+
+    QuerySnapshot<Map<String, dynamic>> business = await _db
+        .collection("pages")
+        .where("preferredFinancial", isEqualTo: 'Business angel')
+        .get();
+
+    QuerySnapshot<Map<String, dynamic>> venture = await _db
+        .collection("pages")
+        .where("preferredFinancial", isEqualTo: 'Venture capital')
+        .get();
+
+    QuerySnapshot<Map<String, dynamic>> gov = await _db
+        .collection("pages")
+        .where("preferredFinancial", isEqualTo: 'Government')
+        .get();
+
+    QuerySnapshot<Map<String, dynamic>> crowd = await _db
+        .collection("pages")
+        .where("preferredFinancial", isEqualTo: 'Crowdfunding')
+        .get();
+
+    bankFunding = bank.size;
+    businessAngel = business.size;
+    vc = venture.size;
+    govermentFounding = gov.size;
+    crowdfounding = crowd.size;
+
+    results.add(PreferredFounding(name: 'Bank funding', value: bankFunding));
+    results
+        .add(PreferredFounding(name: 'Business angel', value: businessAngel));
+    results.add(PreferredFounding(name: 'Venture capital', value: vc));
+    results.add(PreferredFounding(
+        name: 'Government funding', value: govermentFounding));
+    results.add(PreferredFounding(name: 'Crowdfunding', value: crowdfounding));
+
+    return results;
   }
 }

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:unicorn/controllers/firebase_storage_controller.dart';
 
 class User {
@@ -10,9 +11,12 @@ class User {
   String profilePicUrl;
   String linkedInProfile;
   List<dynamic> interests;
-  List<String> posts;
+  List<dynamic> posts;
   DateTime created;
-
+  List<dynamic> pages;
+  int numContacts;
+  int numPosts;
+  int numLinkedin;
 
   User({
     required this.name,
@@ -24,8 +28,12 @@ class User {
     required this.profilePicUrl,
     this.linkedInProfile = "",
     this.interests = const <String>[],
-    this.posts = const <String>[],
-    required this.created
+    this.posts = const <dynamic>[],
+    required this.created,
+    this.pages = const <dynamic>[],
+    this.numContacts = 0,
+    this.numPosts = 0,
+    this.numLinkedin = 0,
   });
 
   String get getName {
@@ -60,8 +68,20 @@ class User {
     return linkedInProfile;
   }
 
-  List<String> get getPosts {
+  List<dynamic> get getPosts {
     return posts;
+  }
+
+  List<dynamic> get getPages {
+    return posts;
+  }
+
+  int get getNumPosts {
+    return numPosts;
+  }
+
+  int get getNumContacts {
+    return numContacts;
   }
 
   void setProfilePicture(String url) {
@@ -117,7 +137,11 @@ class User {
         'linkedInProfile': '',
         'interests': interests,
         'posts': posts,
-        'created': created
+        'created': created,
+        "pages": pages,
+        "numContacts": numContacts,
+        "numPosts": numPosts,
+        "numLinkedin" : numLinkedin,
       };
 
   static User fromJson(Map<String, dynamic> map, String uid) {
@@ -131,7 +155,14 @@ class User {
       profilePicUrl: map["profilePicUrl"] ?? "",
       linkedInProfile: map['linkedInProfile'] ?? "",
       interests: map['interests'],
-      created: map['created'] ?? DateTime(DateTime.now().year),
+      created: map['created'] != null
+          ? (map['created'] as Timestamp).toDate()
+          : DateTime(DateTime.now().year),
+      pages: map["pages"] ?? [],
+      posts: map["posts"] ?? [],
+      numContacts: map["numContacts"] ??= 0,
+      numPosts: map["numPosts"] ??= 0,
+      numLinkedin: map["numLinkedin"] ??=0
     );
   }
 }

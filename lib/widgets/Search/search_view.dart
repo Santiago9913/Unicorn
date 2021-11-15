@@ -26,8 +26,8 @@ class _SearchPageState extends State<SearchPage> {
   late List<User> users;
 
   Future<List<User>> getResults() async {
-    List<User> results =
-        await FirebaseStorageController.queryOnUserName(widget.input, widget.user);
+    List<User> results = await FirebaseStorageController.queryOnUserName(
+        widget.input, widget.user);
     users = results;
     return results;
   }
@@ -127,8 +127,7 @@ class _SearchPageState extends State<SearchPage> {
             if (snapshot.hasError) {
               return Container(
                 child: const Center(
-                  child: Text(
-                      "No Connection, please check your internet connection"),
+                  child: Text("Ups, no information could be found"),
                 ),
               );
               ;
@@ -137,8 +136,13 @@ class _SearchPageState extends State<SearchPage> {
               return ListView.builder(
                 itemCount: users.length,
                 itemBuilder: (context, index) {
-                  User user = users[index];
-                  return ResultCard(user: user, imageUrl: user.profilePicUrl);
+                  User userResult = users[index];
+                  return ResultCard(
+                    user: userResult,
+                    imageUrl: userResult.profilePicUrl,
+                    ownerUID: widget.user.userUID,
+                    userOwner: widget.user,
+                  );
                 },
               );
             }
