@@ -85,15 +85,6 @@ class _MainProfilePageState extends State<MainProfilePage> {
       initialIndex: 0,
       length: 3,
       child: Scaffold(
-        floatingActionButton: widget.ownerUID == ""
-            ? FloatingActionButton(
-                onPressed: () {
-                  print("create post");
-                },
-                child: const Icon(Icons.post_add),
-                backgroundColor: const Color(0xFF3D5AF1),
-              )
-            : null,
         resizeToAvoidBottomInset: false,
         body: Container(
           height: 1.sh,
