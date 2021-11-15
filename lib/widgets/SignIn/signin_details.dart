@@ -1,7 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_performance/firebase_performance.dart';
 import "package:flutter/material.dart";
 import "package:flutter_screenutil/flutter_screenutil.dart";
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:unicorn/controllers/firebase_storage_controller.dart';
+import 'package:unicorn/controllers/location_controller.dart';
+import 'package:unicorn/models/user.dart' as user_model;
 import 'package:unicorn/widgets/Home/home_page.dart';
 import 'package:unicorn/widgets/Survey/survey.dart';
 import 'package:unicorn/widgets/custom_input_text.dart';
@@ -18,8 +25,12 @@ class _SignInPageState extends State<SignInPage> {
   String? password;
   String? uid;
   bool userSignedIn = false;
-  final dataBase = FirebaseDatabase.instance.reference();
+
+  final Trace trace = FirebasePerformance.instance.newTrace('signin_trace');
+
   bool answered = false;
+  String error = "";
+  late user_model.User user;
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -35,35 +46,71 @@ class _SignInPageState extends State<SignInPage> {
 
     if (sum == 2 && enable == false) {
       setState(() {
-        enable = !enable;
+        enable = true;
       });
     } else if (sum != 2 && enable == true) {
       setState(() {
-        enable = !enable;
+        enable = false;
       });
     }
   }
 
-  Future<DataSnapshot> getSurveyFromDataBase() async {
-    DataSnapshot sn = await dataBase.child("users/$uid/survey").get();
-    return sn;
+  Future<dynamic> getSurveyFromDataBase() async {
+    dynamic value =
+        await FirebaseStorageController.getFieldInUser(uid!, "survey");
+    if (value == 'survey') {
+      return "";
+    }
+    return value as bool;
   }
 
   Future<void> signInWithEmailAndPassword() async {
-    try {
-      Future<UserCredential> userCredential = FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email!, password: password!);
+    email = email!.replaceAll(' ', '');
+    Future<UserCredential> userCredential = FirebaseAuth.instance
+        .signInWithEmailAndPassword(email: email!, password: password!);
 
-      UserCredential credentilas = await userCredential;
-      uid = credentilas.user?.uid;
-      userSignedIn = true;
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        print('No user found for that email.');
-      } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
-      }
+    UserCredential credentilas = await userCredential;
+    uid = credentilas.user?.uid;
+    userSignedIn = true;
+  }
+
+  Future<void> createUser() async {
+    Map<String, dynamic> val = await FirebaseStorageController.getUser(uid!);
+    // user = user_model.User(
+    //   name: val["firstName"],
+    //   lastName: val["lastName"],
+    //   userUID: uid!,
+    //   type: val["type"],
+    //   email: val["email"],
+    //   bannerPicURL: val["bannerPicUrl"],
+    //   profilePicUrl: val["profilePicUrl"],
+    //   linkedInProfile: val['linkedInProfile'],
+    //   interests: val['interests'],
+    //   created: (val['created'] as Timestamp).toDate(),
+    // );
+
+    user = user_model.User.fromJson(val, uid!);
+  }
+
+  bool timePassed(DateTime created) {
+    DateTime now = DateTime.now();
+    bool correct = false;
+    if (created.year - now.year != 0) {
+      correct = true;
     }
+    if (created.month - now.month != 0) {
+      correct = true;
+    }
+    if (created.day - now.day != 0) {
+      correct = true;
+    }
+    if (created.hour - now.hour != 0) {
+      correct = true;
+    }
+    if (now.minute - created.minute > 5) {
+      correct = true;
+    }
+    return correct;
   }
 
   @override
@@ -117,7 +164,7 @@ class _SignInPageState extends State<SignInPage> {
                 password: true,
                 getText: (val) {
                   password = val;
-                  if (email != "") {
+                  if (password != "") {
                     fields["password"] = 1;
                   } else {
                     fields["password"] = 0;
@@ -138,34 +185,97 @@ class _SignInPageState extends State<SignInPage> {
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                        elevation: 0,
-                        primary: const Color(0xFF3D5AF1),
-                        fixedSize: Size(0.88.sw, 48),
-                        onSurface: const Color(0xFF3D5AF1)),
+                      elevation: 0,
+                      primary: const Color(0xFF3D5AF1),
+                      fixedSize: Size(0.88.sw, 48),
+                      onSurface: const Color(0xFF3D5AF1),
+                    ),
                     onPressed: enable
                         ? () async {
-                            await signInWithEmailAndPassword();
-                            DataSnapshot snapshot = await getSurveyFromDataBase();
-                            bool val = snapshot.value;
-                            print("----------------------------------SANPSHOT:$val--------------------------------------");
-                            answered = snapshot.value;
-                            if (userSignedIn) {
-                              answered
-                                  ? Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const HomeScreen(),
-                                      ),
-                                      (route) => false,
-                                    )
-                                  : Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            Survey(uid: uid, db: dataBase),
-                                      ),
-                                    );
+                            FocusScope.of(context).requestFocus(
+                              FocusNode(),
+                            ); //Hide keyboard after pressed
+                            try {
+                              await trace.start();
+                              await signInWithEmailAndPassword();
+                              await trace.stop();
+                              await createUser();
+                              bool answered = await getSurveyFromDataBase();
+                              bool time = timePassed(user.created);
+                              if (userSignedIn) {
+                                bool locationGranted =
+                                    await Permission.location.status.isGranted;
+                                String location = "";
+                                late String country;
+                                late int totalPages;
+                                if (locationGranted) {
+                                  location =
+                                      await LocationController.getLocation();
+                                  if (location != "") {
+                                    List<String> posArr = location.split(",");
+                                    List<Placemark> placemarkers =
+                                        await placemarkFromCoordinates(
+                                            double.parse(posArr[0]),
+                                            double.parse(posArr[1]));
+                                    country = placemarkers[4].country!;
+                                    totalPages = await LocationController
+                                        .getPagesInMyLocation(country);
+                                  }
+                                }
+                                answered
+                                    ? Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => HomeScreen(
+                                            user: user,
+                                            locationAccess: locationGranted,
+                                            location:
+                                                location != "" ? country : null,
+                                            totalPages: location != ""
+                                                ? totalPages
+                                                : null,
+                                          ),
+                                        ),
+                                        (route) => false,
+                                      )
+                                    : time
+                                        ? Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  Survey(user: user),
+                                            ),
+                                          )
+                                        : Navigator.pushAndRemoveUntil(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => HomeScreen(
+                                                user: user,
+                                                locationAccess: locationGranted,
+                                                location: location != ""
+                                                    ? country
+                                                    : null,
+                                                totalPages: location != ""
+                                                    ? totalPages
+                                                    : null,
+                                              ),
+                                            ),
+                                            (route) => false,
+                                          );
+                              }
+                            } on FirebaseAuthException catch (e) {
+                              if (e.code == "user-not-found") {
+                                error = "Oops! User not found";
+                              } else if (e.code == "wrong-password") {
+                                error = "Oops! Wrong password :(";
+                              }
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(error),
+                                  backgroundColor: Colors.red.shade600,
+                                ),
+                              );
                             }
                           }
                         : null,

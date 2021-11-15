@@ -12,11 +12,13 @@ class SelectProfileType extends StatefulWidget {
     required this.userUID,
     required this.firstName,
     required this.lastName,
+    required this.email,
   }) : super(key: key);
 
   final String userUID;
-  final String? firstName;
-  final String? lastName;
+  final String firstName;
+  final String lastName;
+  final String email;
 
   @override
   _SelectProfileTypeState createState() => _SelectProfileTypeState();
@@ -30,20 +32,6 @@ class _SelectProfileTypeState extends State<SelectProfileType> {
   double investorElevation = 0;
   String type = "";
   late User user;
-
-  uploadUser() async {
-    user = User(
-        name: widget.firstName!,
-        lastName: widget.lastName!,
-        userUID: widget.userUID,
-        type: type);
-
-    try {
-      await user.getUserRef.set(user.toJSON());
-    } catch (e) {
-      print(e);
-    }
-  }
 
   void toggleEntrepreneur() {
     setState(() {
@@ -71,6 +59,21 @@ class _SelectProfileTypeState extends State<SelectProfileType> {
       investorElevation = investorSelected ? 40 : 0;
       type = "Investor";
     });
+  }
+
+  void createUser() {
+    DateTime now = DateTime.now();
+    DateTime date = DateTime(now.year, now.month, now.day, now.hour, now.minute);
+    user = User(
+        name: widget.firstName,
+        lastName: widget.lastName,
+        userUID: widget.userUID,
+        type: type,
+        email: widget.email,
+        bannerPicURL: "",
+        profilePicUrl: "",
+        created: date,
+    );
   }
 
   @override
@@ -146,13 +149,14 @@ class _SelectProfileTypeState extends State<SelectProfileType> {
                         fixedSize: Size(0.88.sw, 48),
                         onSurface: const Color(0xFF3D5AF1)),
                     onPressed: enable
-                        ? () async {
-                            await uploadUser();
+                        ? () {
+                            createUser();
                             {
                               Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => InterestsPage(user: user),
+                                    builder: (context) =>
+                                        InterestsPage(user: user),
                                   ),
                                   (route) => false);
                             }

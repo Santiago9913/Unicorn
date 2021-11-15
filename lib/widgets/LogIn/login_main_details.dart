@@ -1,4 +1,3 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -14,12 +13,13 @@ class MainDetails extends StatefulWidget {
 }
 
 class _MainDetailsState extends State<MainDetails> {
-  String? name;
-  String? secondName;
-  String? email;
-  String? password;
-  String? uid;
-  AndroidDeviceInfo? androidInfo;
+  String name = "";
+  String secondName = "";
+  String email = "";
+  String password = "";
+  String uid = "";
+  late AndroidDeviceInfo androidInfo;
+  String error = "";
 
   TextEditingController nameController = TextEditingController();
   TextEditingController secondNameController = TextEditingController();
@@ -30,7 +30,6 @@ class _MainDetailsState extends State<MainDetails> {
 
   var fields = {"name": 0, "secondName": 0, "email": 0, "password": 0};
 
-  final FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics();
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 
   void noEmptyFields() {
@@ -56,21 +55,12 @@ class _MainDetailsState extends State<MainDetails> {
   }
 
   createUserWithEmailAndPassword() async {
-    try {
-      Future<UserCredential> userCredential = FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email!, password: password!);
+    // try {
+    Future<UserCredential> userCredential = FirebaseAuth.instance
+        .createUserWithEmailAndPassword(email: email.replaceAll(" ", ""), password: password);
 
-      UserCredential credentilas = await userCredential;
-      uid = credentilas.user?.uid;
-    } on FirebaseAuthException catch (e) {
-      if (e.code == "weak-passowrd") {
-        print(e.code);
-      } else if (e.code == "email-already-in-use") {
-        print(e.code);
-      }
-    } catch (e) {
-      print(e);
-    }
+    UserCredential credentilas = await userCredential;
+    uid = credentilas.user!.uid;
   }
 
   @override
@@ -137,7 +127,7 @@ class _MainDetailsState extends State<MainDetails> {
                 textController: secondNameController,
                 getText: (val) {
                   secondName = val;
-                  if (secondName!.isNotEmpty) {
+                  if (secondName.isNotEmpty) {
                     fields["secondName"] = 1;
                   } else {
                     fields["secondName"] = 0;
@@ -152,7 +142,7 @@ class _MainDetailsState extends State<MainDetails> {
                 textController: emailController,
                 getText: (val) {
                   email = val;
-                  if (email!.isNotEmpty) {
+                  if (email.isNotEmpty) {
                     fields["email"] = 1;
                   } else {
                     fields["email"] = 0;
@@ -168,7 +158,7 @@ class _MainDetailsState extends State<MainDetails> {
                 getText: (val) {
                   password = val;
 
-                  if (password!.isNotEmpty) {
+                  if (password.isNotEmpty) {
                     fields["password"] = 1;
                   } else {
                     fields["password"] = 0;
@@ -196,31 +186,53 @@ class _MainDetailsState extends State<MainDetails> {
                         onSurface: const Color(0xFF3D5AF1)),
                     onPressed: enable
                         ? () async {
-                            await createUserWithEmailAndPassword();
-                            androidInfo = await getAndroidInfo(deviceInfo);
-                            await firebaseAnalytics.logEvent(
-                              name: "os_distribution",
-                              parameters: {
-                                "os_version": androidInfo!.version.release,
-                                "sdk" : androidInfo!.version.sdkInt,
-                              },
-                            );
-                            Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SelectProfileType(
-                                  userUID: uid!,
-                                  firstName: name,
-                                  lastName: secondName,
+                            try {
+                              FocusScope.of(context).requestFocus(FocusNode()); //Hide keyboard after pressed
+                              await createUserWithEmailAndPassword();
+
+                              androidInfo = await getAndroidInfo(deviceInfo);
+                              if (uid.isNotEmpty) {
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SelectProfileType(
+                                      userUID: uid,
+                                      firstName: name.replaceAll(" ", ""),
+                                      lastName: secondName.replaceAll(" ", ""),
+                                      email: email.replaceAll(" ", ""),
+                                    ),
+                                  ),
+                                  (e) => false,
+                                );
+                              }
+                            } on FirebaseAuthException catch (e) {
+                              if (e.code == "email-already-in-use") {
+                                error =
+                                    "Ooops! Looks like the email was already used!";
+                              } else if (e.code == "weak-password") {
+                                error = "Ooops! Looks like the password is too weak!";
+                              }
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(error),
+                                  backgroundColor: Colors.red.shade600,
                                 ),
-                              ),
-                              (e) => false,
-                            );
+                              );
+                            } catch (e) {
+                              error = e.toString();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(error),
+                                  backgroundColor: Colors.red.shade600,
+                                ),
+                              );
+                            }
                           }
                         : null,
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),
