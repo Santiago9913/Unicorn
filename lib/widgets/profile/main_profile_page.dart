@@ -38,6 +38,38 @@ class _MainProfilePageState extends State<MainProfilePage> {
     color: Colors.black,
   );
 
+  cacheImagesIfFileNotExistsProfile() {
+    setState(() {
+      if (widget.user.profilePicUrl.isNotEmpty) {
+        profileImageDecode = CircleAvatar(
+          backgroundImage:
+              CachedNetworkImageProvider(widget.user.profilePicUrl),
+          radius: 38,
+        );
+      } else {
+        const Icon(
+          Icons.person,
+          color: Colors.black,
+        );
+      }
+    });
+  }
+
+  cacheImagesIfFileNotExistsBanner() {
+    setState(() {
+      if (widget.user.bannerPicURL.isNotEmpty) {
+        bannerImageDecode = BoxDecoration(
+          image: DecorationImage(
+            image: CachedNetworkImageProvider(widget.user.bannerPicURL),
+            fit: BoxFit.fill,
+          ),
+        );
+      } else {
+        bannerImageDecode = null;
+      }
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -58,6 +90,8 @@ class _MainProfilePageState extends State<MainProfilePage> {
                   ),
                 );
         });
+      }).catchError((error, stackTrace) {
+        cacheImagesIfFileNotExistsBanner();
       });
     }
 
@@ -75,6 +109,8 @@ class _MainProfilePageState extends State<MainProfilePage> {
                   radius: 38,
                 );
         });
+      }).catchError((error, stackTrace) {
+        cacheImagesIfFileNotExistsProfile();
       });
     }
   }

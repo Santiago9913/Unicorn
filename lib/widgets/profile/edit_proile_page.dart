@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -165,6 +166,32 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
+  cacheImagesIfFileNotExistsBanner() {
+    setState(() {
+      if (widget.user.bannerPicURL.isNotEmpty) {
+        bannerImageDecode = BoxDecoration(
+          image: DecorationImage(
+            image: CachedNetworkImageProvider(widget.user.bannerPicURL),
+            fit: BoxFit.fill,
+          ),
+        );
+      } else {
+        bannerImageDecode = null;
+      }
+    });
+  }
+
+  cacheImagesIfFileNotExistsProfile() {
+    setState(() {
+      if (widget.user.profilePicUrl.isNotEmpty) {
+        profileImageDecode =
+            Image(image: CachedNetworkImageProvider(widget.user.profilePicUrl));
+      } else {
+        Image.asset("assets/icons/blank.png");
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -187,6 +214,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
                 );
         });
+      }).catchError((error, stackTrace) {
+        cacheImagesIfFileNotExistsBanner();
       });
     }
 
@@ -198,6 +227,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ? Image.asset("assets/icons/blank.png")
               : Image.memory(value);
         });
+      }).catchError((error, stackTrace) {
+        cacheImagesIfFileNotExistsProfile();
       });
     }
   }
