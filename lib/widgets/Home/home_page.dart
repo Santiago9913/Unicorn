@@ -2,6 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:unicorn/api/api.dart';
+import 'package:unicorn/controllers/firebase_storage_controller.dart';
+import 'package:unicorn/models/ico.dart';
+import 'package:unicorn/models/preferred_founding.dart';
 import 'package:unicorn/models/user.dart';
 import 'package:unicorn/widgets/Home/home_place_holder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,7 +13,7 @@ import 'package:unicorn/widgets/Search/search_view.dart';
 import 'package:unicorn/widgets/post/post_create_view.dart';
 import 'package:unicorn/widgets/post/post_main_widget.dart';
 import 'package:unicorn/widgets/profile/main_profile_page.dart';
-
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -37,10 +40,13 @@ class _HomeScreenState extends State<HomeScreen> {
   bool locationGranted = true;
   String selectedValueTrends = "United States";
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  
+
+  List<ICO> _chartData = [];
+  List<PreferredFounding> _chartFounding = [];
 
   Api mApi = Api();
-  List<DropdownMenuItem<String>> countriesListMenu = <DropdownMenuItem<String>>[];
+  List<DropdownMenuItem<String>> countriesListMenu =
+      <DropdownMenuItem<String>>[];
   List<Widget> inversionsChildrenList = <Widget>[];
   List<Widget> trendsChildrenList = <Widget>[];
 
@@ -64,6 +70,18 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     }
+
+    getChartData().then((value) {
+      setState(() {
+        _chartData = value;
+      });
+    });
+
+    getPreferredData().then((value) {
+      setState(() {
+        _chartFounding = value;
+      });
+    });
   }
 
   @override
@@ -139,8 +157,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           );
                         },
                         child: CircleAvatar(
-                          backgroundImage:
-                              CachedNetworkImageProvider(widget.user!.getProfilePicURL),
+                          backgroundImage: CachedNetworkImageProvider(
+                              widget.user!.getProfilePicURL),
                           radius: 16,
                         ),
                       ),
@@ -173,7 +191,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => SearchPage(input: input, user: widget.user!,),
+                                builder: (context) => SearchPage(
+                                  input: input,
+                                  user: widget.user!,
+                                ),
                               ),
                             );
                           },
@@ -336,51 +357,91 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             PlaceholderWidget(
               child: SizedBox(
-                height: 1.sh,
-                width: 1.sw,
-                child: Padding(
-                  padding: EdgeInsets.all(14),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      DropdownButtonFormField(
-                        menuMaxHeight: 400,
-                        style: TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Color(0xFF0E153A), width: 2),
-                            borderRadius: BorderRadius.circular(20),
+                  height: 1.sh,
+                  width: 1.sw,
+                  child: Padding(
+                    padding: EdgeInsets.all(14),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        DropdownButtonFormField(
+                          menuMaxHeight: 400,
+                          style: TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Color(0xFF0E153A), width: 2),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Color(0xFF0E153A), width: 2),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            filled: true,
+                            fillColor: Color(0xFF0E153A),
                           ),
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(color: Color(0xFF0E153A), width: 2),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          filled: true,
-                          fillColor: Color(0xFF0E153A),
+                          dropdownColor: Color(0xFF0E153A),
+                          value: selectedValueTrends,
+                          items: countriesListMenu,
+                          onChanged: (String? newValue) {
+                            loadTrend(newValue!);
+                            setState(() {
+                              selectedValueTrends = newValue;
+                            });
+                          },
                         ),
-                        dropdownColor: Color(0xFF0E153A),
-                        value: selectedValueTrends,
-                        items: countriesListMenu,
-                        onChanged: (String? newValue){
-                          loadTrend(newValue!);
-                          setState(() {
-                            selectedValueTrends = newValue;
-                          });
-                        },
-                      ),
-                      SizedBox(
-                          height: 0.65.sh,
-                          width: 1.sw,
-                          child: ListView(
-                            children: trendsChildrenList,
-                          )
-                      )
-                    ],
-                  ),
-                )
-              ),
+                        SizedBox(
+                            height: 0.65.sh,
+                            width: 1.sw,
+                            child: ListView(
+                              children: trendsChildrenList,
+                            ))
+                      ],
+                    ),
+                  )),
             ),
+            PlaceholderWidget(
+              child: SizedBox(
+                  height: 1.sh,
+                  width: 1.sw,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SfCircularChart(
+                            title: ChartTitle(text: "Are Startups using ICO"),
+                            legend: Legend(isVisible: true),
+                            series: <CircularSeries>[
+                              PieSeries<ICO, String>(
+                                dataSource: _chartData,
+                                xValueMapper: (ICO data, _) => data.used,
+                                yValueMapper: (ICO data, _) => data.value,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SfCircularChart(
+                            title: ChartTitle(text: "Preferred Type Of Founding"),
+                            legend: Legend(isVisible: true),
+                            series: <CircularSeries>[
+                              PieSeries<PreferredFounding, String>(
+                                dataSource: _chartFounding,
+                                xValueMapper: (PreferredFounding data, _) =>
+                                    data.name,
+                                yValueMapper: (PreferredFounding data, _) =>
+                                    data.value,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
+            )
           ],
           index: _currentIndex,
         ), // new
@@ -416,7 +477,11 @@ class _HomeScreenState extends State<HomeScreen> {
               BottomNavigationBarItem(
                 icon: Icon(Icons.trending_up),
                 label: 'Trends',
-              )
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.whatshot),
+                label: "Hot",
+              ),
             ],
           ),
         ),
@@ -424,21 +489,16 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void loadCountriesDropdownMenu () {
+  void loadCountriesDropdownMenu() {
     mApi.getCountries().then((countries) {
       List<DropdownMenuItem<String>> mCountries = <DropdownMenuItem<String>>[];
       for (int i = 0; i < countries.length; i++) {
-        mCountries.add(
-            DropdownMenuItem(
-                child: Text(
-                  countries[i].name,
-                  style: TextStyle(
-                    color: Colors.white
-                  ),
-                ),
-                value: countries[i].name
-            )
-        );
+        mCountries.add(DropdownMenuItem(
+            child: Text(
+              countries[i].name,
+              style: TextStyle(color: Colors.white),
+            ),
+            value: countries[i].name));
       }
       setState(() {
         countriesListMenu = mCountries;
@@ -446,7 +506,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void loadTrend (String country) {
+  void loadTrend(String country) {
     mApi.getTrends(country).then((trends) {
       List<Widget> mTrends = [];
       for (int i = 0; i < trends.length; i++) {
@@ -458,24 +518,18 @@ class _HomeScreenState extends State<HomeScreen> {
             margin: const EdgeInsets.fromLTRB(0, 7, 0, 7),
             child: Padding(
                 padding: const EdgeInsets.all(14),
-                child: Wrap(
-                    spacing: 7,
-                    direction: Axis.vertical,
-                    children: [
-                      Text(
-                        'Trend: ' + mName,
-                        style: const TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text('Funding: \$' + mFunding),
-                      Text('Amount of Startups: ' + mStartups)
-                    ]
-                )
-            )
-        );
+                child: Wrap(spacing: 7, direction: Axis.vertical, children: [
+                  Text(
+                    'Trend: ' + mName,
+                    style: const TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text('Funding: \$' + mFunding),
+                  Text('Amount of Startups: ' + mStartups)
+                ])));
         mTrends.add(mItem);
       }
       setState(() {
@@ -484,7 +538,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void loadInversions () {
+  void loadInversions() {
     mApi.getInversion().then((industries) {
       List<Widget> mInversions = [];
       for (int i = 0; i < industries.length; i++) {
@@ -496,24 +550,18 @@ class _HomeScreenState extends State<HomeScreen> {
             margin: const EdgeInsets.fromLTRB(14, 7, 14, 7),
             child: Padding(
                 padding: const EdgeInsets.all(14),
-                child: Wrap(
-                    spacing: 7,
-                    direction: Axis.vertical,
-                    children: [
-                      Text(
-                        'Industry: ' + mName,
-                        style: const TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text('Funding: \$' + mFunding),
-                      Text('Amount of Startups: ' + mStartups)
-                    ]
-                )
-            )
-        );
+                child: Wrap(spacing: 7, direction: Axis.vertical, children: [
+                  Text(
+                    'Industry: ' + mName,
+                    style: const TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text('Funding: \$' + mFunding),
+                  Text('Amount of Startups: ' + mStartups)
+                ])));
         mInversions.add(mItem);
       }
       setState(() {
@@ -523,9 +571,21 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void onTabTapped(int index) {
-    setState(() {
+    setState(
+      () {
         _currentIndex = index;
       },
     );
+  }
+
+  Future<List<ICO>> getChartData() async {
+    List<ICO> chartData = await FirebaseStorageController.queryICO();
+    return chartData;
+  }
+
+  Future<List<PreferredFounding>> getPreferredData() async {
+    List<PreferredFounding> chartData =
+        await FirebaseStorageController.queryPreferredFounding();
+    return chartData;
   }
 }
