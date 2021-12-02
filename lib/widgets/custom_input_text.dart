@@ -7,11 +7,13 @@ class CustomInputText extends StatefulWidget {
     required this.labelName,
     required this.password,
     this.textController,
+    this.phone,
     required this.getText,
   }) : super(key: key);
 
   final String? labelName;
   final bool? password;
+  final bool? phone;
   final TextEditingController? textController;
   final Function getText;
 
@@ -52,6 +54,7 @@ class _CustomInputTextState extends State<CustomInputText> {
             SizedBox(
               width: 0.9.sw,
               child: TextField(
+                keyboardType: widget.phone != null ? TextInputType.phone : TextInputType.text,
                 controller: widget.textController,
                 onChanged: (_) {
                   String? val = widget.textController?.text;

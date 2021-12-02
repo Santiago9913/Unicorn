@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:unicorn/models/user.dart';
 import 'package:unicorn/widgets/Home/home_page.dart';
@@ -13,12 +14,16 @@ class SelectProfileType extends StatefulWidget {
     required this.firstName,
     required this.lastName,
     required this.email,
+    required this.phoneNumber,
+    required this.twoFactor,
   }) : super(key: key);
 
   final String userUID;
   final String firstName;
   final String lastName;
   final String email;
+  final String phoneNumber;
+  final bool twoFactor;
 
   @override
   _SelectProfileTypeState createState() => _SelectProfileTypeState();
@@ -63,16 +68,19 @@ class _SelectProfileTypeState extends State<SelectProfileType> {
 
   void createUser() {
     DateTime now = DateTime.now();
-    DateTime date = DateTime(now.year, now.month, now.day, now.hour, now.minute);
+    DateTime date =
+        DateTime(now.year, now.month, now.day, now.hour, now.minute);
     user = User(
-        name: widget.firstName,
-        lastName: widget.lastName,
-        userUID: widget.userUID,
-        type: type,
-        email: widget.email,
-        bannerPicURL: "",
-        profilePicUrl: "",
-        created: date,
+      name: widget.firstName,
+      lastName: widget.lastName,
+      userUID: widget.userUID,
+      type: type,
+      email: widget.email,
+      phoneNumber: widget.phoneNumber,
+      twoFactor: widget.twoFactor,
+      bannerPicURL: "",
+      profilePicUrl: "",
+      created: date,
     );
   }
 
@@ -83,6 +91,10 @@ class _SelectProfileTypeState extends State<SelectProfileType> {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
+          systemOverlayStyle: const SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.dark,
+          ),
           automaticallyImplyLeading: false,
           backgroundColor: Colors.white,
           elevation: 0,
