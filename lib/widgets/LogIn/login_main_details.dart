@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:unicorn/widgets/LogIn/login_2fa.dart';
 import 'package:unicorn/widgets/LogIn/login_select_profile_type.dart';
 import 'package:unicorn/widgets/custom_input_text.dart';
 import 'package:device_info/device_info.dart';
@@ -17,18 +19,30 @@ class _MainDetailsState extends State<MainDetails> {
   String secondName = "";
   String email = "";
   String password = "";
+  String phoneNumber = "";
   String uid = "";
   late AndroidDeviceInfo androidInfo;
   String error = "";
+
+  late UserCredential credential;
+  FirebaseAuth auth = FirebaseAuth.instance;
 
   TextEditingController nameController = TextEditingController();
   TextEditingController secondNameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
 
   bool enable = false;
+  bool twoFactor = false;
 
-  var fields = {"name": 0, "secondName": 0, "email": 0, "password": 0};
+  var fields = {
+    "name": 0,
+    "secondName": 0,
+    "email": 0,
+    "password": 0,
+    "phone": 0
+  };
 
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 
@@ -56,11 +70,11 @@ class _MainDetailsState extends State<MainDetails> {
 
   createUserWithEmailAndPassword() async {
     // try {
-    Future<UserCredential> userCredential = FirebaseAuth.instance
-        .createUserWithEmailAndPassword(email: email.replaceAll(" ", ""), password: password);
+    Future<UserCredential> userCredential = auth.createUserWithEmailAndPassword(
+        email: email.replaceAll(" ", ""), password: password);
 
-    UserCredential credentilas = await userCredential;
-    uid = credentilas.user!.uid;
+    credential = await userCredential;
+    uid = credential.user!.uid;
   }
 
   @override
@@ -69,6 +83,7 @@ class _MainDetailsState extends State<MainDetails> {
     secondNameController.dispose();
     emailController.dispose();
     passwordController.dispose();
+    phoneController.dispose();
     super.dispose();
   }
 
@@ -77,6 +92,10 @@ class _MainDetailsState extends State<MainDetails> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
@@ -89,10 +108,10 @@ class _MainDetailsState extends State<MainDetails> {
           },
         ),
       ),
-      body: SingleChildScrollView(
-        child: SizedBox(
-          width: 1.sw,
-          height: 0.89.sh,
+      body: SizedBox(
+        width: 1.sw,
+        height: 0.89.sh,
+        child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -152,6 +171,23 @@ class _MainDetailsState extends State<MainDetails> {
                 },
               ),
               CustomInputText(
+                labelName: "Phone Number",
+                password: false,
+                phone: true,
+                textController: phoneController,
+                getText: (val) {
+                  phoneNumber = val;
+
+                  if (password.isNotEmpty) {
+                    fields["phone"] = 1;
+                  } else {
+                    fields["phone"] = 0;
+                  }
+
+                  noEmptyFields();
+                },
+              ),
+              CustomInputText(
                 labelName: "Password",
                 password: true,
                 textController: passwordController,
@@ -169,7 +205,34 @@ class _MainDetailsState extends State<MainDetails> {
               ),
               Center(
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 60),
+                  padding: const EdgeInsets.only(top: 20, bottom: 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Enable 2FA",
+                          style: TextStyle(
+                            fontFamily: "Geometric Sans-Serif",
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                          )),
+                      Checkbox(
+                        checkColor: Colors.white,
+                        fillColor: MaterialStateProperty.resolveWith(
+                            (states) => const Color(0xFF3D5AF1)),
+                        value: twoFactor,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            twoFactor = value!;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 20, bottom: 20),
                   child: ElevatedButton(
                     child: const Text(
                       "Continue",
@@ -187,30 +250,54 @@ class _MainDetailsState extends State<MainDetails> {
                     onPressed: enable
                         ? () async {
                             try {
-                              FocusScope.of(context).requestFocus(FocusNode()); //Hide keyboard after pressed
+                              FocusScope.of(context).requestFocus(
+                                FocusNode(),
+                              ); //Hide keyboard after pressed
                               await createUserWithEmailAndPassword();
 
                               androidInfo = await getAndroidInfo(deviceInfo);
                               if (uid.isNotEmpty) {
-                                Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => SelectProfileType(
-                                      userUID: uid,
-                                      firstName: name.replaceAll(" ", ""),
-                                      lastName: secondName.replaceAll(" ", ""),
-                                      email: email.replaceAll(" ", ""),
+                                if (twoFactor) {
+                                  Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => TwoFactorLogIn(
+                                        name: name,
+                                        secondName: secondName,
+                                        email: email,
+                                        phoneNumber: phoneNumber,
+                                        uid: uid,
+                                        twoFactor: twoFactor,
+                                        login: true,
+                                      ),
                                     ),
-                                  ),
-                                  (e) => false,
-                                );
+                                    (e) => false,
+                                  );
+                                } else {
+                                  Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => SelectProfileType(
+                                        userUID: uid,
+                                        firstName: name.replaceAll(" ", ""),
+                                        lastName:
+                                            secondName.replaceAll(" ", ""),
+                                        email: email.replaceAll(" ", ""),
+                                        phoneNumber: phoneNumber,
+                                        twoFactor: twoFactor,
+                                      ),
+                                    ),
+                                    (e) => false,
+                                  );
+                                }
                               }
                             } on FirebaseAuthException catch (e) {
                               if (e.code == "email-already-in-use") {
                                 error =
                                     "Ooops! Looks like the email was already used!";
                               } else if (e.code == "weak-password") {
-                                error = "Ooops! Looks like the password is too weak!";
+                                error =
+                                    "Ooops! Looks like the password is too weak!";
                               }
 
                               ScaffoldMessenger.of(context).showSnackBar(
