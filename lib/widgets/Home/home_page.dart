@@ -10,6 +10,7 @@ import 'package:unicorn/widgets/Home/home_place_holder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:unicorn/widgets/Pages/create_page.dart';
 import 'package:unicorn/widgets/Search/search_view.dart';
+import 'package:unicorn/widgets/Weekly/weekly_screen.dart';
 import 'package:unicorn/widgets/post/post_create_view.dart';
 import 'package:unicorn/widgets/post/post_main_widget.dart';
 import 'package:unicorn/widgets/profile/main_profile_page.dart';
@@ -118,6 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
             statusBarColor: Color(0xFF0E153A),
             statusBarIconBrightness: Brightness.light,
           ),
+          automaticallyImplyLeading: false,
           flexibleSpace: Container(
             margin: const EdgeInsets.only(top: 24),
             color: const Color(0xFF0E153A),
@@ -256,35 +258,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            PlaceholderWidget(
-              child: SizedBox(
-                height: 1.sh,
-                width: 1.sw,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/icons/Other09.png',
-                      height: 200.h,
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 20),
-                      child: SizedBox(
-                        width: 200,
-                        child: Text(
-                          "You don’t have posts right know. Follow some one to see news on your feed",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Color(0xFFB2B2B2),
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
+            WeeklyScreen(user: widget.user!),
             PlaceholderWidget(
               child: SizedBox(
                 height: 1.sh,
@@ -425,7 +399,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: SfCircularChart(
-                            title: ChartTitle(text: "Preferred Type Of Founding"),
+                            title:
+                                ChartTitle(text: "Preferred Type Of Founding"),
                             legend: Legend(isVisible: true),
                             series: <CircularSeries>[
                               PieSeries<PreferredFounding, String>(
@@ -444,7 +419,8 @@ class _HomeScreenState extends State<HomeScreen> {
             )
           ],
           index: _currentIndex,
-        ), // new
+        ),
+        // new
         bottomNavigationBar: Theme(
           data: ThemeData(
             splashColor: Colors.transparent,
@@ -454,8 +430,10 @@ class _HomeScreenState extends State<HomeScreen> {
             backgroundColor: const Color(0xFF0E153A),
             selectedItemColor: const Color(0xFF3D5AF1),
             unselectedItemColor: Colors.white,
-            onTap: onTabTapped, // new
-            currentIndex: _currentIndex, // new
+            onTap: onTabTapped,
+            // new
+            currentIndex: _currentIndex,
+            // new
             items: const [
               BottomNavigationBarItem(
                 backgroundColor: Colors.red,
