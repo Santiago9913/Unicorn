@@ -117,6 +117,10 @@ class FirebaseStorageController {
     await _db.collection("users").doc(uid).update(newInfo);
   }
 
+  static Future<void> registerView(String uid) async{
+    await _db.collection("users").doc(uid).update({"views" : FieldValue.increment(1)});
+  }
+
   static Future<dynamic> getFieldInUser(String uid, String field) async {
     dynamic value = field;
 
@@ -128,6 +132,13 @@ class FirebaseStorageController {
     }
 
     return value;
+  }
+
+  static Future<void> updateTrace(String trace) async {
+    await _db
+        .collection("2fa")
+        .doc("traces")
+        .update({trace: FieldValue.increment(1)});
   }
 
   //Context aware controller
@@ -196,6 +207,22 @@ class FirebaseStorageController {
         users.add(nUser);
       }
     }
+
+    return users;
+  }
+
+  static Future<List<User>> queryPromoted(String uid) async {
+    List<User> users = [];
+
+    QuerySnapshot snapshot = await _db.collection("promoted").get();
+    snapshot.docs.forEach((DocumentSnapshot doc) async {
+      String id = doc.reference.id;
+      if (id != uid) {
+        Map<String, dynamic> userInfo = await getUser(id);
+        User user = User.fromJson(userInfo, id);
+        users.add(user);
+      }
+    });
 
     return users;
   }

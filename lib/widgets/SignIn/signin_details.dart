@@ -236,7 +236,7 @@ class _SignInPageState extends State<SignInPage> {
                                   }
                                 }
                                 answered
-                                    ? Navigator.pushAndRemoveUntil(
+                                    ? Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => HomeScreen(
@@ -249,7 +249,6 @@ class _SignInPageState extends State<SignInPage> {
                                                 : null,
                                           ),
                                         ),
-                                        (route) => false,
                                       )
                                     : time
                                         ? Navigator.push(
@@ -259,7 +258,7 @@ class _SignInPageState extends State<SignInPage> {
                                                   Survey(user: user),
                                             ),
                                           )
-                                        : Navigator.pushAndRemoveUntil(
+                                        : Navigator.push(
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) => HomeScreen(
@@ -273,7 +272,6 @@ class _SignInPageState extends State<SignInPage> {
                                                     : null,
                                               ),
                                             ),
-                                            (route) => false,
                                           );
                               }
                             } on FirebaseAuthException catch (e) {

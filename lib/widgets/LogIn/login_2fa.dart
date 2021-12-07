@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_verification_code/flutter_verification_code.dart';
+import 'package:unicorn/controllers/firebase_storage_controller.dart';
 import 'package:unicorn/widgets/LogIn/login_select_profile_type.dart';
 
 class TwoFactorLogIn extends StatefulWidget {
@@ -59,6 +61,7 @@ class _TwoFactorLogInState extends State<TwoFactorLogIn> {
                 ),
                 backgroundColor: Colors.white,
                 elevation: 0,
+                leading: null,
               ),
               body: Center(
                 child: SizedBox(
@@ -109,6 +112,7 @@ class _TwoFactorLogInState extends State<TwoFactorLogIn> {
                             try {
                               await auth.signInWithCredential(credential);
                               if (widget.login) {
+                                await FirebaseStorageController.updateTrace("accepted");
                                 Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
@@ -126,9 +130,11 @@ class _TwoFactorLogInState extends State<TwoFactorLogIn> {
                                   (e) => false,
                                 );
                               } else {
+                                await FirebaseStorageController.updateTrace("accepted");
                                 Navigator.pop(context);
                               }
                             } catch (e) {
+                              await FirebaseStorageController.updateTrace("rejected");
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: const Text(
