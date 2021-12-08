@@ -54,7 +54,7 @@ class Event {
     timeEnd = nTimeEnd;
   }
 
-  Map<String, dynamic> toJSON() => <String, dynamic>{
+  Map<String, dynamic> toJson() => <String, dynamic>{
     'name': name,
     'date': date,
     'description': description,

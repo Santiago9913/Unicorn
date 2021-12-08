@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_performance/firebase_performance.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:convert';
 import 'package:unicorn/models/event.dart';
 import 'package:unicorn/models/ico.dart';
 import 'package:unicorn/models/page.dart';
 import 'package:unicorn/models/post.dart';
 import 'package:unicorn/models/preferred_founding.dart';
 import 'package:unicorn/models/user.dart';
+import 'package:unicorn/controllers/hive_controller.dart';
 
 class FirebaseStorageController {
   static final FirebaseStorage _storage = FirebaseStorage.instance;
@@ -160,7 +162,7 @@ class FirebaseStorageController {
         .get();
   }
 
-  static Future<List<Event>> getEvents() async {
+  static Future<List<Event>> getEventsFB() async {
     List<Event> events = [];
     QuerySnapshot qs = await _db.collection("events").get();
     print(qs.docs);
@@ -171,6 +173,30 @@ class FirebaseStorageController {
       print(e);
       events.add(e);
     });
+    return events;
+  }
+
+  static Future<List<Event>> getEvents() async {
+    List<dynamic> mHiveEvents = await HiveController.retrieveEvents();
+    List<Event> hiveEvents = [];
+    mHiveEvents.forEach((element) {
+      hiveEvents.add(Event(name: element['name'], date: element['date'], description: element['description'], timeStart: element['timeStart'], timeEnd: element['timeEnd']));
+    });
+    List<Event> fbEvents = [];
+    var total = 0;
+    try {
+      fbEvents = await getEventsFB();
+      total = fbEvents.length;
+    } catch (e) {
+      print(e.toString());
+    }
+    print(hiveEvents);
+    print(fbEvents);
+    var events = hiveEvents.length > total ? [...hiveEvents] : [...fbEvents];
+    if (hiveEvents.length <= total) {
+      String jsonStr = jsonEncode(events);
+      HiveController.storeEvents(jsonStr);
+    }
     return events;
   }
 
