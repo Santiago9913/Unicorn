@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import "package:flutter_screenutil/flutter_screenutil.dart";
+import 'package:unicorn/controllers/firebase_storage_controller.dart';
 import 'package:unicorn/models/user.dart';
 import 'package:unicorn/widgets/profile/main_profile_page.dart';
 
@@ -21,6 +22,7 @@ class ResultCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        FirebaseStorageController.registerView(user.userUID);
         Navigator.push(
           context,
           MaterialPageRoute(
