@@ -34,6 +34,7 @@ class _CreatePageState extends State<CreatePage> {
   String dropdownValue5 = '1';
   String dropdownValue6 = '1';
   String dropdownValue7 = 'Bank funding';
+  String dropdownValue8 = 'React';
 
   String bannerPicUrl = "";
   late File bannerPicFile;
@@ -46,7 +47,6 @@ class _CreatePageState extends State<CreatePage> {
   bool enable = false;
 
   TextEditingController nameController = TextEditingController();
-
 
   void checkOrder() {
     enable = true;
@@ -114,6 +114,7 @@ class _CreatePageState extends State<CreatePage> {
       ownerUID: widget.user.userUID,
       preferences: pref,
       preferredFinancial: dropdownValue7,
+      preferredFramewok: dropdownValue8,
       useICO: _checked,
       type: widget.user.type == "Entrepreneur" ? "Startup" : "VC",
     );
@@ -782,6 +783,55 @@ class _CreatePageState extends State<CreatePage> {
                             'Funding',
                             'Crowdfunding'
                           ].map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 1.sw,
+                      padding:
+                          const EdgeInsets.only(left: 16, top: 20, bottom: 14),
+                      child: const Text(
+                        "Choose your preferred framework",
+                        style: TextStyle(
+                            fontFamily: "Geometric Sans-Serif",
+                            fontSize: 15,
+                            fontWeight: FontWeight.normal),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 16.0, right: 25.0, top: 2),
+                      child: Container(
+                        padding:
+                            EdgeInsets.only(left: 16.0, right: 16.0, top: 6),
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black38),
+                            borderRadius: BorderRadius.circular(5)),
+                        child: DropdownButton<String>(
+                          hint: const Text('Select a country'),
+                          elevation: 5,
+                          icon: Icon(Icons.arrow_drop_down),
+                          iconSize: 36.0,
+                          isExpanded: true,
+                          style:
+                              TextStyle(color: Colors.black54, fontSize: 17.0),
+                          underline: Container(
+                            height: 2,
+                            color: Colors.white,
+                          ),
+                          value: dropdownValue8,
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              dropdownValue8 = newValue!;
+                            });
+                          },
+                          items: <String>['React', 'Angular', 'Vue']
+                              .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(value),
