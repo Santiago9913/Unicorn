@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:unicorn/controllers/firebase_storage_controller.dart';
 import 'package:unicorn/models/user.dart';
-import "package:flutter_screenutil/flutter_screenutil.dart";
 import 'package:unicorn/widgets/Home/home_page.dart';
 import 'package:unicorn/widgets/Search/result_card.dart';
 
@@ -120,7 +119,8 @@ class _SearchPageState extends State<SearchPage> {
               return Container(
                 child: const Center(
                   child: Text(
-                      "No Connection, please check your internet connection"),
+                    "No Connection, please check your internet connection",
+                  ),
                 ),
               );
             }

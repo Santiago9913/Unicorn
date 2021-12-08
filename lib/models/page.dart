@@ -5,6 +5,7 @@ class UserPage {
   String? profilePicUrl;
   bool useICO;
   String preferredFinancial;
+  String preferredFramewok;
   String ownerUID;
   Map<String, int> preferences;
   String type;
@@ -16,6 +17,7 @@ class UserPage {
     this.profilePicUrl = "",
     required this.useICO,
     required this.preferredFinancial,
+    required this.preferredFramewok,
     required this.ownerUID,
     required this.preferences,
     required this.type,
@@ -43,6 +45,10 @@ class UserPage {
 
   String get getPreferredFinancial {
     return preferredFinancial;
+  }
+
+  String get getpreferredFramewok {
+    return preferredFramewok;
   }
 
   String get getPageOwnerUID {
@@ -77,6 +83,9 @@ class UserPage {
     preferredFinancial = value;
   }
 
+  void setpreferredFramewok(String value) {
+    preferredFramewok = value;
+  }
   void setOwnerUID(String uid) {
     ownerUID = uid;
   }
@@ -86,13 +95,14 @@ class UserPage {
   }
 
   Map<String, dynamic> toJSON() => <String, dynamic>{
-        'name': name,
-        'country': country,
-        'bannerPicUrl': bannerPicURL,
-        'profilePicUrl': profilePicUrl,
-        'ownerUID': ownerUID,
-        'useICO': useICO,
-        'preferredFinancial': preferredFinancial,
-        'preferences': preferences,
-      };
+    'name': name,
+    'country': country,
+    'bannerPicUrl': bannerPicURL,
+    'profilePicUrl': profilePicUrl,
+    'ownerUID': ownerUID,
+    'useICO': useICO,
+    'preferredFinancial': preferredFinancial,
+    'preferredFramewok': preferredFramewok,
+    'preferences': preferences,
+  };
 }

@@ -55,12 +55,16 @@ dependencies:
   hive_flutter: ^1.1.0
   cached_network_image: ^3.1.0+1
   syncfusion_flutter_charts: ^19.3.53
+  flutter_verification_code: ^1.1.0
+  flutter_stripe: ^2.0.2
+  syncfusion_flutter_calendar: ^19.3.56
 
 dev_dependencies:
   hive_generator: ^1.1.1
   build_runner: ^2.1.5
   flutter_test:
     sdk: flutter
+  syncfusion_flutter_calendar: ^19.3.56
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

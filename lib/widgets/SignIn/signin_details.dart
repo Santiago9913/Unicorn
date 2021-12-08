@@ -1,15 +1,15 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_performance/firebase_performance.dart';
 import "package:flutter/material.dart";
+import 'package:flutter/services.dart';
 import "package:flutter_screenutil/flutter_screenutil.dart";
 import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:unicorn/controllers/firebase_storage_controller.dart';
 import 'package:unicorn/controllers/location_controller.dart';
 import 'package:unicorn/models/user.dart' as user_model;
 import 'package:unicorn/widgets/Home/home_page.dart';
+import 'package:unicorn/widgets/LogIn/login_2fa.dart';
 import 'package:unicorn/widgets/Survey/survey.dart';
 import 'package:unicorn/widgets/custom_input_text.dart';
 
@@ -31,6 +31,9 @@ class _SignInPageState extends State<SignInPage> {
   bool answered = false;
   String error = "";
   late user_model.User user;
+
+  late UserCredential credentilas;
+  FirebaseAuth auth = FirebaseAuth.instance;
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -61,34 +64,22 @@ class _SignInPageState extends State<SignInPage> {
     if (value == 'survey') {
       return "";
     }
-    return value as bool;
+    answered = value as bool;
+    return answered;
   }
 
   Future<void> signInWithEmailAndPassword() async {
     email = email!.replaceAll(' ', '');
-    Future<UserCredential> userCredential = FirebaseAuth.instance
-        .signInWithEmailAndPassword(email: email!, password: password!);
+    Future<UserCredential> userCredential =
+        auth.signInWithEmailAndPassword(email: email!, password: password!);
 
-    UserCredential credentilas = await userCredential;
+    credentilas = await userCredential;
     uid = credentilas.user?.uid;
     userSignedIn = true;
   }
 
   Future<void> createUser() async {
     Map<String, dynamic> val = await FirebaseStorageController.getUser(uid!);
-    // user = user_model.User(
-    //   name: val["firstName"],
-    //   lastName: val["lastName"],
-    //   userUID: uid!,
-    //   type: val["type"],
-    //   email: val["email"],
-    //   bannerPicURL: val["bannerPicUrl"],
-    //   profilePicUrl: val["profilePicUrl"],
-    //   linkedInProfile: val['linkedInProfile'],
-    //   interests: val['interests'],
-    //   created: (val['created'] as Timestamp).toDate(),
-    // );
-
     user = user_model.User.fromJson(val, uid!);
   }
 
@@ -125,6 +116,10 @@ class _SignInPageState extends State<SignInPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
@@ -200,7 +195,23 @@ class _SignInPageState extends State<SignInPage> {
                               await signInWithEmailAndPassword();
                               await trace.stop();
                               await createUser();
-                              bool answered = await getSurveyFromDataBase();
+                              if (user.twoFactor) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => TwoFactorLogIn(
+                                      name: user.name,
+                                      secondName: user.lastName,
+                                      email: user.email,
+                                      phoneNumber: user.phoneNumber,
+                                      uid: user.userUID,
+                                      twoFactor: user.twoFactor,
+                                      login: false,
+                                    ),
+                                  ),
+                                );
+                              }
+                              await getSurveyFromDataBase();
                               bool time = timePassed(user.created);
                               if (userSignedIn) {
                                 bool locationGranted =
@@ -223,7 +234,7 @@ class _SignInPageState extends State<SignInPage> {
                                   }
                                 }
                                 answered
-                                    ? Navigator.pushAndRemoveUntil(
+                                    ? Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => HomeScreen(
@@ -236,7 +247,6 @@ class _SignInPageState extends State<SignInPage> {
                                                 : null,
                                           ),
                                         ),
-                                        (route) => false,
                                       )
                                     : time
                                         ? Navigator.push(
@@ -246,7 +256,7 @@ class _SignInPageState extends State<SignInPage> {
                                                   Survey(user: user),
                                             ),
                                           )
-                                        : Navigator.pushAndRemoveUntil(
+                                        : Navigator.push(
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) => HomeScreen(
@@ -260,7 +270,6 @@ class _SignInPageState extends State<SignInPage> {
                                                     : null,
                                               ),
                                             ),
-                                            (route) => false,
                                           );
                               }
                             } on FirebaseAuthException catch (e) {

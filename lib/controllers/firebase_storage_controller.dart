@@ -3,11 +3,14 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_performance/firebase_performance.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:convert';
+import 'package:unicorn/models/event.dart';
 import 'package:unicorn/models/ico.dart';
 import 'package:unicorn/models/page.dart';
 import 'package:unicorn/models/post.dart';
 import 'package:unicorn/models/preferred_founding.dart';
 import 'package:unicorn/models/user.dart';
+import 'package:unicorn/controllers/hive_controller.dart';
 
 class FirebaseStorageController {
   static final FirebaseStorage _storage = FirebaseStorage.instance;
@@ -35,7 +38,7 @@ class FirebaseStorageController {
           break;
       }
     } catch (error) {
-      print(error.toString());
+      error;
     }
 
     return url;
@@ -66,7 +69,7 @@ class FirebaseStorageController {
 
       return url;
     } catch (e) {
-      print(e.toString());
+      e;
     }
 
     return url;
@@ -97,7 +100,7 @@ class FirebaseStorageController {
         "pages": FieldValue.arrayUnion([id])
       });
     } catch (e) {
-      print(e.toString());
+      e;
     }
   }
 
@@ -117,6 +120,13 @@ class FirebaseStorageController {
     await _db.collection("users").doc(uid).update(newInfo);
   }
 
+  static Future<void> registerView(String uid) async {
+    await _db
+        .collection("users")
+        .doc(uid)
+        .update({"views": FieldValue.increment(1)});
+  }
+
   static Future<dynamic> getFieldInUser(String uid, String field) async {
     dynamic value = field;
 
@@ -130,12 +140,66 @@ class FirebaseStorageController {
     return value;
   }
 
+  static Future<void> updateTrace(String trace) async {
+    await _db
+        .collection("2fa")
+        .doc("traces")
+        .update({trace: FieldValue.increment(1)});
+  }
+
+  static Future<void> updateViewsCalendar(String uid) async {
+    await _db
+        .collection("users")
+        .doc(uid)
+        .update({"viewsCalendar": FieldValue.increment(1)});
+  }
+
   //Context aware controller
   static Future<QuerySnapshot> getPagesInMyLocation(String location) async {
     return await _db
         .collection("pages")
         .where("country", isEqualTo: location)
         .get();
+  }
+
+  static Future<List<Event>> getEventsFB() async {
+    List<Event> events = [];
+    QuerySnapshot qs = await _db.collection("events").get();
+    List<dynamic> docs = await qs.docs;
+    docs.forEach((element) {
+      Map<String, dynamic> info = element.data() as Map<String, dynamic>;
+      Event e = Event.fromJson(info);
+      events.add(e);
+    });
+    return events;
+  }
+
+  static Future<List<Event>> getEvents() async {
+    List<dynamic> mHiveEvents = await HiveController.retrieveEvents();
+    List<Event> hiveEvents = [];
+    mHiveEvents.forEach((element) {
+      hiveEvents.add(Event(
+          name: element['name'],
+          date: element['date'],
+          description: element['description'],
+          timeStart: element['timeStart'],
+          timeEnd: element['timeEnd']));
+    });
+    List<Event> fbEvents = [];
+    var total = 0;
+    try {
+      fbEvents = await getEventsFB();
+      total = fbEvents.length;
+    } catch (e) {
+      e;
+    }
+
+    var events = hiveEvents.length > total ? [...hiveEvents] : [...fbEvents];
+    if (hiveEvents.length <= total) {
+      String jsonStr = jsonEncode(events);
+      HiveController.storeEvents(jsonStr);
+    }
+    return events;
   }
 
   //Pages controllers
@@ -196,6 +260,22 @@ class FirebaseStorageController {
         users.add(nUser);
       }
     }
+
+    return users;
+  }
+
+  static Future<List<User>> queryPromoted(String uid) async {
+    List<User> users = [];
+
+    QuerySnapshot snapshot = await _db.collection("promoted").get();
+    snapshot.docs.forEach((DocumentSnapshot doc) async {
+      String id = doc.reference.id;
+      if (id != uid) {
+        Map<String, dynamic> userInfo = await getUser(id);
+        User user = User.fromJson(userInfo, id);
+        users.add(user);
+      }
+    });
 
     return users;
   }

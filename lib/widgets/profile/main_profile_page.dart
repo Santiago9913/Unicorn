@@ -1,16 +1,20 @@
-import 'dart:typed_data';
+import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:unicorn/controllers/hive_controller.dart';
 import 'package:unicorn/models/user.dart';
 import 'package:unicorn/widgets/Contact/contact_page.dart';
 import 'package:unicorn/widgets/Home/home_page.dart';
-import 'package:unicorn/widgets/profile/display_card.dart';
 import 'package:unicorn/widgets/profile/edit_proile_page.dart';
 import 'package:unicorn/widgets/profile/info_card.dart';
+import 'package:intl/intl.dart';
+
+import 'package:http/http.dart' as http;
 
 class MainProfilePage extends StatefulWidget {
   const MainProfilePage({
@@ -31,6 +35,8 @@ class MainProfilePage extends StatefulWidget {
 class _MainProfilePageState extends State<MainProfilePage> {
   String bannerPicUrl = "";
   String profilePicUrl = "";
+
+  late Map<String, dynamic> paymentData;
 
   BoxDecoration? bannerImageDecode = const BoxDecoration();
   Widget profileImageDecode = const Icon(
@@ -112,6 +118,31 @@ class _MainProfilePageState extends State<MainProfilePage> {
       }).catchError((error, stackTrace) {
         cacheImagesIfFileNotExistsProfile();
       });
+    }
+  }
+
+  Future<void> checkout() async {
+
+    paymentData = await compute(generatePayment, widget.user);
+
+
+    await Stripe.instance.initPaymentSheet(
+      paymentSheetParameters: SetupPaymentSheetParameters(
+        applePay: false,
+        googlePay: true,
+        style: ThemeMode.light,
+        testEnv: true,
+        merchantCountryCode: "US",
+        merchantDisplayName: "Promote profile",
+        paymentIntentClientSecret: paymentData["payment"],
+      ),
+    );
+    try {
+      await Stripe.instance.presentPaymentSheet();
+      Scaffold.of(context)
+          .showSnackBar(const SnackBar(content: Text("Payment Succesfull")));
+    } catch (e) {
+      e;
     }
   }
 
@@ -300,9 +331,9 @@ class _MainProfilePageState extends State<MainProfilePage> {
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                 ),
-                                onPressed: () {
+                                onPressed: ()  {
                                   widget.ownerUID == ""
-                                      ? print("Promote me")
+                                      ? checkout()
                                       : Navigator.push(
                                           context,
                                           MaterialPageRoute(
@@ -421,4 +452,31 @@ class _MainProfilePageState extends State<MainProfilePage> {
       ),
     );
   }
+}
+
+Future<Map<String, dynamic>> generatePayment(User user) async {
+  const url_un = 'https://unicornm.herokuapp.com/api/stripe/generatePayment';
+  final formatter = DateFormat('yyyy-MM-dd');
+  DateTime now = DateTime.now();
+  DateTime startDate = DateTime(now.year, now.month, now.day);
+  DateTime finishDate = DateTime(startDate.year, startDate.month, startDate.day + 7);
+
+  String id = user.userUID.toString();
+  String start = formatter.format(startDate).toString();
+  String end = formatter.format(finishDate).toString();
+
+
+  final response = await http.post(
+    Uri.parse(url_un),
+    headers: <String, String> {
+      'content-type' : 'application/json; charset=UTF-8'
+    },
+    body: jsonEncode(<String, String> {
+      'id' : id,
+      'startDate' : start,
+      'finishDate' : end,
+    }),
+  );
+
+  return json.decode(response.body);
 }

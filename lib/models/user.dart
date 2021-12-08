@@ -17,6 +17,8 @@ class User {
   int numContacts;
   int numPosts;
   int numLinkedin;
+  String phoneNumber;
+  bool twoFactor;
 
   User({
     required this.name,
@@ -24,6 +26,8 @@ class User {
     required this.userUID,
     required this.type,
     required this.email,
+    required this.phoneNumber,
+    required this.twoFactor,
     required this.bannerPicURL,
     required this.profilePicUrl,
     this.linkedInProfile = "",
@@ -102,7 +106,7 @@ class User {
       await FirebaseStorageController.updateUser(userUID, mapName);
       linkedInProfile = url;
     } catch (e) {
-      print(e.toString());
+      e;
     }
   }
 
@@ -112,7 +116,7 @@ class User {
       await FirebaseStorageController.updateUser(userUID, mapName);
       name = nName;
     } catch (e) {
-      print(e.toString());
+      e;
     }
   }
 
@@ -122,12 +126,14 @@ class User {
       await FirebaseStorageController.updateUser(userUID, mapName);
       lastName = nName;
     } catch (e) {
-      print(e.toString());
+      e;
     }
   }
 
   Map<String, dynamic> toJSON() => <String, dynamic>{
         'email': email,
+        'phoneNumber' : phoneNumber,
+        'twoFactor' : twoFactor,
         'firstName': name,
         'lastName': lastName,
         'type': type,
@@ -141,28 +147,29 @@ class User {
         "pages": pages,
         "numContacts": numContacts,
         "numPosts": numPosts,
-        "numLinkedin" : numLinkedin,
+        "numLinkedin": numLinkedin,
       };
 
   static User fromJson(Map<String, dynamic> map, String uid) {
     return User(
-      name: map["firstName"],
-      lastName: map["lastName"],
-      userUID: uid,
-      type: map["type"],
-      email: map["email"],
-      bannerPicURL: map["bannerPicUrl"] ?? "",
-      profilePicUrl: map["profilePicUrl"] ?? "",
-      linkedInProfile: map['linkedInProfile'] ?? "",
-      interests: map['interests'],
-      created: map['created'] != null
-          ? (map['created'] as Timestamp).toDate()
-          : DateTime(DateTime.now().year),
-      pages: map["pages"] ?? [],
-      posts: map["posts"] ?? [],
-      numContacts: map["numContacts"] ??= 0,
-      numPosts: map["numPosts"] ??= 0,
-      numLinkedin: map["numLinkedin"] ??=0
-    );
+        name: map["firstName"],
+        lastName: map["lastName"],
+        userUID: uid,
+        type: map["type"],
+        email: map["email"],
+        phoneNumber: map["phoneNumber"] ??= "",
+        twoFactor: map["twoFactor"] ?? false,
+        bannerPicURL: map["bannerPicUrl"] ?? "",
+        profilePicUrl: map["profilePicUrl"] ?? "",
+        linkedInProfile: map['linkedInProfile'] ?? "",
+        interests: map['interests'],
+        created: map['created'] != null
+            ? (map['created'] as Timestamp).toDate()
+            : DateTime(DateTime.now().year),
+        pages: map["pages"] ?? [],
+        posts: map["posts"] ?? [],
+        numContacts: map["numContacts"] ??= 0,
+        numPosts: map["numPosts"] ??= 0,
+        numLinkedin: map["numLinkedin"] ??= 0);
   }
 }
