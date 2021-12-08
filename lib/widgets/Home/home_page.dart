@@ -6,6 +6,7 @@ import 'package:unicorn/controllers/firebase_storage_controller.dart';
 import 'package:unicorn/models/ico.dart';
 import 'package:unicorn/models/preferred_founding.dart';
 import 'package:unicorn/models/user.dart';
+import 'package:unicorn/widgets/Calendar/calendar_page.dart';
 import 'package:unicorn/widgets/Home/home_place_holder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:unicorn/widgets/Pages/create_page.dart';
@@ -279,6 +280,37 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: Color(0xFFB2B2B2),
                           ),
                         ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: ElevatedButton(
+                        child: const Text(
+                          "See Calendar",
+                          style: TextStyle(
+                            fontFamily: "Geometric Sans-Serif",
+                            fontSize: 12,
+                            color: Colors.white,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          splashFactory: NoSplash.splashFactory,
+                          elevation: 0,
+                          primary: const Color(0xFF0E153A),
+                          fixedSize: Size(0.3.sw, 20),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CalendarPage(
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     )
                   ],
