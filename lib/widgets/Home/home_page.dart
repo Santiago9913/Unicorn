@@ -6,14 +6,12 @@ import 'package:unicorn/controllers/firebase_storage_controller.dart';
 import 'package:unicorn/models/ico.dart';
 import 'package:unicorn/models/preferred_founding.dart';
 import 'package:unicorn/models/user.dart';
-import 'package:unicorn/widgets/Calendar/calendar_page.dart';
 import 'package:unicorn/widgets/Home/home_place_holder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:unicorn/widgets/Pages/create_page.dart';
 import 'package:unicorn/widgets/Search/search_view.dart';
 import 'package:unicorn/widgets/Weekly/weekly_screen.dart';
 import 'package:unicorn/widgets/post/post_create_view.dart';
-import 'package:unicorn/widgets/post/post_main_widget.dart';
 import 'package:unicorn/widgets/profile/main_profile_page.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -335,28 +333,28 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 1.sh,
                   width: 1.sw,
                   child: Padding(
-                    padding: EdgeInsets.all(14),
+                    padding: const EdgeInsets.all(14),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         DropdownButtonFormField(
                           menuMaxHeight: 400,
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
                             enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
+                              borderSide: const BorderSide(
                                   color: Color(0xFF0E153A), width: 2),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             border: OutlineInputBorder(
-                              borderSide: BorderSide(
+                              borderSide: const BorderSide(
                                   color: Color(0xFF0E153A), width: 2),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             filled: true,
-                            fillColor: Color(0xFF0E153A),
+                            fillColor: const Color(0xFF0E153A),
                           ),
-                          dropdownColor: Color(0xFF0E153A),
+                          dropdownColor: const Color(0xFF0E153A),
                           value: selectedValueTrends,
                           items: countriesListMenu,
                           onChanged: (String? newValue) {
@@ -394,7 +392,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 dataSource: _chartData,
                                 xValueMapper: (ICO data, _) => data.used,
                                 yValueMapper: (ICO data, _) => data.value,
-                                dataLabelSettings: DataLabelSettings(isVisible: true),
+                                dataLabelSettings: const DataLabelSettings(isVisible: true),
                               ),
                             ],
                           ),
@@ -412,7 +410,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     data.name,
                                 yValueMapper: (PreferredFounding data, _) =>
                                     data.value,
-                                dataLabelSettings: DataLabelSettings(isVisible: true),
+                                dataLabelSettings: const DataLabelSettings(isVisible: true),
                               ),
                             ],
                           ),
@@ -478,7 +476,7 @@ class _HomeScreenState extends State<HomeScreen> {
         mCountries.add(DropdownMenuItem(
             child: Text(
               countries[i].name,
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
             ),
             value: countries[i].name));
       }

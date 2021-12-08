@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -36,16 +35,13 @@ class _TwoFactorLogInState extends State<TwoFactorLogIn> {
 
   Future<void> verifyNumber() async {
     FirebaseAuth auth = FirebaseAuth.instance;
-    print(auth.currentUser);
 
     await auth.verifyPhoneNumber(
-      phoneNumber: "+57 2346723789",
+      phoneNumber: "+57 " + widget.phoneNumber,
       verificationCompleted: (PhoneAuthCredential credential) {
-        print("completed");
       },
       verificationFailed: (FirebaseAuthException e) {
         if (e.code == 'invalid-phone-number') {
-          print('The provided phone number is not valid.');
         }
       },
       codeSent: (String verificationId, int? resendToken) {

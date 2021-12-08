@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:unicorn/controllers/firebase_storage_controller.dart';
 import 'package:unicorn/models/event.dart';
 
@@ -64,7 +62,7 @@ class _CalendarPageState extends State<CalendarPage> {
   void initState() {
     // TODO: implement initState
     getEvents().then((List<Event> value) {
-      print(value);
+
       setState(() {
         events = value;
       });
@@ -101,13 +99,13 @@ class _CalendarPageState extends State<CalendarPage> {
           view: CalendarView.month,
           showNavigationArrow: true,
           allowAppointmentResize: true,
-          allowedViews: [
+          allowedViews: const [
             CalendarView.month,
             CalendarView.week,
             CalendarView.day
           ],
           dataSource: MeetingDataSource(_getDataSource()),
-          monthViewSettings: MonthViewSettings(
+          monthViewSettings: const MonthViewSettings(
               appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
         )
         //]

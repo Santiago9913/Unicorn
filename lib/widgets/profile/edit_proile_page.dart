@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:unicorn/controllers/firebase_storage_controller.dart';
 import 'package:unicorn/controllers/hive_controller.dart';
 import 'package:unicorn/models/user.dart';
@@ -366,7 +365,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           ),
                           child: IconButton(
                             color: Colors.white,
-                            icon: Icon(Icons.camera_alt_outlined),
+                            icon: const Icon(Icons.camera_alt_outlined),
                             onPressed: () {
                               _showPicker(context, 'profile');
                             },

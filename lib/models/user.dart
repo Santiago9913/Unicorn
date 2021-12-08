@@ -106,7 +106,7 @@ class User {
       await FirebaseStorageController.updateUser(userUID, mapName);
       linkedInProfile = url;
     } catch (e) {
-      print(e.toString());
+      e;
     }
   }
 
@@ -116,7 +116,7 @@ class User {
       await FirebaseStorageController.updateUser(userUID, mapName);
       name = nName;
     } catch (e) {
-      print(e.toString());
+      e;
     }
   }
 
@@ -126,7 +126,7 @@ class User {
       await FirebaseStorageController.updateUser(userUID, mapName);
       lastName = nName;
     } catch (e) {
-      print(e.toString());
+      e;
     }
   }
 

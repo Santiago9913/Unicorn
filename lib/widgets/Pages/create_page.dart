@@ -1,16 +1,13 @@
 import 'dart:io';
 
-import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:unicorn/controllers/firebase_storage_controller.dart';
 import 'package:unicorn/models/page.dart';
 import 'package:unicorn/models/user.dart';
 import 'package:unicorn/widgets/Home/home_page.dart';
-import 'package:unicorn/widgets/profile/main_profile_page.dart';
 
 import '../custom_input_text.dart';
 
@@ -127,7 +124,7 @@ class _CreatePageState extends State<CreatePage> {
         widget.user.userUID,
       );
     } catch (e) {
-      print(e.toString());
+      e;
     }
   }
 
@@ -275,17 +272,17 @@ class _CreatePageState extends State<CreatePage> {
                   padding:
                       const EdgeInsets.only(left: 16.0, right: 25.0, top: 2),
                   child: Container(
-                    padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 6),
+                    padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 6),
                     decoration: BoxDecoration(
                         border: Border.all(color: Colors.black38),
                         borderRadius: BorderRadius.circular(5)),
                     child: DropdownButton<String>(
                       hint: const Text('Select a country'),
                       elevation: 5,
-                      icon: Icon(Icons.arrow_drop_down),
+                      icon: const Icon(Icons.arrow_drop_down),
                       iconSize: 36.0,
                       isExpanded: true,
-                      style: TextStyle(color: Colors.black54, fontSize: 17.0),
+                      style: const TextStyle(color: Colors.black54, fontSize: 17.0),
                       underline: Container(
                         height: 2,
                         color: Colors.white,
@@ -393,7 +390,7 @@ class _CreatePageState extends State<CreatePage> {
                               ),
                               child: IconButton(
                                 color: Colors.white,
-                                icon: Icon(Icons.camera_alt_outlined),
+                                icon: const Icon(Icons.camera_alt_outlined),
                                 onPressed: () {
                                   _showPicker(context, 'profile');
                                 },
@@ -420,7 +417,7 @@ class _CreatePageState extends State<CreatePage> {
                             _checked = value!;
                           });
                         },
-                        activeColor: Color(0xFF3D5AF1),
+                        activeColor: const Color(0xFF3D5AF1),
                         checkColor: Colors.white,
                       ),
                     ),
@@ -452,18 +449,18 @@ class _CreatePageState extends State<CreatePage> {
                       padding: const EdgeInsets.only(
                           left: 50.0, right: 260, top: 0, bottom: 20),
                       child: Container(
-                        padding: EdgeInsets.only(left: 16.0, right: 16.0),
+                        padding: const EdgeInsets.only(left: 16.0, right: 16.0),
                         decoration: BoxDecoration(
                             border: Border.all(color: Colors.black38),
                             borderRadius: BorderRadius.circular(5)),
                         child: DropdownButton<String>(
                           hint: const Text('1'),
                           elevation: 5,
-                          icon: Icon(Icons.arrow_drop_down),
+                          icon: const Icon(Icons.arrow_drop_down),
                           iconSize: 36.0,
                           isExpanded: true,
                           style:
-                              TextStyle(color: Colors.black54, fontSize: 17.0),
+                              const TextStyle(color: Colors.black54, fontSize: 17.0),
                           underline: Container(
                             height: 2,
                             color: Colors.white,
@@ -502,18 +499,18 @@ class _CreatePageState extends State<CreatePage> {
                       padding: const EdgeInsets.only(
                           left: 50.0, right: 260, top: 0, bottom: 20),
                       child: Container(
-                        padding: EdgeInsets.only(left: 16.0, right: 16.0),
+                        padding: const EdgeInsets.only(left: 16.0, right: 16.0),
                         decoration: BoxDecoration(
                             border: Border.all(color: Colors.black38),
                             borderRadius: BorderRadius.circular(5)),
                         child: DropdownButton<String>(
                           hint: const Text('1'),
                           elevation: 5,
-                          icon: Icon(Icons.arrow_drop_down),
+                          icon: const Icon(Icons.arrow_drop_down),
                           iconSize: 36.0,
                           isExpanded: true,
                           style:
-                              TextStyle(color: Colors.black54, fontSize: 17.0),
+                              const TextStyle(color: Colors.black54, fontSize: 17.0),
                           underline: Container(
                             height: 2,
                             color: Colors.white,
@@ -552,18 +549,18 @@ class _CreatePageState extends State<CreatePage> {
                       padding: const EdgeInsets.only(
                           left: 50.0, right: 260, top: 0, bottom: 20),
                       child: Container(
-                        padding: EdgeInsets.only(left: 16.0, right: 16.0),
+                        padding: const EdgeInsets.only(left: 16.0, right: 16.0),
                         decoration: BoxDecoration(
                             border: Border.all(color: Colors.black38),
                             borderRadius: BorderRadius.circular(5)),
                         child: DropdownButton<String>(
                           hint: const Text('1'),
                           elevation: 5,
-                          icon: Icon(Icons.arrow_drop_down),
+                          icon: const Icon(Icons.arrow_drop_down),
                           iconSize: 36.0,
                           isExpanded: true,
                           style:
-                              TextStyle(color: Colors.black54, fontSize: 17.0),
+                              const TextStyle(color: Colors.black54, fontSize: 17.0),
                           underline: Container(
                             height: 2,
                             color: Colors.white,
@@ -602,18 +599,18 @@ class _CreatePageState extends State<CreatePage> {
                       padding: const EdgeInsets.only(
                           left: 50.0, right: 260, top: 0, bottom: 20),
                       child: Container(
-                        padding: EdgeInsets.only(left: 16.0, right: 16.0),
+                        padding: const EdgeInsets.only(left: 16.0, right: 16.0),
                         decoration: BoxDecoration(
                             border: Border.all(color: Colors.black38),
                             borderRadius: BorderRadius.circular(5)),
                         child: DropdownButton<String>(
                           hint: const Text('1'),
                           elevation: 5,
-                          icon: Icon(Icons.arrow_drop_down),
+                          icon: const Icon(Icons.arrow_drop_down),
                           iconSize: 36.0,
                           isExpanded: true,
                           style:
-                              TextStyle(color: Colors.black54, fontSize: 17.0),
+                              const TextStyle(color: Colors.black54, fontSize: 17.0),
                           underline: Container(
                             height: 2,
                             color: Colors.white,
@@ -652,18 +649,18 @@ class _CreatePageState extends State<CreatePage> {
                       padding: const EdgeInsets.only(
                           left: 50.0, right: 260, top: 0, bottom: 20),
                       child: Container(
-                        padding: EdgeInsets.only(left: 16.0, right: 16.0),
+                        padding: const EdgeInsets.only(left: 16.0, right: 16.0),
                         decoration: BoxDecoration(
                             border: Border.all(color: Colors.black38),
                             borderRadius: BorderRadius.circular(5)),
                         child: DropdownButton<String>(
                           hint: const Text('1'),
                           elevation: 5,
-                          icon: Icon(Icons.arrow_drop_down),
+                          icon: const Icon(Icons.arrow_drop_down),
                           iconSize: 36.0,
                           isExpanded: true,
                           style:
-                              TextStyle(color: Colors.black54, fontSize: 17.0),
+                              const TextStyle(color: Colors.black54, fontSize: 17.0),
                           underline: Container(
                             height: 2,
                             color: Colors.white,
@@ -702,18 +699,18 @@ class _CreatePageState extends State<CreatePage> {
                       padding: const EdgeInsets.only(
                           left: 50.0, right: 260, top: 0, bottom: 20),
                       child: Container(
-                        padding: EdgeInsets.only(left: 16.0, right: 16.0),
+                        padding: const EdgeInsets.only(left: 16.0, right: 16.0),
                         decoration: BoxDecoration(
                             border: Border.all(color: Colors.black38),
                             borderRadius: BorderRadius.circular(5)),
                         child: DropdownButton<String>(
                           hint: const Text('1'),
                           elevation: 5,
-                          icon: Icon(Icons.arrow_drop_down),
+                          icon: const Icon(Icons.arrow_drop_down),
                           iconSize: 36.0,
                           isExpanded: true,
                           style:
-                              TextStyle(color: Colors.black54, fontSize: 17.0),
+                              const TextStyle(color: Colors.black54, fontSize: 17.0),
                           underline: Container(
                             height: 2,
                             color: Colors.white,
@@ -753,18 +750,18 @@ class _CreatePageState extends State<CreatePage> {
                           left: 16.0, right: 25.0, top: 2),
                       child: Container(
                         padding:
-                            EdgeInsets.only(left: 16.0, right: 16.0, top: 6),
+                            const EdgeInsets.only(left: 16.0, right: 16.0, top: 6),
                         decoration: BoxDecoration(
                             border: Border.all(color: Colors.black38),
                             borderRadius: BorderRadius.circular(5)),
                         child: DropdownButton<String>(
                           hint: const Text('Select a country'),
                           elevation: 5,
-                          icon: Icon(Icons.arrow_drop_down),
+                          icon: const Icon(Icons.arrow_drop_down),
                           iconSize: 36.0,
                           isExpanded: true,
                           style:
-                              TextStyle(color: Colors.black54, fontSize: 17.0),
+                              const TextStyle(color: Colors.black54, fontSize: 17.0),
                           underline: Container(
                             height: 2,
                             color: Colors.white,
@@ -808,18 +805,18 @@ class _CreatePageState extends State<CreatePage> {
                           left: 16.0, right: 25.0, top: 2),
                       child: Container(
                         padding:
-                            EdgeInsets.only(left: 16.0, right: 16.0, top: 6),
+                            const EdgeInsets.only(left: 16.0, right: 16.0, top: 6),
                         decoration: BoxDecoration(
                             border: Border.all(color: Colors.black38),
                             borderRadius: BorderRadius.circular(5)),
                         child: DropdownButton<String>(
                           hint: const Text('Select a country'),
                           elevation: 5,
-                          icon: Icon(Icons.arrow_drop_down),
+                          icon: const Icon(Icons.arrow_drop_down),
                           iconSize: 36.0,
                           isExpanded: true,
                           style:
-                              TextStyle(color: Colors.black54, fontSize: 17.0),
+                              const TextStyle(color: Colors.black54, fontSize: 17.0),
                           underline: Container(
                             height: 2,
                             color: Colors.white,

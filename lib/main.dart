@@ -6,7 +6,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:unicorn/widgets/Weekly/weekly_screen.dart';
 import 'package:unicorn/widgets/main_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:unicorn/widgets/splash_screen.dart';
@@ -49,7 +48,7 @@ class _UnicornState extends State<Unicorn> {
       future: _initialization,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          print("Error");
+
         }
 
         if (snapshot.connectionState == ConnectionState.done) {

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:unicorn/models/user.dart';
-import 'package:unicorn/widgets/Home/home_page.dart';
 import 'package:unicorn/widgets/LogIn/profile_type_button.dart';
 
 import 'login_interests.dart';

@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:hive/hive.dart';
-import 'package:unicorn/models/event.dart';
 
 class HiveController {
   static var imagesBox = Hive.box('imagesBox');

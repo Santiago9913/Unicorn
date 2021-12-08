@@ -38,7 +38,7 @@ class FirebaseStorageController {
           break;
       }
     } catch (error) {
-      print(error.toString());
+      error;
     }
 
     return url;
@@ -69,7 +69,7 @@ class FirebaseStorageController {
 
       return url;
     } catch (e) {
-      print(e.toString());
+      e;
     }
 
     return url;
@@ -100,7 +100,7 @@ class FirebaseStorageController {
         "pages": FieldValue.arrayUnion([id])
       });
     } catch (e) {
-      print(e.toString());
+      e;
     }
   }
 
@@ -165,12 +165,10 @@ class FirebaseStorageController {
   static Future<List<Event>> getEventsFB() async {
     List<Event> events = [];
     QuerySnapshot qs = await _db.collection("events").get();
-    print(qs.docs);
     List<dynamic> docs = await qs.docs;
     docs.forEach((element) {
       Map<String, dynamic> info = element.data() as Map<String, dynamic>;
       Event e = Event.fromJson(info);
-      print(e);
       events.add(e);
     });
     return events;
@@ -180,7 +178,12 @@ class FirebaseStorageController {
     List<dynamic> mHiveEvents = await HiveController.retrieveEvents();
     List<Event> hiveEvents = [];
     mHiveEvents.forEach((element) {
-      hiveEvents.add(Event(name: element['name'], date: element['date'], description: element['description'], timeStart: element['timeStart'], timeEnd: element['timeEnd']));
+      hiveEvents.add(Event(
+          name: element['name'],
+          date: element['date'],
+          description: element['description'],
+          timeStart: element['timeStart'],
+          timeEnd: element['timeEnd']));
     });
     List<Event> fbEvents = [];
     var total = 0;
@@ -188,10 +191,9 @@ class FirebaseStorageController {
       fbEvents = await getEventsFB();
       total = fbEvents.length;
     } catch (e) {
-      print(e.toString());
+      e;
     }
-    print(hiveEvents);
-    print(fbEvents);
+
     var events = hiveEvents.length > total ? [...hiveEvents] : [...fbEvents];
     if (hiveEvents.length <= total) {
       String jsonStr = jsonEncode(events);

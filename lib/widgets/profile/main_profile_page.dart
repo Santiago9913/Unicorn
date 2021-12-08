@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
@@ -11,7 +10,6 @@ import 'package:unicorn/controllers/hive_controller.dart';
 import 'package:unicorn/models/user.dart';
 import 'package:unicorn/widgets/Contact/contact_page.dart';
 import 'package:unicorn/widgets/Home/home_page.dart';
-import 'package:unicorn/widgets/profile/display_card.dart';
 import 'package:unicorn/widgets/profile/edit_proile_page.dart';
 import 'package:unicorn/widgets/profile/info_card.dart';
 import 'package:intl/intl.dart';
@@ -142,9 +140,9 @@ class _MainProfilePageState extends State<MainProfilePage> {
     try {
       await Stripe.instance.presentPaymentSheet();
       Scaffold.of(context)
-          .showSnackBar(SnackBar(content: Text("Payment Succesfull")));
+          .showSnackBar(const SnackBar(content: Text("Payment Succesfull")));
     } catch (e) {
-      print(e.toString());
+      e;
     }
   }
 

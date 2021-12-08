@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import "package:flutter_screenutil/flutter_screenutil.dart";
 import 'package:unicorn/controllers/firebase_storage_controller.dart';
 import 'package:unicorn/models/user.dart';
@@ -97,7 +96,6 @@ class _WeeklyScreenState extends State<WeeklyScreen> {
         }
         if (snapshot.hasData) {
           if (users.isEmpty) {
-            print(users);
             return SizedBox(
               height: 1.sh,
               width: 1.sw,

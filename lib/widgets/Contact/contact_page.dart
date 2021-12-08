@@ -47,7 +47,6 @@ class _ContactPageState extends State<ContactPage> {
             FocusScope.of(context).requestFocus(
               FocusNode(),
             );
-            print("send");
             await FirebaseStorageController.updateUser(widget.user.userUID,
                 {"numContacts": widget.user.numContacts++});
 
@@ -80,7 +79,7 @@ class _ContactPageState extends State<ContactPage> {
         ],
       ),
       body: Container(
-        padding: EdgeInsets.only(left: 20, right: 20),
+        padding: const EdgeInsets.only(left: 20, right: 20),
         height: 0.7.sh,
         child: SingleChildScrollView(
           child: Column(
