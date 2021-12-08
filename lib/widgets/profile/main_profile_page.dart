@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -123,29 +124,8 @@ class _MainProfilePageState extends State<MainProfilePage> {
   }
 
   Future<void> checkout() async {
-    const url_un = 'https://unicornm.herokuapp.com/api/stripe/generatePayment';
-    final formatter = DateFormat('yyyy-MM-dd');
-    DateTime now = DateTime.now();
-    DateTime startDate = DateTime(now.year, now.month, now.day);
-    DateTime finishDate = DateTime(startDate.year, startDate.month, startDate.day + 7);
 
-    String id = widget.user.userUID.toString();
-    String start = formatter.format(startDate).toString();
-    String end = formatter.format(finishDate).toString();
-
-    final response = await http.post(
-      Uri.parse(url_un),
-      headers: <String, String> {
-        'content-type' : 'application/json; charset=UTF-8'
-      },
-      body: jsonEncode(<String, String> {
-        'id' : id,
-        'startDate' : start,
-        'finishDate' : end,
-      }),
-    );
-
-    paymentData = json.decode(response.body);
+    paymentData = await compute(generatePayment, widget.user);
 
 
     await Stripe.instance.initPaymentSheet(
@@ -474,4 +454,31 @@ class _MainProfilePageState extends State<MainProfilePage> {
       ),
     );
   }
+}
+
+Future<Map<String, dynamic>> generatePayment(User user) async {
+  const url_un = 'https://unicornm.herokuapp.com/api/stripe/generatePayment';
+  final formatter = DateFormat('yyyy-MM-dd');
+  DateTime now = DateTime.now();
+  DateTime startDate = DateTime(now.year, now.month, now.day);
+  DateTime finishDate = DateTime(startDate.year, startDate.month, startDate.day + 7);
+
+  String id = user.userUID.toString();
+  String start = formatter.format(startDate).toString();
+  String end = formatter.format(finishDate).toString();
+
+
+  final response = await http.post(
+    Uri.parse(url_un),
+    headers: <String, String> {
+      'content-type' : 'application/json; charset=UTF-8'
+    },
+    body: jsonEncode(<String, String> {
+      'id' : id,
+      'startDate' : start,
+      'finishDate' : end,
+    }),
+  );
+
+  return json.decode(response.body);
 }
