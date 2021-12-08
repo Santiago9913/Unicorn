@@ -63,6 +63,7 @@ dev_dependencies:
   build_runner: ^2.1.5
   flutter_test:
     sdk: flutter
+  syncfusion_flutter_calendar: ^19.3.56
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

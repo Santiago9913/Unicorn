@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_performance/firebase_performance.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:unicorn/models/event.dart';
 import 'package:unicorn/models/ico.dart';
 import 'package:unicorn/models/page.dart';
 import 'package:unicorn/models/post.dart';
@@ -147,6 +148,20 @@ class FirebaseStorageController {
         .collection("pages")
         .where("country", isEqualTo: location)
         .get();
+  }
+
+  static Future<List<Event>> getEvents() async {
+    List<Event> events = [];
+    QuerySnapshot qs = await _db.collection("events").get();
+    print(qs.docs);
+    List<dynamic> docs = await qs.docs;
+    docs.forEach((element) {
+      Map<String, dynamic> info = element.data() as Map<String, dynamic>;
+      Event e = Event.fromJson(info);
+      print(e);
+      events.add(e);
+    });
+    return events;
   }
 
   //Pages controllers
