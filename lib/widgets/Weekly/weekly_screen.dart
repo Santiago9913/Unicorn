@@ -62,6 +62,7 @@ class _WeeklyScreenState extends State<WeeklyScreen> {
               ),
             ),
             onPressed: () {
+              FirebaseStorageController.updateViewsCalendar(widget.user.userUID);
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -142,6 +143,7 @@ class _WeeklyScreenState extends State<WeeklyScreen> {
                         ),
                       ),
                       onPressed: () {
+                        FirebaseStorageController.updateViewsCalendar(widget.user.userUID);
                         Navigator.push(
                           context,
                           MaterialPageRoute(
