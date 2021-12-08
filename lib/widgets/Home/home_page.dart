@@ -388,11 +388,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: SfCircularChart(
                             title: ChartTitle(text: "Are Startups using ICO"),
                             legend: Legend(isVisible: true),
+
                             series: <CircularSeries>[
                               PieSeries<ICO, String>(
                                 dataSource: _chartData,
                                 xValueMapper: (ICO data, _) => data.used,
                                 yValueMapper: (ICO data, _) => data.value,
+                                dataLabelSettings: DataLabelSettings(isVisible: true),
                               ),
                             ],
                           ),
@@ -410,6 +412,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     data.name,
                                 yValueMapper: (PreferredFounding data, _) =>
                                     data.value,
+                                dataLabelSettings: DataLabelSettings(isVisible: true),
                               ),
                             ],
                           ),
