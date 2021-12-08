@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import "package:flutter_screenutil/flutter_screenutil.dart";
 import 'package:unicorn/controllers/firebase_storage_controller.dart';
 import 'package:unicorn/models/user.dart';
+import 'package:unicorn/widgets/Calendar/calendar_page.dart';
 import 'package:unicorn/widgets/Search/result_card.dart';
 
 class WeeklyScreen extends StatefulWidget {
@@ -37,6 +38,40 @@ class _WeeklyScreenState extends State<WeeklyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title:  Padding(
+          padding: const EdgeInsets.only(left: 60.0),
+          child: ElevatedButton(
+            child: const Text(
+              "See Calendar",
+              style: TextStyle(
+                fontFamily: "Geometric Sans-Serif",
+                fontSize: 12,
+                color: Colors.white,
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              splashFactory: NoSplash.splashFactory,
+              elevation: 0,
+              primary: const Color(0xFF0E153A),
+              fixedSize: Size(0.3.sw, 20),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CalendarPage(),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
         body: FutureBuilder(
       future: getUsersPromoted(),
       builder: (context, snapshot) {
@@ -84,6 +119,36 @@ class _WeeklyScreenState extends State<WeeklyScreen> {
                           color: Color(0xFFB2B2B2),
                         ),
                       ),
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: ElevatedButton(
+                      child: const Text(
+                        "See Calendar",
+                        style: TextStyle(
+                          fontFamily: "Geometric Sans-Serif",
+                          fontSize: 12,
+                          color: Colors.white,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        splashFactory: NoSplash.splashFactory,
+                        elevation: 0,
+                        primary: const Color(0xFF0E153A),
+                        fixedSize: Size(0.3.sw, 20),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CalendarPage(),
+                          ),
+                        );
+                      },
                     ),
                   )
                 ],
